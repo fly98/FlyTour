@@ -144,6 +144,16 @@
     display:flex; flex-direction:column; align-items:center; gap:2px; padding:4px;}
   .skip-btn svg{width:24px;height:24px;}
   .skip-btn span{font-size:9px; color:var(--limestone-dim);}
+
+  /* pannello foto */
+  .photo-panel{position:relative; margin-bottom:12px; border-radius:14px; overflow:hidden;
+    background:var(--stone); aspect-ratio: 16/10;}
+  .photo-panel img{width:100%; height:100%; object-fit:cover; display:block;
+    opacity:0; transition:opacity .6s ease;}
+  .photo-panel img.show{opacity:1;}
+  .photo-caption{position:absolute; left:0; right:0; bottom:0; padding:8px 12px 7px;
+    background:linear-gradient(transparent, rgba(0,0,0,0.75)); font-size:11.5px;
+    color:var(--limestone); line-height:1.3;}
 </style>
 </head>
 <body>
@@ -188,6 +198,10 @@
 </div>
 
 <div class="player" id="player">
+  <div class="photo-panel" id="photoPanel">
+    <img id="photoImg" src="" alt="">
+    <div class="photo-caption" id="photoCaption"></div>
+  </div>
   <div class="player-top">
     <div class="player-name" id="playerName">—</div>
   </div>
@@ -222,7 +236,13 @@ const STOPS = [
     desc: "Ponte Sisto, la fontana spostata, l'ingresso a Trastevere",
     lat: 41.8917821,
     lon: 12.4702261,
-    audio: "audio/tappa1.mp3"
+    audio: "audio/tappa1.mp3",
+    photos: [
+      { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Trastevere_-_piazza_Trilussa_-_monumento_a_Trilussa_1531.JPG?width=900",
+        caption: "Il monumento a Trilussa, 1954", credit: "Wikimedia Commons" },
+      { time: 40, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Trastevere_-_Fontanone_dei_cento_preti_a_piazza_Trilussa_1527.JPG?width=900",
+        caption: "Il Fontanone dei Cento Preti, spostato qui da Ponte Sisto", credit: "Wikimedia Commons" }
+    ]
   },
   {
     id: 2,
@@ -230,7 +250,11 @@ const STOPS = [
     desc: "La farmacia dei Papi, teriaca e frati speziali",
     lat: 41.8913020,
     lon: 12.4679727,
-    audio: "audio/tappa2.mp3"
+    audio: "audio/tappa2.mp3",
+    photos: [
+      { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Trastevere_-_santa_maria_della_scala_01586-9.JPG?width=900",
+        caption: "Piazza della Scala e la facciata del convento carmelitano", credit: "Wikimedia Commons" }
+    ]
   }
 ];
 
@@ -349,6 +373,7 @@ function playStop(id, manual){
   const stop = STOPS.find(s => s.id === id);
   if(!stop) return;
   state.currentStopId = id;
+  currentPhotoUrl = null;
   document.getElementById('playerName').textContent = stop.name;
   audioEl.src = stop.audio;
   audioEl.play().catch(()=>{ /* iOS può richiedere un tap: il bottone play resta disponibile */ });
@@ -372,8 +397,30 @@ audioEl.ontimeupdate = () => {
   if(!seekBar.matches(':active')){ seekBar.value = audioEl.currentTime; }
   timeElapsed.textContent = fmtTime(audioEl.currentTime);
   timeRemaining.textContent = '-' + fmtTime((audioEl.duration || 0) - audioEl.currentTime);
+  updatePhoto(audioEl.currentTime);
 };
 seekBar.addEventListener('input', () => { audioEl.currentTime = seekBar.value; });
+
+// ---- Pannello foto sincronizzato ----
+const photoImg = document.getElementById('photoImg');
+const photoCaption = document.getElementById('photoCaption');
+let currentPhotoUrl = null;
+
+function updatePhoto(t){
+  const stop = STOPS.find(s => s.id === state.currentStopId);
+  if(!stop || !stop.photos || !stop.photos.length) return;
+  let active = stop.photos[0];
+  for(const p of stop.photos){ if(t >= p.time) active = p; }
+  if(active.url !== currentPhotoUrl){
+    currentPhotoUrl = active.url;
+    photoImg.classList.remove('show');
+    setTimeout(() => {
+      photoImg.src = active.url;
+      photoCaption.textContent = active.caption + ' · ' + active.credit;
+      photoImg.onload = () => photoImg.classList.add('show');
+    }, 300);
+  }
+}
 
 // ---- Overlay arrivo tappa (quando autoplay è OFF) ----
 const overlay = document.getElementById('arrivalOverlay');
