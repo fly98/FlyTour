@@ -63,6 +63,9 @@
 
   .gps-status{margin:4px 20px 18px; font-size:12.5px; color:var(--limestone-dim);
     display:flex; align-items:center; gap:7px;}
+  .gps-status span{flex:1;}
+  .reset-link{background:none; border:none; color:var(--limestone-dim); text-decoration:underline;
+    font-size:11.5px; cursor:pointer; flex-shrink:0; padding:2px 0;}
   .gps-dot{width:7px;height:7px;border-radius:50%; background:var(--patina-dim);}
   .gps-dot.live{background:var(--patina); box-shadow:0 0 0 3px rgba(124,154,130,0.25);}
 
@@ -104,8 +107,10 @@
 
   /* player */
   .player{position:fixed; left:50%; bottom:0; z-index:40; width:100%; max-width:520px;
+    max-height:90vh; overflow-y:auto;
     background:var(--stone-2); border-top:1px solid var(--line);
-    padding:14px 20px calc(14px + env(safe-area-inset-bottom));
+    border-radius:20px 20px 0 0;
+    padding:16px 20px calc(16px + env(safe-area-inset-bottom));
     transform:translateX(-50%) translateY(110%); transition:transform .3s;}
   .player.show{transform:translateX(-50%) translateY(0);}
   .player-top{display:flex; align-items:center; gap:12px; margin-bottom:10px;}
@@ -186,13 +191,16 @@
 
   /* pannello foto */
   .photo-panel{position:relative; margin-bottom:12px; border-radius:14px; overflow:hidden;
-    background:var(--stone); aspect-ratio: 16/10;}
+    background:var(--stone); aspect-ratio: 4/3; max-height:46vh;}
   .photo-panel img{width:100%; height:100%; object-fit:cover; display:block;
     opacity:0; transition:opacity .6s ease;}
   .photo-panel img.show{opacity:1;}
   .photo-caption{position:absolute; left:0; right:0; bottom:0; padding:8px 12px 7px;
     background:linear-gradient(transparent, rgba(0,0,0,0.75)); font-size:11.5px;
     color:var(--limestone); line-height:1.3;}
+  .player-close{position:absolute; top:10px; right:10px; width:32px; height:32px; border-radius:50%;
+    background:rgba(20,17,14,0.55); backdrop-filter:blur(4px); border:none; color:var(--limestone);
+    font-size:15px; display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:2;}
 </style>
 </head>
 <body>
@@ -218,6 +226,7 @@
   <div class="gps-status">
     <div class="gps-dot" id="gpsDot"></div>
     <span id="gpsText">Posizione non attiva — tocca "Attiva GPS" qui sotto</span>
+    <button class="reset-link" id="resetBtn">Ricomincia il giro</button>
   </div>
 
   <div class="stops" id="stops"></div>
@@ -267,6 +276,7 @@
 <div class="player" id="player">
   <div class="photo-panel" id="photoPanel">
     <img id="photoImg" src="" alt="">
+    <button class="player-close" id="playerCloseBtn">✕</button>
     <div class="photo-caption" id="photoCaption"></div>
   </div>
   <div class="player-top">
@@ -507,6 +517,24 @@ playPauseBtn.onclick = () => {
 };
 document.getElementById('backBtn').onclick = () => { audioEl.currentTime = Math.max(0, audioEl.currentTime - 15); };
 document.getElementById('fwdBtn').onclick = () => { audioEl.currentTime = Math.min(audioEl.duration || 0, audioEl.currentTime + 15); };
+document.getElementById('playerCloseBtn').onclick = () => {
+  audioEl.pause();
+  playerEl.classList.remove('show');
+  state.currentStopId = null;
+  render();
+};
+
+// ---- Reset sessione ----
+document.getElementById('resetBtn').onclick = () => {
+  if(!confirm('Ricominciare il giro da capo? Le tappe già ascoltate torneranno disponibili.')) return;
+  audioEl.pause();
+  playerEl.classList.remove('show');
+  state.played = new Set();
+  state.currentStopId = null;
+  currentPhotoUrl = null;
+  localStorage.removeItem('trastevere_played');
+  render();
+};
 
 audioEl.onplay = () => { playIcon.setAttribute('d','M6 5h4v14H6zM14 5h4v14h-4z'); };
 audioEl.onpause = () => { playIcon.setAttribute('d','M8 5v14l11-7z'); };
