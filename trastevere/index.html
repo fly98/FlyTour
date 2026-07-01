@@ -100,11 +100,11 @@
   .btn-ghost{background:transparent; color:var(--limestone-dim); border:1px solid var(--line);}
 
   /* player */
-  .player{position:fixed; left:0; right:0; bottom:0; z-index:40;
+  .player{position:fixed; left:50%; bottom:0; z-index:40; width:100%; max-width:520px;
     background:var(--stone-2); border-top:1px solid var(--line);
     padding:14px 20px calc(14px + env(safe-area-inset-bottom));
-    transform:translateY(110%); transition:transform .3s;}
-  .player.show{transform:translateY(0);}
+    transform:translateX(-50%) translateY(110%); transition:transform .3s;}
+  .player.show{transform:translateX(-50%) translateY(0);}
   .player-top{display:flex; align-items:center; gap:12px; margin-bottom:10px;}
   .player-name{font-family:'Fraunces',serif; font-size:15px; font-weight:600; flex:1;
     white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
@@ -131,6 +131,16 @@
   .stop-marker.pending{background:var(--stone-2); opacity:0.6;}
   .me-marker{width:16px;height:16px;border-radius:50%; background:#4a9eff;
     border:3px solid white; box-shadow:0 0 0 5px rgba(74,158,255,0.3);}
+  .stop-tooltip{background:rgba(42,38,34,0.92) !important; border:1px solid var(--line) !important;
+    color:var(--limestone) !important; font-family:'Inter',sans-serif !important; font-size:10.5px !important;
+    font-weight:600; padding:2px 7px !important; box-shadow:none !important;
+    border-radius:6px !important;}
+  .stop-tooltip::before{display:none !important;}
+
+  .stop-actions{display:flex; align-items:center; gap:6px; flex-shrink:0;}
+  .nav-link{width:34px;height:34px;border-radius:50%; background:rgba(124,154,130,0.14);
+    display:flex; align-items:center; justify-content:center; color:var(--patina); flex-shrink:0;}
+  .nav-link svg{width:16px;height:16px;}
 
   /* modal testo */
   .text-modal-overlay{position:fixed; inset:0; background:rgba(20,17,14,0.85); z-index:60;
@@ -346,7 +356,9 @@ STOPS.forEach(s => {
     className: '', html: `<div class="stop-marker${s.ready ? '' : ' pending'}" id="marker-${s.id}"><span>${s.id}</span></div>`,
     iconSize:[26,26], iconAnchor:[13,26]
   });
-  stopMarkers[s.id] = L.marker([s.lat, s.lon], {icon}).addTo(map);
+  const m = L.marker([s.lat, s.lon], {icon}).addTo(map);
+  m.bindTooltip(s.name, {permanent:true, direction:'right', offset:[4,-14], className:'stop-tooltip'});
+  stopMarkers[s.id] = m;
 });
 map.fitBounds(ROUTE_COORDS, {padding:[40,40]});
 
@@ -411,19 +423,26 @@ function render(){
     // stop card
     const el = document.createElement('div');
     el.className = 'stop' + (done ? ' done' : '') + (current ? ' current' : '') + (!s.ready ? ' pending' : '');
+    const navUrl = `https://maps.apple.com/?daddr=${s.lat},${s.lon}&dirflg=w`;
     el.innerHTML = `
       <div class="stop-num">${String(s.id).padStart(2,'0')}</div>
       <div class="stop-body">
         <p class="stop-name">${s.name}</p>
         <p class="stop-desc">${s.desc}</p>
       </div>
-      ${s.ready
-        ? `<button class="stop-text-btn" data-textbtn="${s.id}">Leggi</button><div class="stop-icon">${done ? '✓' : '▶'}</div>`
-        : `<span class="pending-tag">in arrivo</span>`}
+      <div class="stop-actions">
+        <a class="nav-link" href="${navUrl}" target="_blank" title="Naviga fin qui" data-navlink>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l18-8-8 18-2-8-8-2z"/></svg>
+        </a>
+        ${s.ready
+          ? `<button class="stop-text-btn" data-textbtn="${s.id}">Leggi</button><div class="stop-icon" data-playicon>${done ? '✓' : '▶'}</div>`
+          : `<span class="pending-tag">in arrivo</span>`}
+      </div>
     `;
+    el.querySelector('[data-navlink]').onclick = (e) => e.stopPropagation();
     if(s.ready){
       el.querySelector('.stop-body').onclick = () => playStop(s.id, true);
-      el.querySelector('.stop-icon').onclick = () => playStop(s.id, true);
+      el.querySelector('[data-playicon]').onclick = () => playStop(s.id, true);
       el.querySelector('[data-textbtn]').onclick = (e) => { e.stopPropagation(); openTextModal(s.id); };
     }
     stopsEl.appendChild(el);
