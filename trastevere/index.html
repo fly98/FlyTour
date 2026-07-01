@@ -6,6 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Trastevere Nascosta — Audioguida</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap');
 
@@ -114,6 +115,35 @@
 
   footer{text-align:center; padding:24px 20px; font-size:11.5px; color:var(--limestone-dim);
     opacity:0.6;}
+
+  /* mappa */
+  .map-wrap{margin:14px 20px 4px; border-radius:16px; overflow:hidden;
+    border:1px solid var(--line); position:relative;}
+  #map{height:220px; width:100%; background:var(--stone-2);}
+  .leaflet-control-attribution{font-size:9px !important;}
+  .stop-marker{width:26px;height:26px;border-radius:50% 50% 50% 0; background:var(--ochre);
+    transform:rotate(-45deg); display:flex; align-items:center; justify-content:center;
+    border:2px solid var(--stone); box-shadow:0 2px 6px rgba(0,0,0,0.4);}
+  .stop-marker span{transform:rotate(45deg); font-family:'Fraunces',serif; font-size:11px;
+    font-weight:700; color:#241a12;}
+  .stop-marker.done{background:var(--patina);}
+  .me-marker{width:16px;height:16px;border-radius:50%; background:#4a9eff;
+    border:3px solid white; box-shadow:0 0 0 5px rgba(74,158,255,0.3);}
+
+  /* player esteso */
+  .seek-row{display:flex; align-items:center; gap:8px; margin-bottom:8px;}
+  .time-label{font-size:11px; color:var(--limestone-dim); font-variant-numeric:tabular-nums;
+    width:38px; flex-shrink:0;}
+  .time-label.right{text-align:right;}
+  input[type="range"].seek{flex:1; -webkit-appearance:none; appearance:none; height:4px;
+    background:var(--line); border-radius:2px; outline:none;}
+  input[type="range"].seek::-webkit-slider-thumb{-webkit-appearance:none; width:14px; height:14px;
+    border-radius:50%; background:var(--ochre); cursor:pointer;}
+  .transport{display:flex; align-items:center; justify-content:center; gap:22px;}
+  .skip-btn{background:none; border:none; color:var(--limestone); cursor:pointer;
+    display:flex; flex-direction:column; align-items:center; gap:2px; padding:4px;}
+  .skip-btn svg{width:24px;height:24px;}
+  .skip-btn span{font-size:9px; color:var(--limestone-dim);}
 </style>
 </head>
 <body>
@@ -125,6 +155,8 @@
   </header>
 
   <div class="trail" id="trail"></div>
+
+  <div class="map-wrap"><div id="map"></div></div>
 
   <div class="toggle-row">
     <div class="toggle-label"><b>Riproduzione automatica</b><br>Parte da sola quando arrivi a una tappa</div>
@@ -157,14 +189,30 @@
 
 <div class="player" id="player">
   <div class="player-top">
-    <button class="play-btn" id="playPauseBtn">
-      <svg viewBox="0 0 24 24" fill="#241a12"><path id="playIcon" d="M8 5v14l11-7z"/></svg>
-    </button>
     <div class="player-name" id="playerName">—</div>
   </div>
-  <audio id="audioEl"></audio>
+  <div class="seek-row">
+    <span class="time-label" id="timeElapsed">0:00</span>
+    <input type="range" class="seek" id="seekBar" min="0" max="100" value="0" step="0.1">
+    <span class="time-label right" id="timeRemaining">-0:00</span>
+  </div>
+  <div class="transport">
+    <button class="skip-btn" id="backBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 19l-7-7 7-7M4 12h13a4 4 0 000-8"/></svg>
+      <span>15s</span>
+    </button>
+    <button class="play-btn" id="playPauseBtn" style="width:52px;height:52px;">
+      <svg viewBox="0 0 24 24" fill="#241a12" style="width:20px;height:20px;"><path id="playIcon" d="M8 5v14l11-7z"/></svg>
+    </button>
+    <button class="skip-btn" id="fwdBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 5l7 7-7 7M20 12H7a4 4 0 010-8"/></svg>
+      <span>15s</span>
+    </button>
+  </div>
+  <audio id="audioEl" style="display:none;"></audio>
 </div>
 
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 // ---- Dati tappe (pilota: 2 tappe) ----
 const STOPS = [
@@ -185,6 +233,44 @@ const STOPS = [
     audio: "audio/tappa2.mp3"
   }
 ];
+
+// ---- Mappa ----
+const map = L.map('map', {zoomControl:false, attributionControl:true}).setView(
+  [STOPS[0].lat, STOPS[0].lon], 16
+);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+  attribution: '&copy; OpenStreetMap &copy; CARTO',
+  maxZoom: 19
+}).addTo(map);
+
+const routeLatLngs = STOPS.map(s => [s.lat, s.lon]);
+L.polyline(routeLatLngs, {color:'#7c9a82', weight:3, dashArray:'2 8', opacity:0.8}).addTo(map);
+
+const stopMarkers = {};
+STOPS.forEach(s => {
+  const icon = L.divIcon({
+    className: '', html: `<div class="stop-marker" id="marker-${s.id}"><span>${s.id}</span></div>`,
+    iconSize:[26,26], iconAnchor:[13,26]
+  });
+  stopMarkers[s.id] = L.marker([s.lat, s.lon], {icon}).addTo(map);
+});
+map.fitBounds(routeLatLngs, {padding:[40,40]});
+
+let meMarker = null;
+function updateMeMarker(lat, lon){
+  if(!meMarker){
+    const icon = L.divIcon({className:'', html:'<div class="me-marker"></div>', iconSize:[16,16], iconAnchor:[8,8]});
+    meMarker = L.marker([lat, lon], {icon, zIndexOffset:1000}).addTo(map);
+  } else {
+    meMarker.setLatLng([lat, lon]);
+  }
+}
+function refreshStopMarkers(){
+  STOPS.forEach(s => {
+    const el = document.getElementById('marker-' + s.id);
+    if(el) el.classList.toggle('done', state.played.has(s.id));
+  });
+}
 
 const RADIUS_METERS = 45;
 const state = {
@@ -212,6 +298,7 @@ function render(){
   const trailEl = document.getElementById('trail');
   stopsEl.innerHTML = '';
   trailEl.innerHTML = '';
+  refreshStopMarkers();
 
   STOPS.forEach((s, i) => {
     const done = state.played.has(s.id);
@@ -248,6 +335,15 @@ const audioEl = document.getElementById('audioEl');
 const playerEl = document.getElementById('player');
 const playPauseBtn = document.getElementById('playPauseBtn');
 const playIcon = document.getElementById('playIcon');
+const seekBar = document.getElementById('seekBar');
+const timeElapsed = document.getElementById('timeElapsed');
+const timeRemaining = document.getElementById('timeRemaining');
+
+function fmtTime(sec){
+  if(!isFinite(sec) || sec < 0) sec = 0;
+  const m = Math.floor(sec / 60), s = Math.floor(sec % 60);
+  return `${m}:${String(s).padStart(2,'0')}`;
+}
 
 function playStop(id, manual){
   const stop = STOPS.find(s => s.id === id);
@@ -266,8 +362,18 @@ function playStop(id, manual){
 playPauseBtn.onclick = () => {
   if(audioEl.paused){ audioEl.play(); } else { audioEl.pause(); }
 };
+document.getElementById('backBtn').onclick = () => { audioEl.currentTime = Math.max(0, audioEl.currentTime - 15); };
+document.getElementById('fwdBtn').onclick = () => { audioEl.currentTime = Math.min(audioEl.duration || 0, audioEl.currentTime + 15); };
+
 audioEl.onplay = () => { playIcon.setAttribute('d','M6 5h4v14H6zM14 5h4v14h-4z'); };
 audioEl.onpause = () => { playIcon.setAttribute('d','M8 5v14l11-7z'); };
+audioEl.onloadedmetadata = () => { seekBar.max = audioEl.duration; };
+audioEl.ontimeupdate = () => {
+  if(!seekBar.matches(':active')){ seekBar.value = audioEl.currentTime; }
+  timeElapsed.textContent = fmtTime(audioEl.currentTime);
+  timeRemaining.textContent = '-' + fmtTime((audioEl.duration || 0) - audioEl.currentTime);
+};
+seekBar.addEventListener('input', () => { audioEl.currentTime = seekBar.value; });
 
 // ---- Overlay arrivo tappa (quando autoplay è OFF) ----
 const overlay = document.getElementById('arrivalOverlay');
@@ -300,6 +406,7 @@ const gpsText = document.getElementById('gpsText');
 function onPosition(pos){
   gpsDot.classList.add('live');
   const { latitude, longitude } = pos.coords;
+  updateMeMarker(latitude, longitude);
 
   let nearest = null, nearestDist = Infinity;
   STOPS.forEach(s => {
