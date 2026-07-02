@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="FlyTour">
+<meta name="theme-color" content="#2a2622">
+<link rel="manifest" href="../manifest.json">
+<link rel="apple-touch-icon" href="../icons/icon-180.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../icons/icon-32.png">
+<title>Belém — Audioguida</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap');
+
+  :root{
+    --stone:#2a2622;
+    --stone-2:#332e28;
+    --patina:#7c9a82;
+    --patina-dim:#5c7566;
+    --ochre:#c97d4b;
+    --limestone:#ede6d8;
+    --limestone-dim:#b3a996;
+    --line: rgba(237,230,216,0.12);
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color: transparent;}
+  html,body{margin:0;padding:0;background:var(--stone);color:var(--limestone);
+    font-family:'Inter',-apple-system,sans-serif; min-height:100vh;
+    -webkit-font-smoothing:antialiased;}
+
+  .wrap{max-width:520px;margin:0 auto;padding:0 0 120px 0;}
+
+  header{padding:28px 20px 18px; position:sticky; top:0; z-index:20;
+    background:linear-gradient(var(--stone) 82%, transparent);}
+  @media (display-mode: standalone){
+    header{padding-top:calc(8px + env(safe-area-inset-top));}
+  }
+  .eyebrow{font-size:12px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--patina); font-weight:600; margin-bottom:6px;}
+  h1{font-family:'Fraunces',serif; font-weight:600; font-size:30px; line-height:1.05;
+    margin:0 0 4px 0; letter-spacing:-0.01em;}
+  .subtitle{color:var(--limestone-dim); font-size:14px; margin:0;}
+  .back-link{display:inline-block; font-size:12px; color:var(--limestone-dim); text-decoration:none;
+    margin-bottom:10px;}
+
+  /* trail of stops, like sampietrini paving */
+  .trail{display:flex; align-items:center; gap:5px; padding:18px 20px 4px;}
+  .dot{width:20px;height:20px;border-radius:50%;background:var(--stone-2); flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    font-size:10px; font-weight:700; color:var(--limestone-dim);
+    border:1px solid var(--line);
+    transition:background .4s, transform .3s, color .3s, border-color .3s;}
+  .dot.done{background:var(--patina); color:#1a231d; border-color:var(--patina);}
+  .dot.active{background:var(--ochre); color:#241a12; border-color:var(--ochre); transform:scale(1.15);}
+  .trail-line{flex:1; height:2px; background:var(--line); border-radius:2px; min-width:6px;}
+  .trail-line.done{background:var(--patina-dim);}
+
+  .toggle-row{display:flex; align-items:center; justify-content:space-between;
+    margin:14px 20px 8px; padding:12px 14px; background:var(--stone-2);
+    border-radius:14px; border:1px solid var(--line);}
+  .toggle-label{font-size:13.5px; color:var(--limestone-dim);}
+  .toggle-label b{color:var(--limestone); font-weight:600;}
+  .switch{position:relative; width:44px; height:26px; flex-shrink:0;}
+  .switch input{opacity:0; width:0; height:0;}
+  .slider{position:absolute; inset:0; background:var(--line); border-radius:999px;
+    cursor:pointer; transition:.25s;}
+  .slider:before{content:""; position:absolute; width:20px; height:20px; left:3px; top:3px;
+    background:var(--limestone); border-radius:50%; transition:.25s;}
+  input:checked + .slider{background:var(--patina);}
+  input:checked + .slider:before{transform:translateX(18px);}
+
+  .gps-status{margin:4px 20px 18px; font-size:12.5px; color:var(--limestone-dim);
+    display:flex; align-items:center; gap:7px;}
+  .gps-status span{flex:1;}
+  .reset-link{background:none; border:none; color:var(--limestone-dim); text-decoration:underline;
+    font-size:11.5px; cursor:pointer; flex-shrink:0; padding:2px 0;}
+  .gps-dot{width:7px;height:7px;border-radius:50%; background:var(--patina-dim);}
+  .gps-dot.live{background:var(--patina); box-shadow:0 0 0 3px rgba(124,154,130,0.25);}
+
+  .stops{padding:0 20px; display:flex; flex-direction:column; gap:10px;}
+  .stop{background:var(--stone-2); border:1px solid var(--line); border-radius:16px;
+    padding:16px 16px; display:flex; align-items:center; gap:14px; cursor:pointer;
+    transition:border-color .2s, transform .15s;}
+  .stop:active{transform:scale(0.98);}
+  .stop.current{border-color:var(--ochre);}
+  .stop.done{opacity:0.55;}
+  .stop.pending{opacity:0.5;}
+  .stop-num{font-family:'Fraunces',serif; font-size:20px; color:var(--limestone-dim);
+    width:26px; text-align:center; flex-shrink:0;}
+  .stop.done .stop-num{color:var(--patina);}
+  .stop-body{flex:1; min-width:0;}
+  .stop-name{font-family:'Fraunces',serif; font-size:17px; font-weight:600; margin:0 0 2px;}
+  .stop-desc{font-size:12.5px; color:var(--limestone-dim); margin:0; line-height:1.4;}
+  .stop-icon{width:34px;height:34px; border-radius:50%; background:rgba(124,154,130,0.14);
+    display:flex; align-items:center; justify-content:center; flex-shrink:0; color:var(--patina);}
+
+  /* arrival prompt */
+  .arrival-overlay{position:fixed; inset:0; background:rgba(20,17,14,0.72);
+    backdrop-filter:blur(3px); z-index:600; display:flex; align-items:flex-end;
+    justify-content:center; opacity:0; pointer-events:none; transition:opacity .25s;}
+  .arrival-overlay.show{opacity:1; pointer-events:auto;}
+  .arrival-card{width:100%; max-width:520px; background:var(--stone-2);
+    border-radius:22px 22px 0 0; padding:26px 22px calc(26px + env(safe-area-inset-bottom));
+    border:1px solid var(--line); border-bottom:none;
+    transform:translateY(20px); transition:transform .3s;}
+  .arrival-overlay.show .arrival-card{transform:translateY(0);}
+  .arrival-eyebrow{font-size:12px; text-transform:uppercase; letter-spacing:.1em;
+    color:var(--ochre); font-weight:600; margin-bottom:8px;}
+  .arrival-title{font-family:'Fraunces',serif; font-size:22px; font-weight:600; margin:0 0 18px;}
+  .arrival-actions{display:flex; gap:10px;}
+  .btn{flex:1; padding:14px; border-radius:12px; border:none; font-size:15px;
+    font-weight:600; font-family:'Inter',sans-serif; cursor:pointer;}
+  .btn-primary{background:var(--ochre); color:#241a12;}
+  .btn-ghost{background:transparent; color:var(--limestone-dim); border:1px solid var(--line);}
+
+  /* player */
+  .player{position:fixed; left:50%; bottom:0; z-index:500; width:100%; max-width:520px;
+    max-height:90vh; overflow-y:auto;
+    background:var(--stone-2); border-top:1px solid var(--line);
+    border-radius:20px 20px 0 0;
+    padding:16px 20px calc(16px + env(safe-area-inset-bottom));
+    transform:translateX(-50%) translateY(110%); transition:transform .3s;}
+  .player.show{transform:translateX(-50%) translateY(0);}
+  .player-top{display:flex; align-items:center; gap:12px; margin-bottom:10px;}
+  .player-name{font-family:'Fraunces',serif; font-size:15px; font-weight:600; flex:1;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .play-btn{width:40px;height:40px;border-radius:50%; background:var(--patina); border:none;
+    display:flex; align-items:center; justify-content:center; flex-shrink:0; cursor:pointer;}
+  .play-btn svg{width:16px;height:16px;}
+  audio{width:100%; height:32px;}
+  audio::-webkit-media-controls-panel{background-color:var(--stone-2);}
+
+  footer{text-align:center; padding:24px 20px; font-size:11.5px; color:var(--limestone-dim);
+    opacity:0.6;}
+
+  /* mappa */
+  .map-wrap{margin:14px 20px 4px; border-radius:16px; overflow:hidden;
+    border:1px solid var(--line); position:relative; z-index:1;}
+  #map{height:220px; width:100%; background:var(--stone-2);}
+  .leaflet-control-attribution{font-size:9px !important;}
+  .stop-marker{width:26px;height:26px;border-radius:50% 50% 50% 0; background:var(--ochre);
+    transform:rotate(-45deg); display:flex; align-items:center; justify-content:center;
+    border:2px solid var(--stone); box-shadow:0 2px 6px rgba(0,0,0,0.4);}
+  .stop-marker span{transform:rotate(45deg); font-family:'Fraunces',serif; font-size:11px;
+    font-weight:700; color:#241a12;}
+  .stop-marker.done{background:var(--patina);}
+  .stop-marker.pending{background:var(--stone-2); opacity:0.6;}
+  .me-marker{width:16px;height:16px;border-radius:50%; background:#4a9eff;
+    border:3px solid white; box-shadow:0 0 0 5px rgba(74,158,255,0.3);}
+  .stop-tooltip{background:rgba(42,38,34,0.92) !important; border:1px solid var(--line) !important;
+    color:var(--limestone) !important; font-family:'Inter',sans-serif !important; font-size:10.5px !important;
+    font-weight:600; padding:2px 7px !important; box-shadow:none !important;
+    border-radius:6px !important;}
+  .stop-tooltip::before{display:none !important;}
+
+  .stop-actions{display:flex; align-items:center; gap:6px; flex-shrink:0;}
+  .nav-link{width:34px;height:34px;border-radius:50%; background:rgba(124,154,130,0.14);
+    display:flex; align-items:center; justify-content:center; color:var(--patina); flex-shrink:0;}
+  .nav-link svg{width:16px;height:16px;}
+
+  /* modal testo */
+  .text-modal-overlay{position:fixed; inset:0; background:rgba(20,17,14,0.85); z-index:610;
+    display:flex; align-items:flex-end; justify-content:center; opacity:0; pointer-events:none;
+    transition:opacity .25s;}
+  .text-modal-overlay.show{opacity:1; pointer-events:auto;}
+  .text-modal{width:100%; max-width:520px; max-height:82vh; overflow-y:auto;
+    background:var(--stone-2); border-radius:22px 22px 0 0; padding:22px 22px calc(22px + env(safe-area-inset-bottom));
+    transform:translateY(20px); transition:transform .3s;}
+  .text-modal-overlay.show .text-modal{transform:translateY(0);}
+  .text-modal-header{display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;}
+  .text-modal-title{font-family:'Fraunces',serif; font-size:20px; font-weight:600;}
+  .text-modal-close{background:none; border:none; color:var(--limestone-dim); font-size:22px; cursor:pointer; line-height:1;}
+  .text-modal-body{font-size:14.5px; line-height:1.65; color:var(--limestone-dim);}
+  .text-modal-body a{color:var(--patina);}
+  .yt-links{margin-top:18px; padding-top:14px; border-top:1px solid var(--line);}
+  .yt-eyebrow{font-size:11px; text-transform:uppercase; letter-spacing:.08em; color:var(--limestone-dim); margin-bottom:8px;}
+  .yt-link{display:flex; align-items:center; gap:8px; padding:9px 0; color:var(--limestone);
+    text-decoration:none; font-size:13.5px; border-bottom:1px solid var(--line);}
+  .yt-link:last-child{border-bottom:none;}
+  .yt-link svg{width:18px; height:18px; flex-shrink:0; color:var(--patina);}
+  .yt-video-toggle{background:none; border:none; width:100%; text-align:left; cursor:pointer;
+    font-family:'Inter',sans-serif;}
+  .yt-video-embed{overflow:hidden; border-radius:10px; margin:2px 0 10px;}
+  .yt-video-embed iframe{width:100%; height:190px; display:block; border:none;}
+  .stop-text-btn{background:none; border:1px solid var(--line); color:var(--limestone-dim);
+    border-radius:9px; padding:6px 10px; font-size:11.5px; flex-shrink:0; cursor:pointer;}
+  .pending-tag{font-size:10.5px; color:var(--limestone-dim); background:var(--stone);
+    padding:3px 8px; border-radius:7px; flex-shrink:0;}
+
+  /* player esteso */
+  .seek-row{display:flex; align-items:center; gap:8px; margin-bottom:8px;}
+  .time-label{font-size:11px; color:var(--limestone-dim); font-variant-numeric:tabular-nums;
+    width:38px; flex-shrink:0;}
+  .time-label.right{text-align:right;}
+  input[type="range"].seek{flex:1; -webkit-appearance:none; appearance:none; height:4px;
+    background:var(--line); border-radius:2px; outline:none;}
+  input[type="range"].seek::-webkit-slider-thumb{-webkit-appearance:none; width:14px; height:14px;
+    border-radius:50%; background:var(--ochre); cursor:pointer;}
+  .transport{display:flex; align-items:center; justify-content:center; gap:22px;}
+  .skip-btn{background:none; border:none; color:var(--limestone); cursor:pointer;
+    display:flex; flex-direction:column; align-items:center; gap:2px; padding:4px;}
+  .skip-btn svg{width:24px;height:24px;}
+  .skip-btn span{font-size:9px; color:var(--limestone-dim);}
+
+  /* pannello foto */
+  .photo-panel{position:relative; margin-bottom:12px; border-radius:14px; overflow:hidden;
+    background:var(--stone); aspect-ratio: 4/3; max-height:52vh;}
+  .photo-panel img{width:100%; height:100%; object-fit:cover; display:block;
+    opacity:0; transition:opacity .6s ease;}
+  .photo-panel img.show{opacity:1;}
+  .photo-caption{position:absolute; left:0; right:0; bottom:0; padding:8px 12px 7px;
+    background:linear-gradient(transparent, rgba(0,0,0,0.75)); font-size:11.5px;
+    color:var(--limestone); line-height:1.3;}
+  .player-close{position:absolute; top:10px; right:10px; width:32px; height:32px; border-radius:50%;
+    background:rgba(20,17,14,0.55); backdrop-filter:blur(4px); border:none; color:var(--limestone);
+    font-size:15px; display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:2;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a href="../index.html" class="back-link">← Tutti i percorsi</a>
+    <div class="eyebrow">Passeggiata narrata · ~2h30-3h · 4,2 km ad anello</div>
+    <h1>Belém</h1>
+    <p class="subtitle">Il quartiere da cui è partita l'epoca delle grandi scoperte: un monastero pagato col pepe, una torre col rinoceronte, e i dolcetti più famosi del Portogallo. Anello lungo il fiume, comodo per una mezza giornata. Cammina, e ti racconto io.</p>
+  </header>
+
+  <div class="trail" id="trail"></div>
+
+  <div class="map-wrap"><div id="map"></div></div>
+
+  <div class="toggle-row">
+    <div class="toggle-label"><b>Riproduzione automatica</b><br>Parte da sola quando arrivi a una tappa</div>
+    <label class="switch">
+      <input type="checkbox" id="autoplayToggle" checked>
+      <span class="slider"></span>
+    </label>
+  </div>
+
+  <div class="gps-status">
+    <div class="gps-dot" id="gpsDot"></div>
+    <span id="gpsText">Posizione non attiva — tocca "Attiva GPS" qui sotto</span>
+    <button class="reset-link" id="resetBtn">Ricomincia il giro</button>
+  </div>
+
+  <div class="stops" id="stops"></div>
+
+  <footer>Genera audio con Google Cloud TTS · fatto per camminarci sopra</footer>
+</div>
+
+<div class="arrival-overlay" id="arrivalOverlay">
+  <div class="arrival-card">
+    <div class="arrival-eyebrow">Sei arrivato</div>
+    <div class="arrival-title" id="arrivalTitle">—</div>
+    <div class="arrival-actions">
+      <button class="btn btn-ghost" id="laterBtn">Più tardi</button>
+      <button class="btn btn-primary" id="playNowBtn">▶ Riproduci</button>
+    </div>
+  </div>
+</div>
+
+<div class="text-modal-overlay" id="textModalOverlay">
+  <div class="text-modal">
+    <div class="text-modal-header">
+      <div class="text-modal-title" id="textModalTitle">—</div>
+      <button class="text-modal-close" id="textModalClose">✕</button>
+    </div>
+    <div class="text-modal-body" id="textModalBody"></div>
+    <div class="yt-links" id="ytLinks" style="display:none;">
+      <div class="yt-eyebrow">Approfondisci</div>
+      <div id="ytLinksList"></div>
+    </div>
+  </div>
+</div>
+
+<div class="arrival-overlay" id="endOverlay">
+  <div class="arrival-card">
+    <div class="arrival-eyebrow">Tappa completata</div>
+    <div class="arrival-title" id="endTitle">—</div>
+    <div class="yt-links" id="endYtLinks" style="display:none;">
+      <div class="yt-eyebrow">Approfondisci</div>
+      <div id="endYtLinksList"></div>
+    </div>
+    <div class="arrival-actions" style="margin-top:16px;">
+      <button class="btn btn-primary" id="endCloseBtn">Continua a camminare</button>
+    </div>
+  </div>
+</div>
+
+<div class="player" id="player">
+  <div class="photo-panel" id="photoPanel">
+    <img id="photoImg" src="" alt="">
+    <button class="player-close" id="playerCloseBtn">✕</button>
+    <div class="photo-caption" id="photoCaption"></div>
+  </div>
+  <div class="player-top">
+    <div class="player-name" id="playerName">—</div>
+  </div>
+  <div class="seek-row">
+    <span class="time-label" id="timeElapsed">0:00</span>
+    <input type="range" class="seek" id="seekBar" min="0" max="100" value="0" step="0.1">
+    <span class="time-label right" id="timeRemaining">-0:00</span>
+  </div>
+  <div class="transport">
+    <button class="skip-btn" id="backBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 19l-7-7 7-7M4 12h13a4 4 0 000-8"/></svg>
+      <span>15s</span>
+    </button>
+    <button class="play-btn" id="playPauseBtn" style="width:52px;height:52px;">
+      <svg viewBox="0 0 24 24" fill="#241a12" style="width:20px;height:20px;"><path id="playIcon" d="M8 5v14l11-7z"/></svg>
+    </button>
+    <button class="skip-btn" id="fwdBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 5l7 7-7 7M20 12H7a4 4 0 010-8"/></svg>
+      <span>15s</span>
+    </button>
+  </div>
+  <audio id="audioEl" style="display:none;"></audio>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+// ---- Dati tappe (pilota: 2 tappe) ----
+const STOPS = [
+  {
+    id: 1, ready: true,
+    name: "Mosteiro dos Jerónimos",
+    desc: "Il monastero pagato col pepe",
+    lat: 38.6978909, lon: -9.2067039,
+    audio: "audio/tappa1.mp3",
+    photos: [
+      { time: 0, url: "img/t1_jeronimos1.jpg",
+        caption: "La facciata sud del Mosteiro dos Jerónimos", credit: "Wikimedia Commons" },
+      { time: 40, url: "img/t1_jeronimos2.jpg",
+        caption: "I dettagli manuelini della facciata", credit: "Wikimedia Commons" }
+    ],
+    fullText: `Sei arrivato al Mosteiro dos Jerónimos, probabilmente il monumento più ambizioso di tutto il Portogallo. Guarda la facciata: un merletto di pietra continuo, corde scolpite, nodi marinari, mostri marini — tutto lo stile manuelino concentrato in un solo edificio.<br><br>
+Fu voluto dal re Manuel I nel 1501, finanziato con una tassa speciale sulle spezie che arrivavano dall'Oriente — letteralmente, il pepe pagò questo monastero. I lavori durarono oltre cento anni, e il risultato fu talmente sontuoso da diventare, secoli dopo, uno dei primi siti portoghesi Patrimonio dell'Umanità UNESCO.<br><br>
+Dentro riposano Vasco da Gama, che salpò da queste rive per l'India, e il poeta Luís de Camões, che di quel viaggio scrisse il poema epico nazionale. Curiosità: prima di partire, i naviganti trascorrevano l'ultima notte in preghiera nella piccola cappella che sorgeva qui, fondata dallo stesso Enrico il Navigatore — un rito di buon auspicio prima dell'ignoto.<br><br>
+Quando sei pronto, esci e dirigiti verso il giardino proprio di fronte, la Praça do Império.`,
+    deepen: [
+      { type: "video", title: "Mosteiro dos Jerónimos — visita guidata", url: "https://www.youtube.com/watch?v=yVcGVhfLsKA" }
+    ]
+  },
+  {
+    id: 2, ready: true,
+    name: "Jardim da Praça do Império",
+    desc: "Geometria pombalina, eredità dell'Esposizione del 1940",
+    lat: 38.6959948, lon: -9.2059935,
+    audio: "audio/tappa2.mp3",
+    photos: [
+      { time: 0, url: "img/t2_imperio1.jpg",
+        caption: "Il Jardim da Praça do Império", credit: "Wikimedia Commons" }
+    ],
+    fullText: `Sei arrivato al Jardim da Praça do Império, il grande giardino simmetrico proprio davanti al monastero. Guarda la fontana monumentale al centro: di notte, con i giochi d'acqua illuminati, è uno degli spettacoli gratuiti più belli di Lisbona.<br><br>
+Questo giardino, con la sua geometria rigida e le siepi basse ben potate, fu ridisegnato nel 1940 per l'Esposizione del Mondo Portoghese — una mostra voluta dal regime di Salazar per celebrare otto secoli di storia nazionale e l'epoca d'oro delle scoperte.<br><br>
+Da qui il colpo d'occhio è perfetto: da un lato la facciata di pietra chiara del monastero, dall'altro, in lontananza verso il fiume, si intravede già la sagoma bianca del Monumento alle Scoperte, la nostra meta più avanti nel percorso.<br><br>
+Quando sei pronto, dirigiti verso la pasticceria Pastéis de Belém, a pochi passi da qui.`,
+    deepen: [
+      { type: "video", title: "Novo Jardim da Praça do Império — video", url: "https://www.youtube.com/watch?v=ebpLD735Sio" }
+    ]
+  },
+  {
+    id: 3, ready: true,
+    name: "Pastéis de Belém",
+    desc: "La ricetta chiusa in cassaforte dal 1837",
+    lat: 38.6975105, lon: -9.2032276,
+    audio: "audio/tappa3.mp3",
+    photos: [
+      { time: 0, url: "img/t3_pasteis1.jpg",
+        caption: "I pastéis de Belém appena sfornati", credit: "Wikimedia Commons" },
+      { time: 15, url: "img/t3_pasteis2.jpg",
+        caption: "La ricetta segreta dal 1837", credit: "Wikimedia Commons" }
+    ],
+    fullText: `Sei arrivato ai Pastéis de Belém, la pasticceria che ha inventato il dolce più famoso del Portogallo. Guarda l'insegna: dal 1837, la stessa famiglia produce questi dolcetti seguendo una ricetta segreta, custodita — letteralmente — in una cassaforte.<br><br>
+La storia comincia con la rivoluzione liberale del 1820: i conventi portoghesi furono chiusi, e i monaci di Jerónimos, rimasti senza reddito, iniziarono a vendere dolcetti a base di uova e crema in una bottega qui vicino per sopravvivere. La ricetta fu poi acquistata da un imprenditore locale, e ancora oggi solo tre persone al mondo la conoscono per intero.<br><br>
+Un dettaglio da intenditori: quello che si compra ovunque a Lisbona si chiama "pastel de nata" — solo questi, prodotti qui con la ricetta originale, hanno diritto al nome "pastel de Belém". Se vedi la fila lunga fuori, un trucco: entra comunque, la coda per sedersi ai tavoli dentro è quasi sempre più corta.<br><br>
+Quando sei pronto, dirigiti verso il Jardim Vasco da Gama.`,
+    deepen: [
+      { type: "video", title: "Il segreto della ricetta — video", url: "https://www.youtube.com/watch?v=WMXtrejhzEI" }
+    ]
+  },
+  {
+    id: 4, ready: true,
+    name: "Jardim Vasco da Gama",
+    desc: "Il padiglione thailandese e 500 anni di diplomazia",
+    lat: 38.696313, lon: -9.2026639,
+    audio: "audio/tappa4.mp3",
+    photos: [
+      { time: 0, url: "img/t4_gama1.jpg",
+        caption: "Il padiglione thailandese nel Jardim Vasco da Gama", credit: "Wikimedia Commons" }
+    ],
+    fullText: `Sei arrivato al Jardim Vasco da Gama, un grande parco verde nel cuore di Belém. Guarda la struttura in legno dorato tra gli alberi: è un padiglione thailandese autentico, donato dal governo della Thailandia nel 2012 per celebrare cinquecento anni di relazioni diplomatiche tra i due paesi.<br><br>
+Un dettaglio che in pochi notano: quelle relazioni, tra le più antiche al mondo tra un paese europeo e uno asiatico, cominciarono proprio grazie ai viaggi partiti da questo tratto di fiume — lo stesso Vasco da Gama, dopo aver raggiunto l'India, aprì la strada ai contatti commerciali portoghesi con tutto il sud-est asiatico.<br><br>
+Il parco è anche un buon posto per una pausa tranquilla lontano dalla folla dei monumenti: prati ampi, sentieri ombreggiati, e spesso qualche partita di calcio improvvisata.<br><br>
+Quando sei pronto, dirigiti verso il Padrão dos Descobrimentos, sul lungofiume.`,
+    deepen: [
+      { type: "video", title: "Jardim Vasco da Gama — video", url: "https://www.youtube.com/watch?v=xp8HIViSy3w" }
+    ]
+  },
+  {
+    id: 5, ready: true,
+    name: "Padrão dos Descobrimentos",
+    desc: "La caravella che non è quella originale",
+    lat: 38.6935973, lon: -9.2057115,
+    audio: "audio/tappa5.mp3",
+    photos: [
+      { time: 0, url: "img/t5_padrao1.jpg",
+        caption: "Il Padrão dos Descobrimentos", credit: "Wikimedia Commons" },
+      { time: 17, url: "img/t5_padrao2.jpg",
+        caption: "Le statue sui fianchi del monumento", credit: "Wikimedia Commons" }
+    ],
+    fullText: `Sei arrivato al Padrão dos Descobrimentos, il Monumento alle Scoperte. Guarda la forma: una caravella di pietra bianca, alta cinquantadue metri, con la prua rivolta verso l'oceano — esattamente la direzione da cui partivano le spedizioni portoghesi.<br><br>
+Sui due fianchi, trentatré figure scolpite rappresentano i protagonisti dell'epoca d'oro: naviganti, cartografi, missionari, persino un re inginocchiato. In cima alla prua, Enrico il Navigatore — che, nonostante il nome, non navigò quasi mai: fu piuttosto il finanziatore e organizzatore di quei viaggi, una specie di capo progetto ante litteram.<br><br>
+Curiosità poco nota: il monumento che vedi oggi non è l'originale. La prima versione, costruita nel 1940 per la stessa esposizione del giardino visto prima, era fatta di materiali scadenti e rischiava il crollo — fu demolita e ricostruita in pietra vera solo nel 1960.<br><br>
+Se sali in cima, la vista sul Tago è tra le migliori della zona — e ai tuoi piedi, sulla piazza, noterai un'enorme rosa dei venti in mosaico, dono del governo sudafricano.<br><br>
+Quando sei pronto, cammina lungo il fiume verso la Torre de Belém.`,
+    deepen: [
+      { type: "video", title: "Padrão dos Descobrimentos — video", url: "https://www.youtube.com/watch?v=aZ6SjJ1ryT4" }
+    ]
+  },
+  {
+    id: 6, ready: true,
+    name: "Torre de Belém",
+    desc: "Il rinoceronte che ispirò Dürer",
+    lat: 38.6915837, lon: -9.2159773,
+    audio: "audio/tappa6.mp3",
+    photos: [
+      { time: 0, url: "img/t6_torre1.jpg",
+        caption: "La Torre de Belém", credit: "Wikimedia Commons" },
+      { time: 34, url: "img/t6_torre2.jpg",
+        caption: "I dettagli manuelini della torre", credit: "Wikimedia Commons" }
+    ],
+    fullText: `Sei arrivato alla Torre de Belém, il simbolo più fotografato di Lisbona — e qui chiudiamo il nostro giro. Guarda la pietra chiara: proviene dalle stesse cave usate per il monastero visitato all'inizio, la pietra "lioz" tipica di questa zona.<br><br>
+Costruita dal 1514 per volere del re Giovanni II, doveva difendere l'imboccatura del Tago — ma all'epoca sorgeva su un'isoletta in mezzo all'acqua, non sulla riva come oggi. Solo dopo che il terremoto del 1755 modificò il corso del fiume, la torre si ritrovò collegata alla terraferma.<br><br>
+Cerca sulla facciata ovest una gargolla a forma di rinoceronte: è la prima raffigurazione europea conosciuta dell'animale, scolpita nel 1514 dopo che un rinoceronte vivo, arrivato dall'India come dono per il re, causò sensazione in tutta Europa — l'esemplare ispirò persino un celebre disegno di Albrecht Dürer, che non lo vide mai dal vivo.<br><br>
+Se prima di tornare verso Jerónimos vuoi un momento di sosta in stile locale, senza fronzoli: la Confeitaria Nacional Belém, proprio sul lungofiume di fronte alla torre, è perfetta per un'imperial (la birra piccola alla spina) o un bicchiere di vinho verde, seduti fuori con la torre davanti agli occhi.<br><br>
+Da qui, tornando verso il Mosteiro dos Jerónimos, chiudi idealmente l'anello di Belém. Grazie per aver camminato con noi lungo le rive da cui è partita l'epoca delle grandi scoperte.`,
+    deepen: [
+      { type: "video", title: "Torre de Belém — video", url: "https://www.youtube.com/watch?v=olBWq1aj_O4" }
+    ]
+  }
+];
+
+// Percorso pedonale reale (OpenRouteService, foot-walking) — [lat, lon]
+const ROUTE_COORDS = [[38.697592, -9.205956], [38.697443, -9.205894], [38.697381, -9.205868], [38.697356, -9.205858], [38.697298, -9.205834], [38.697408, -9.205397], [38.697242, -9.205323], [38.697202, -9.205306], [38.697146, -9.205282], [38.697094, -9.20526], [38.697019, -9.205229], [38.696337, -9.20495], [38.696298, -9.205102], [38.696293, -9.205122], [38.696251, -9.20529], [38.696204, -9.205474], [38.696199, -9.205495], [38.696176, -9.205586], [38.696161, -9.205644], [38.696098, -9.205618], [38.695865, -9.205522], [38.695791, -9.205814], [38.69577, -9.2059], [38.695769, -9.205901], [38.69577, -9.2059], [38.695791, -9.205814], [38.695865, -9.205522], [38.696098, -9.205618], [38.696161, -9.205644], [38.696176, -9.205586], [38.696199, -9.205495], [38.696204, -9.205474], [38.696251, -9.20529], [38.696293, -9.205122], [38.696298, -9.205102], [38.696337, -9.20495], [38.696375, -9.204804], [38.696901, -9.20502], [38.696939, -9.204867], [38.697132, -9.204945], [38.69718, -9.204748], [38.697228, -9.204556], [38.697253, -9.204463], [38.697312, -9.204269], [38.697297, -9.203955], [38.697329, -9.203951], [38.697347, -9.203948], [38.697372, -9.203945], [38.697397, -9.203942], [38.697438, -9.203937], [38.697457, -9.203935], [38.697488, -9.203932], [38.697482, -9.203818], [38.697463, -9.203493], [38.697409, -9.2035], [38.69739, -9.203242], [38.697344, -9.202622], [38.697309, -9.202625], [38.697268, -9.202628], [38.69723, -9.202631], [38.697205, -9.202274], [38.696887, -9.202297], [38.696873, -9.20202], [38.696664, -9.20204], [38.696659, -9.201933], [38.696466, -9.201886], [38.696286, -9.201839], [38.696182, -9.201816], [38.696042, -9.202583], [38.695883, -9.203452], [38.695979, -9.203783], [38.695991, -9.203869], [38.695945, -9.204242], [38.695897, -9.204444], [38.695861, -9.204595], [38.695688, -9.204524], [38.695679, -9.20456], [38.695652, -9.20467], [38.695625, -9.204779], [38.695615, -9.204819], [38.695568, -9.2048], [38.695521, -9.204986], [38.695359, -9.20563], [38.695313, -9.205812], [38.69522, -9.20618], [38.695039, -9.206105], [38.695051, -9.206033], [38.695068, -9.205944], [38.695073, -9.205911], [38.694643, -9.205789], [38.694638, -9.205817], [38.694622, -9.205903], [38.694611, -9.205971], [38.694585, -9.20613], [38.694543, -9.206119], [38.694233, -9.206033], [38.694143, -9.205957], [38.694067, -9.205972], [38.69401, -9.205925], [38.694005, -9.205914], [38.6939, -9.205933], [38.693776, -9.206132], [38.693837, -9.205765], [38.693785, -9.205749], [38.693693, -9.205722], [38.693664, -9.205714], [38.693601, -9.205694], [38.693664, -9.205714], [38.693693, -9.205722], [38.693785, -9.205749], [38.693837, -9.205765], [38.693776, -9.206132], [38.6939, -9.205933], [38.694005, -9.205914], [38.69401, -9.205925], [38.694067, -9.205972], [38.694143, -9.205957], [38.694233, -9.206033], [38.694543, -9.206119], [38.694585, -9.20613], [38.694572, -9.206211], [38.694592, -9.20631], [38.694465, -9.20701], [38.694292, -9.207926], [38.694258, -9.207973], [38.694208, -9.207973], [38.694192, -9.208047], [38.694171, -9.20818], [38.694097, -9.208638], [38.694038, -9.209009], [38.693994, -9.209281], [38.693947, -9.209789], [38.693943, -9.209833], [38.693937, -9.2099], [38.693851, -9.210812], [38.693834, -9.210951], [38.693828, -9.211009], [38.693784, -9.211542], [38.693697, -9.212781], [38.69367, -9.21306], [38.693545, -9.213185], [38.693491, -9.213189], [38.693487, -9.213231], [38.693449, -9.213719], [38.693439, -9.213854], [38.693414, -9.21402], [38.693394, -9.214067], [38.693324, -9.21413], [38.693227, -9.214182], [38.693024, -9.214222], [38.692799, -9.214297], [38.692617, -9.214393], [38.692397, -9.214573], [38.692262, -9.214749], [38.692104, -9.215], [38.692039, -9.215087], [38.691974, -9.215178], [38.691924, -9.215251], [38.691945, -9.215275], [38.69193, -9.215295], [38.691721, -9.215593], [38.691738, -9.215781], [38.691681, -9.215793], [38.691738, -9.215781], [38.691721, -9.215593], [38.69193, -9.215295], [38.691945, -9.215275], [38.691924, -9.215251], [38.691974, -9.215178], [38.692039, -9.215087], [38.692104, -9.215], [38.692262, -9.214749], [38.692397, -9.214573], [38.692617, -9.214393], [38.692799, -9.214297], [38.693024, -9.214222], [38.693227, -9.214182], [38.693324, -9.21413], [38.693394, -9.214067], [38.693414, -9.21402], [38.693439, -9.213854], [38.693492, -9.213865], [38.693601, -9.213879], [38.69403, -9.213943], [38.69404, -9.213839], [38.694045, -9.213792], [38.694057, -9.213795], [38.694275, -9.213034], [38.694361, -9.212733], [38.694764, -9.212817], [38.695026, -9.212347], [38.695244, -9.212471], [38.695291, -9.2125], [38.6955, -9.212624], [38.695608, -9.212224], [38.695835, -9.212347], [38.695945, -9.211997], [38.696072, -9.21207], [38.696102, -9.211974], [38.696204, -9.211642], [38.696297, -9.211342], [38.696553, -9.210513], [38.696579, -9.210428], [38.696294, -9.210271], [38.696323, -9.210163], [38.696571, -9.20914], [38.69662, -9.208834], [38.696664, -9.208428], [38.696639, -9.208385], [38.696636, -9.208315], [38.696667, -9.208258], [38.696717, -9.20806], [38.696763, -9.207968], [38.696824, -9.207716], [38.69687, -9.207534], [38.697021, -9.206934], [38.697078, -9.206957], [38.697356, -9.205858], [38.697381, -9.205868], [38.697443, -9.205894], [38.697592, -9.205956]];
+
+// ---- Mappa ----
+const map = L.map('map', {zoomControl:false, attributionControl:true}).setView(
+  [STOPS[0].lat, STOPS[0].lon], 16
+);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+  attribution: '&copy; OpenStreetMap &copy; CARTO',
+  maxZoom: 20
+}).addTo(map);
+
+const routeLatLngs = STOPS.map(s => [s.lat, s.lon]);
+L.polyline(ROUTE_COORDS, {color:'#7c9a82', weight:4, opacity:0.85, lineJoin:'round'}).addTo(map);
+
+const stopMarkers = {};
+STOPS.forEach(s => {
+  const icon = L.divIcon({
+    className: '', html: `<div class="stop-marker${s.ready ? '' : ' pending'}" id="marker-${s.id}"><span>${s.id}</span></div>`,
+    iconSize:[26,26], iconAnchor:[13,26]
+  });
+  const m = L.marker([s.lat, s.lon], {icon}).addTo(map);
+  stopMarkers[s.id] = m;
+});
+map.fitBounds(ROUTE_COORDS, {padding:[40,40]});
+setTimeout(() => {
+  map.invalidateSize();
+  map.fitBounds(ROUTE_COORDS, {padding:[24,24]});
+}, 300);
+
+function zoomToStop(stop){
+  map.flyTo([stop.lat, stop.lon], 18, {duration: 0.6});
+}
+function zoomToOverview(){
+  map.flyToBounds(ROUTE_COORDS, {padding:[24,24], duration: 0.6});
+}
+
+let meMarker = null;
+function updateMeMarker(lat, lon){
+  if(!meMarker){
+    const icon = L.divIcon({className:'', html:'<div class="me-marker"></div>', iconSize:[16,16], iconAnchor:[8,8]});
+    meMarker = L.marker([lat, lon], {icon, zIndexOffset:1000}).addTo(map);
+  } else {
+    meMarker.setLatLng([lat, lon]);
+  }
+}
+function refreshStopMarkers(){
+  STOPS.forEach(s => {
+    const el = document.getElementById('marker-' + s.id);
+    if(el) el.classList.toggle('done', state.played.has(s.id));
+  });
+}
+
+const RADIUS_METERS = 45;
+const state = {
+  played: new Set(JSON.parse(localStorage.getItem('trastevere_played') || '[]')),
+  autoplay: localStorage.getItem('trastevere_autoplay') !== 'false',
+  currentStopId: null,
+  wakeLock: null,
+  watchId: null
+};
+
+// ---- Utils ----
+function haversine(lat1, lon1, lat2, lon2){
+  const R = 6371000;
+  const toRad = d => d * Math.PI/180;
+  const dLat = toRad(lat2-lat1), dLon = toRad(lon2-lon1);
+  const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLon/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+function savePlayed(){ localStorage.setItem('trastevere_played', JSON.stringify([...state.played])); }
+function saveAutoplay(){ localStorage.setItem('trastevere_autoplay', state.autoplay); }
+
+// ---- Render lista tappe + trail ----
+function render(){
+  const stopsEl = document.getElementById('stops');
+  const trailEl = document.getElementById('trail');
+  stopsEl.innerHTML = '';
+  trailEl.innerHTML = '';
+  refreshStopMarkers();
+
+  STOPS.forEach((s, i) => {
+    const done = state.played.has(s.id);
+    const current = state.currentStopId === s.id;
+
+    // trail dot
+    const dot = document.createElement('div');
+    dot.className = 'dot' + (done ? ' done' : '') + (current ? ' active' : '');
+    dot.textContent = s.id;
+    trailEl.appendChild(dot);
+    if(i < STOPS.length - 1){
+      const line = document.createElement('div');
+      line.className = 'trail-line' + (done ? ' done' : '');
+      trailEl.appendChild(line);
+    }
+
+    // stop card
+    const el = document.createElement('div');
+    el.className = 'stop' + (done ? ' done' : '') + (current ? ' current' : '') + (!s.ready ? ' pending' : '');
+    const navUrl = `https://maps.apple.com/?daddr=${s.lat},${s.lon}&dirflg=w`;
+    el.innerHTML = `
+      <div class="stop-num">${String(s.id).padStart(2,'0')}</div>
+      <div class="stop-body">
+        <p class="stop-name">${s.name}</p>
+        <p class="stop-desc">${s.desc}</p>
+      </div>
+      <div class="stop-actions">
+        <a class="nav-link" href="${navUrl}" target="_blank" title="Naviga fin qui" data-navlink>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l18-8-8 18-2-8-8-2z"/></svg>
+        </a>
+        ${s.ready
+          ? `<button class="stop-text-btn" data-textbtn="${s.id}">Leggi</button><div class="stop-icon" data-playicon>${done ? '✓' : '▶'}</div>`
+          : `<span class="pending-tag">in arrivo</span>`}
+      </div>
+    `;
+    el.querySelector('[data-navlink]').onclick = (e) => e.stopPropagation();
+    if(s.ready){
+      el.querySelector('.stop-body').onclick = () => playStop(s.id, true);
+      el.querySelector('[data-playicon]').onclick = () => playStop(s.id, true);
+      el.querySelector('[data-textbtn]').onclick = (e) => { e.stopPropagation(); openTextModal(s.id); };
+    }
+    stopsEl.appendChild(el);
+  });
+}
+
+// ---- Player ----
+const audioEl = document.getElementById('audioEl');
+const playerEl = document.getElementById('player');
+const playPauseBtn = document.getElementById('playPauseBtn');
+const playIcon = document.getElementById('playIcon');
+const seekBar = document.getElementById('seekBar');
+const timeElapsed = document.getElementById('timeElapsed');
+const timeRemaining = document.getElementById('timeRemaining');
+
+function fmtTime(sec){
+  if(!isFinite(sec) || sec < 0) sec = 0;
+  const m = Math.floor(sec / 60), s = Math.floor(sec % 60);
+  return `${m}:${String(s).padStart(2,'0')}`;
+}
+
+function playStop(id, manual){
+  const stop = STOPS.find(s => s.id === id);
+  if(!stop) return;
+  state.currentStopId = id;
+  zoomToStop(stop);
+  currentPhotoUrl = null;
+  document.getElementById('playerName').textContent = stop.name;
+  audioEl.src = stop.audio;
+  audioEl.play().catch(()=>{ /* iOS può richiedere un tap: il bottone play resta disponibile */ });
+  playerEl.classList.add('show');
+  state.played.add(id);
+  savePlayed();
+  render();
+  requestWakeLock();
+}
+
+playPauseBtn.onclick = () => {
+  if(audioEl.paused){ audioEl.play(); } else { audioEl.pause(); }
+};
+document.getElementById('backBtn').onclick = () => { audioEl.currentTime = Math.max(0, audioEl.currentTime - 15); };
+document.getElementById('fwdBtn').onclick = () => { audioEl.currentTime = Math.min(audioEl.duration || 0, audioEl.currentTime + 15); };
+document.getElementById('playerCloseBtn').onclick = () => {
+  audioEl.pause();
+  playerEl.classList.remove('show');
+  state.currentStopId = null;
+  render();
+  zoomToOverview();
+  stopAllVideos();
+};
+
+// ---- Reset sessione ----
+document.getElementById('resetBtn').onclick = () => {
+  if(!confirm('Ricominciare il giro da capo? Le tappe già ascoltate torneranno disponibili.')) return;
+  audioEl.pause();
+  playerEl.classList.remove('show');
+  state.played = new Set();
+  state.currentStopId = null;
+  currentPhotoUrl = null;
+  zoomToOverview();
+  localStorage.removeItem('trastevere_played');
+  render();
+};
+
+audioEl.onplay = () => { playIcon.setAttribute('d','M6 5h4v14H6zM14 5h4v14h-4z'); };
+audioEl.onpause = () => { playIcon.setAttribute('d','M8 5v14l11-7z'); };
+audioEl.onended = () => { showEndOverlay(state.currentStopId); };
+audioEl.onloadedmetadata = () => { seekBar.max = audioEl.duration; };
+audioEl.ontimeupdate = () => {
+  if(!seekBar.matches(':active')){ seekBar.value = audioEl.currentTime; }
+  timeElapsed.textContent = fmtTime(audioEl.currentTime);
+  timeRemaining.textContent = '-' + fmtTime((audioEl.duration || 0) - audioEl.currentTime);
+  updatePhoto(audioEl.currentTime);
+};
+seekBar.addEventListener('input', () => { audioEl.currentTime = seekBar.value; });
+
+// ---- Pannello foto sincronizzato ----
+const photoImg = document.getElementById('photoImg');
+const photoCaption = document.getElementById('photoCaption');
+let currentPhotoUrl = null;
+
+function updatePhoto(t){
+  const stop = STOPS.find(s => s.id === state.currentStopId);
+  if(!stop || !stop.photos || !stop.photos.length) return;
+  let active = stop.photos[0];
+  for(const p of stop.photos){ if(t >= p.time) active = p; }
+  if(active.url !== currentPhotoUrl){
+    currentPhotoUrl = active.url;
+    photoImg.classList.remove('show');
+    setTimeout(() => {
+      photoImg.src = active.url;
+      photoCaption.textContent = active.caption + ' · ' + active.credit;
+      photoImg.onload = () => photoImg.classList.add('show');
+    }, 300);
+  }
+}
+
+// ---- Overlay arrivo tappa (quando autoplay è OFF) ----
+const overlay = document.getElementById('arrivalOverlay');
+let pendingStopId = null;
+
+function showArrival(stopId){
+  const stop = STOPS.find(s => s.id === stopId);
+  pendingStopId = stopId;
+  document.getElementById('arrivalTitle').textContent = stop.name;
+  overlay.classList.add('show');
+}
+document.getElementById('playNowBtn').onclick = () => {
+  overlay.classList.remove('show');
+  if(pendingStopId) playStop(pendingStopId, false);
+};
+document.getElementById('laterBtn').onclick = () => {
+  overlay.classList.remove('show');
+};
+
+document.getElementById('autoplayToggle').onchange = (e) => {
+  state.autoplay = e.target.checked;
+  saveAutoplay();
+};
+document.getElementById('autoplayToggle').checked = state.autoplay;
+
+// ---- Rendering condiviso approfondimenti (video + link) ----
+const ICON_VIDEO = `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 15.5l6-3.5-6-3.5v7zM12 3C7 3 2.7 3.3 2.7 3.3S2 3.4 1.4 3.7C.9 4 .5 4.5.3 5.1c0 0-.3 1.8-.3 3.5v2.7c0 1.8.3 3.5.3 3.5.2.6.6 1.1 1.1 1.4.6.3 1.3.4 1.3.4S7 17 12 17s5-.3 5-.3.7-.1 1.3-.4c.5-.3.9-.8 1.1-1.4 0 0 .3-1.8.3-3.5V8.6c0-1.8-.3-3.5-.3-3.5-.2-.6-.6-1.1-1.1-1.4C17.7 3.4 17 3.3 17 3.3S12 3 12 3z"/></svg>`;
+const ICON_LINK = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 007.07 0l2.83-2.83a5 5 0 00-7.07-7.07L11.5 4.5M14 11a5 5 0 00-7.07 0L4.1 13.83a5 5 0 007.07 7.07L12.5 19.5"/></svg>`;
+
+function extractYouTubeId(url){
+  const m = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/shorts\/)([\w-]{11})/);
+  return m ? m[1] : null;
+}
+function renderDeepenList(items){
+  return items.map(v => {
+    if(v.type === 'video'){
+      const vid = extractYouTubeId(v.url);
+      if(vid){
+        return `
+    <div class="yt-video-block">
+      <button class="yt-link yt-video-toggle" data-vid="${vid}">
+        ${ICON_VIDEO}
+        ${v.title}
+      </button>
+      <div class="yt-video-embed" style="display:none;"></div>
+    </div>`;
+      }
+    }
+    return `
+    <a class="yt-link" href="${v.url}" target="_blank">
+      ${v.type === 'video' ? ICON_VIDEO : ICON_LINK}
+      ${v.title}
+    </a>`;
+  }).join('');
+}
+function handleVideoToggle(e){
+  const btn = e.target.closest('.yt-video-toggle');
+  if(!btn) return;
+  const block = btn.closest('.yt-video-block');
+  const embed = block.querySelector('.yt-video-embed');
+  if(embed.style.display === 'none'){
+    audioEl.pause();
+    if(!embed.dataset.loaded){
+      embed.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${btn.dataset.vid}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>`;
+      embed.dataset.loaded = "1";
+    }
+    embed.style.display = 'block';
+  } else {
+    embed.style.display = 'none';
+  }
+}
+document.getElementById('ytLinksList').addEventListener('click', handleVideoToggle);
+document.getElementById('endYtLinksList').addEventListener('click', handleVideoToggle);
+
+// ---- Modal testo scritto ----
+const textModalOverlay = document.getElementById('textModalOverlay');
+function openTextModal(stopId){
+  const stop = STOPS.find(s => s.id === stopId);
+  if(!stop) return;
+  document.getElementById('textModalTitle').textContent = stop.name;
+  document.getElementById('textModalBody').innerHTML = stop.fullText || '';
+  const ytWrap = document.getElementById('ytLinks');
+  const ytList = document.getElementById('ytLinksList');
+  if(stop.deepen && stop.deepen.length){
+    ytList.innerHTML = renderDeepenList(stop.deepen);
+    ytWrap.style.display = 'block';
+  } else {
+    ytWrap.style.display = 'none';
+  }
+  textModalOverlay.classList.add('show');
+}
+function stopAllVideos(){
+  document.querySelectorAll('.yt-video-embed').forEach(embed => {
+    embed.innerHTML = '';
+    embed.style.display = 'none';
+    delete embed.dataset.loaded;
+  });
+}
+document.getElementById('textModalClose').onclick = () => { textModalOverlay.classList.remove('show'); stopAllVideos(); };
+textModalOverlay.onclick = (e) => { if(e.target === textModalOverlay){ textModalOverlay.classList.remove('show'); stopAllVideos(); } };
+
+// ---- Overlay fine tappa con approfondimenti ----
+const endOverlay = document.getElementById('endOverlay');
+function showEndOverlay(stopId){
+  const stop = STOPS.find(s => s.id === stopId);
+  if(!stop) return;
+  document.getElementById('endTitle').textContent = stop.name + ' — completata';
+  const ytWrap = document.getElementById('endYtLinks');
+  const ytList = document.getElementById('endYtLinksList');
+  if(stop.deepen && stop.deepen.length){
+    ytList.innerHTML = renderDeepenList(stop.deepen);
+    ytWrap.style.display = 'block';
+  } else {
+    ytWrap.style.display = 'none';
+  }
+  endOverlay.classList.add('show');
+}
+document.getElementById('endCloseBtn').onclick = () => {
+  endOverlay.classList.remove('show');
+  audioEl.pause();
+  playerEl.classList.remove('show');
+  state.currentStopId = null;
+  render();
+  zoomToOverview();
+  stopAllVideos();
+};
+
+// ---- Geolocalizzazione ----
+const gpsDot = document.getElementById('gpsDot');
+const gpsText = document.getElementById('gpsText');
+
+function onPosition(pos){
+  gpsDot.classList.add('live');
+  const { latitude, longitude } = pos.coords;
+  updateMeMarker(latitude, longitude);
+
+  let nearest = null, nearestDist = Infinity;
+  STOPS.forEach(s => {
+    if(state.played.has(s.id)) return; // già ascoltata, non ritriggerare
+    const d = haversine(latitude, longitude, s.lat, s.lon);
+    if(d < nearestDist){ nearestDist = d; nearest = s; }
+  });
+
+  if(nearest){
+    gpsText.textContent = `A ${Math.round(nearestDist)} m dalla prossima tappa — ${nearest.name}`;
+    if(nearestDist <= RADIUS_METERS && state.currentStopId !== nearest.id){
+      if(state.autoplay){
+        playStop(nearest.id, false);
+      } else {
+        showArrival(nearest.id);
+      }
+    }
+  } else {
+    gpsText.textContent = "Hai ascoltato tutte le tappe del pilota 🎉";
+  }
+}
+function onGpsError(err){
+  gpsDot.classList.remove('live');
+  gpsText.textContent = "GPS non disponibile (" + err.message + ") — usa la lista qui sotto";
+}
+
+function startGps(){
+  if(!navigator.geolocation){
+    gpsText.textContent = "Il browser non supporta la geolocalizzazione";
+    return;
+  }
+  state.watchId = navigator.geolocation.watchPosition(onPosition, onGpsError, {
+    enableHighAccuracy: true, maximumAge: 5000, timeout: 15000
+  });
+}
+
+// ---- Wake Lock (schermo sempre acceso mentre l'app è in uso) ----
+async function requestWakeLock(){
+  try{
+    if('wakeLock' in navigator){
+      state.wakeLock = await navigator.wakeLock.request('screen');
+    }
+  }catch(e){ /* silenzioso: non tutti i browser lo supportano */ }
+}
+document.addEventListener('visibilitychange', () => {
+  if(document.visibilityState === 'visible' && state.currentStopId) requestWakeLock();
+});
+
+// ---- Avvio ----
+render();
+startGps();
+requestWakeLock();
+</script>
+</body>
+</html>
