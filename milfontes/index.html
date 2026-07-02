@@ -706,7 +706,13 @@ function showEndOverlay(stopId){
   }
   endOverlay.classList.add('show');
 }
-document.getElementById('endCloseBtn').onclick = () => endOverlay.classList.remove('show');
+document.getElementById('endCloseBtn').onclick = () => {
+  endOverlay.classList.remove('show');
+  audioEl.pause();
+  playerEl.classList.remove('show');
+  state.currentStopId = null;
+  render();
+};
 
 // ---- Geolocalizzazione ----
 const gpsDot = document.getElementById('gpsDot');
