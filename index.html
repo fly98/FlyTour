@@ -62,7 +62,8 @@
     background:linear-gradient(transparent, rgba(0,0,0,0.75));}
   .tour-badge{display:inline-block; font-size:10.5px; text-transform:uppercase; letter-spacing:.08em;
     font-weight:700; color:#1a231d; background:var(--patina); padding:3px 9px; border-radius:7px;
-    margin-bottom:6px;}
+    margin-bottom:6px; margin-right:6px;}
+  .tour-badge-ochre{background:var(--ochre); color:#241a12;}
   .tour-title-onimg{font-family:'Fraunces',serif; font-weight:600; font-size:19px; color:var(--limestone);}
   .tour-body{padding:14px 16px 16px;}
   .tour-desc{font-size:13px; color:var(--limestone-dim); line-height:1.5; margin:0 0 10px;}
@@ -106,6 +107,7 @@
 const TOURS = [
   {
     slug: "trastevere",
+    location: "Roma",
     title: "Trastevere Nascosta",
     desc: "Il lato del rione che i turisti non vedono. 8 tappe tra vicoli, chiostri e piazzette dimenticate.",
     duration: "~2h30",
@@ -116,6 +118,7 @@ const TOURS = [
   },
   {
     slug: "ghetto-testaccio",
+    location: "Roma",
     title: "Dal Ghetto al Mattatoio",
     desc: "La storia della cucina povera romana, dai carciofi alla giudia alla coda alla vaccinara. 8 tappe dal Ghetto ebraico a Testaccio.",
     duration: "~2h30",
@@ -123,6 +126,17 @@ const TOURS = [
     stops: 8,
     cover: "https://commons.wikimedia.org/wiki/Special:FilePath/S_Angelo_-_via_del_Portico_d%27Ottavia_1000373.JPG?width=700",
     url: "ghetto-testaccio/index.html"
+  },
+  {
+    slug: "evora",
+    location: "Portogallo",
+    title: "Évora, la Città Museo",
+    desc: "Duemila anni di storia iberica in poche centinaia di metri, tra templi romani e cappelle di ossa. 6 tappe nel cuore dell'Alentejo.",
+    duration: "~2h",
+    distance: "2-3 km",
+    stops: 6,
+    cover: "https://commons.wikimedia.org/wiki/Special:FilePath/%C3%89vora_-_Templo_Romano_01.jpg?width=700",
+    url: "evora/index.html"
   }
 ];
 
@@ -133,7 +147,8 @@ function render(){
       <div class="tour-cover">
         <img src="${t.cover}" alt="" loading="lazy">
         <div class="tour-cover-overlay">
-          <span class="tour-badge">${t.stops} tappe</span>
+          <span class="tour-badge">${t.location}</span>
+          <span class="tour-badge tour-badge-ochre">${t.stops} tappe</span>
           <div class="tour-title-onimg">${t.title}</div>
         </div>
       </div>
