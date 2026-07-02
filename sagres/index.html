@@ -177,8 +177,13 @@
   .yt-links{margin-top:18px; padding-top:14px; border-top:1px solid var(--line);}
   .yt-eyebrow{font-size:11px; text-transform:uppercase; letter-spacing:.08em; color:var(--limestone-dim); margin-bottom:8px;}
   .yt-link{display:flex; align-items:center; gap:8px; padding:9px 0; color:var(--limestone);
-    font-size:13.5px; text-decoration:none;}
+    text-decoration:none; font-size:13.5px; border-bottom:1px solid var(--line);}
+  .yt-link:last-child{border-bottom:none;}
   .yt-link svg{width:18px; height:18px; flex-shrink:0; color:var(--patina);}
+  .yt-video-toggle{background:none; border:none; width:100%; text-align:left; cursor:pointer;
+    font-family:'Inter',sans-serif;}
+  .yt-video-embed{overflow:hidden; border-radius:10px; margin:2px 0 10px;}
+  .yt-video-embed iframe{width:100%; height:190px; display:block; border:none;}
   .stop-text-btn{background:none; border:1px solid var(--line); color:var(--limestone-dim);
     border-radius:9px; padding:6px 10px; font-size:11.5px; flex-shrink:0; cursor:pointer;}
   .pending-tag{font-size:10.5px; color:var(--limestone-dim); background:var(--stone);
@@ -692,13 +697,50 @@ document.getElementById('autoplayToggle').checked = state.autoplay;
 const ICON_VIDEO = `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 15.5l6-3.5-6-3.5v7zM12 3C7 3 2.7 3.3 2.7 3.3S2 3.4 1.4 3.7C.9 4 .5 4.5.3 5.1c0 0-.3 1.8-.3 3.5v2.7c0 1.8.3 3.5.3 3.5.2.6.6 1.1 1.1 1.4.6.3 1.3.4 1.3.4S7 17 12 17s5-.3 5-.3.7-.1 1.3-.4c.5-.3.9-.8 1.1-1.4 0 0 .3-1.8.3-3.5V8.6c0-1.8-.3-3.5-.3-3.5-.2-.6-.6-1.1-1.1-1.4C17.7 3.4 17 3.3 17 3.3S12 3 12 3z"/></svg>`;
 const ICON_LINK = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 007.07 0l2.83-2.83a5 5 0 00-7.07-7.07L11.5 4.5M14 11a5 5 0 00-7.07 0L4.1 13.83a5 5 0 007.07 7.07L12.5 19.5"/></svg>`;
 
+function extractYouTubeId(url){
+  const m = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/shorts\/)([\w-]{11})/);
+  return m ? m[1] : null;
+}
 function renderDeepenList(items){
-  return items.map(v => `
+  return items.map(v => {
+    if(v.type === 'video'){
+      const vid = extractYouTubeId(v.url);
+      if(vid){
+        return `
+    <div class="yt-video-block">
+      <button class="yt-link yt-video-toggle" data-vid="${vid}">
+        ${ICON_VIDEO}
+        ${v.title}
+      </button>
+      <div class="yt-video-embed" style="display:none;"></div>
+    </div>`;
+      }
+    }
+    return `
     <a class="yt-link" href="${v.url}" target="_blank">
       ${v.type === 'video' ? ICON_VIDEO : ICON_LINK}
       ${v.title}
-    </a>`).join('');
+    </a>`;
+  }).join('');
 }
+function handleVideoToggle(e){
+  const btn = e.target.closest('.yt-video-toggle');
+  if(!btn) return;
+  const block = btn.closest('.yt-video-block');
+  const embed = block.querySelector('.yt-video-embed');
+  if(embed.style.display === 'none'){
+    audioEl.pause();
+    if(!embed.dataset.loaded){
+      embed.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${btn.dataset.vid}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>`;
+      embed.dataset.loaded = "1";
+    }
+    embed.style.display = 'block';
+  } else {
+    embed.style.display = 'none';
+  }
+}
+document.getElementById('ytLinksList').addEventListener('click', handleVideoToggle);
+document.getElementById('endYtLinksList').addEventListener('click', handleVideoToggle);
 
 // ---- Modal testo scritto ----
 const textModalOverlay = document.getElementById('textModalOverlay');
