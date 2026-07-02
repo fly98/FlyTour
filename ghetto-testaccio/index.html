@@ -32,8 +32,11 @@
 
   .wrap{max-width:520px;margin:0 auto;padding:0 0 120px 0;}
 
-  header{padding:calc(28px + env(safe-area-inset-top)) 20px 18px; position:sticky; top:0; z-index:20;
+  header{padding:28px 20px 18px; position:sticky; top:0; z-index:20;
     background:linear-gradient(var(--stone) 82%, transparent);}
+  @media (display-mode: standalone){
+    header{padding-top:calc(28px + env(safe-area-inset-top));}
+  }
   .eyebrow{font-size:12px; letter-spacing:.14em; text-transform:uppercase;
     color:var(--patina); font-weight:600; margin-bottom:6px;}
   h1{font-family:'Fraunces',serif; font-weight:600; font-size:30px; line-height:1.05;
