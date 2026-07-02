@@ -42,14 +42,21 @@
     margin:0 0 6px 0; letter-spacing:-0.01em;}
   .subtitle{color:var(--limestone-dim); font-size:14px; margin:0 0 8px 0; line-height:1.5;}
 
-  .search-row{margin:20px 20px 6px; opacity:0.4;}
+  .search-row{margin:20px 20px 6px;}
   .search-box{display:flex; align-items:center; gap:10px; background:var(--stone-2);
     border:1px solid var(--line); border-radius:14px; padding:12px 14px;}
   .search-box svg{width:16px;height:16px; color:var(--limestone-dim); flex-shrink:0;}
-  .search-box span{font-size:13.5px; color:var(--limestone-dim);}
+  .search-box input{background:none; border:none; outline:none; color:var(--limestone);
+    font-family:'Inter',sans-serif; font-size:13.5px; width:100%; padding:0;}
+  .search-box input::placeholder{color:var(--limestone-dim);}
   .search-note{font-size:10.5px; color:var(--limestone-dim); margin:6px 2px 0; text-align:right;}
 
   .tours{padding:14px 20px 0; display:flex; flex-direction:column; gap:14px;}
+  .group-header{font-family:'Fraunces',serif; font-weight:600; font-size:15px;
+    color:var(--limestone-dim); letter-spacing:.02em; margin:10px 2px 0;
+    display:flex; align-items:center; gap:8px;}
+  .group-header:first-child{margin-top:0;}
+  .group-header::after{content:""; flex:1; height:1px; background:var(--line);}
 
   .tour-card{display:block; text-decoration:none; color:inherit; background:var(--stone-2);
     border:1px solid var(--line); border-radius:18px; overflow:hidden;
@@ -64,6 +71,7 @@
     font-weight:700; color:#1a231d; background:var(--patina); padding:3px 9px; border-radius:7px;
     margin-bottom:6px; margin-right:6px;}
   .tour-badge-ochre{background:var(--ochre); color:#241a12;}
+  .tour-badge-near{background:var(--limestone); color:#1a231d;}
   .tour-title-onimg{font-family:'Fraunces',serif; font-weight:600; font-size:19px; color:var(--limestone);}
   .tour-body{padding:14px 16px 16px;}
   .tour-desc{font-size:13px; color:var(--limestone-dim); line-height:1.5; margin:0 0 10px;}
@@ -92,13 +100,14 @@
   <div class="search-row">
     <div class="search-box">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-      <span>Filtri di ricerca — in arrivo</span>
+      <input type="text" id="searchInput" placeholder="Cerca un percorso, una città…" autocomplete="off">
     </div>
+    <div class="search-note" id="searchNote"></div>
   </div>
 
   <div class="tours" id="tours"></div>
 
-  <div class="empty-hint">Nuovi percorsi in altre zone di Roma arriveranno presto.</div>
+  <div class="empty-hint" id="emptyHint" style="display:none;">Nessun percorso trovato. Prova con un altro termine.</div>
 
   <footer>FlyTour · fatto per camminarci sopra</footer>
 </div>
@@ -107,59 +116,89 @@
 const TOURS = [
   {
     slug: "trastevere",
-    location: "Roma",
+    country: "Italia",
+    city: "Roma",
     title: "Trastevere Nascosta",
     desc: "Il lato del rione che i turisti non vedono. 8 tappe tra vicoli, chiostri e piazzette dimenticate.",
     duration: "~2h30",
     distance: "4-5 km",
     stops: 8,
+    lat: 41.8917821, lon: 12.4702261,
     cover: "https://commons.wikimedia.org/wiki/Special:FilePath/Trastevere_-_piazza_Trilussa_-_monumento_a_Trilussa_1531.JPG?width=700",
     url: "trastevere/index.html"
   },
   {
     slug: "ghetto-testaccio",
-    location: "Roma",
+    country: "Italia",
+    city: "Roma",
     title: "Dal Ghetto al Mattatoio",
     desc: "La storia della cucina povera romana, dai carciofi alla giudia alla coda alla vaccinara. 8 tappe dal Ghetto ebraico a Testaccio.",
     duration: "~2h30",
     distance: "4-5 km",
     stops: 8,
+    lat: 41.8925126, lon: 12.4785372,
     cover: "https://commons.wikimedia.org/wiki/Special:FilePath/S_Angelo_-_via_del_Portico_d%27Ottavia_1000373.JPG?width=700",
     url: "ghetto-testaccio/index.html"
   },
   {
     slug: "evora",
-    location: "Portogallo",
+    country: "Portogallo",
+    city: "Évora",
     title: "Évora, la Città Museo",
     desc: "Duemila anni di storia iberica in poche centinaia di metri, tra templi romani e cappelle di ossa. 6 tappe nel cuore dell'Alentejo.",
     duration: "~2h",
     distance: "2-3 km",
     stops: 6,
+    lat: 38.5758082, lon: -7.9126708,
     cover: "https://commons.wikimedia.org/wiki/Special:FilePath/%C3%89vora_-_Templo_Romano_01.jpg?width=700",
     url: "evora/index.html"
   },
   {
     slug: "milfontes",
-    location: "Portogallo",
+    country: "Portogallo",
+    city: "Vila Nova de Milfontes",
     title: "Vila Nova de Milfontes",
     desc: "Un anello contemplativo tra pirati, fiume e oceano, sulla Costa Vicentina. 5 tappe intorno alla foce del Mira, perfetto al tramonto.",
     duration: "~1h15",
     distance: "2,4 km ad anello",
     stops: 5,
+    lat: 37.7227299, lon: -8.7829060,
     cover: "https://commons.wikimedia.org/wiki/Special:FilePath/Forte_de_Milfontes_(2).jpg?width=700",
     url: "milfontes/index.html"
   }
 ];
 
-function render(){
-  const el = document.getElementById('tours');
-  el.innerHTML = TOURS.map(t => `
+let userPos = null;
+
+function haversineKm(lat1, lon1, lat2, lon2){
+  const R = 6371;
+  const toRad = d => d * Math.PI / 180;
+  const dLat = toRad(lat2 - lat1);
+  const dLon = toRad(lon2 - lon1);
+  const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon/2)**2;
+  return 2 * R * Math.asin(Math.sqrt(a));
+}
+
+function filterTours(query){
+  if(!query) return TOURS.slice();
+  const q = query.toLowerCase();
+  return TOURS.filter(t =>
+    t.title.toLowerCase().includes(q) ||
+    t.desc.toLowerCase().includes(q) ||
+    t.city.toLowerCase().includes(q) ||
+    t.country.toLowerCase().includes(q)
+  );
+}
+
+function cardHtml(t, isNearest){
+  return `
     <a class="tour-card" href="${t.url}">
       <div class="tour-cover">
         <img src="${t.cover}" alt="" loading="lazy">
         <div class="tour-cover-overlay">
-          <span class="tour-badge">${t.location}</span>
+          <span class="tour-badge">${t.city}</span>
           <span class="tour-badge tour-badge-ochre">${t.stops} tappe</span>
+          ${isNearest ? '<span class="tour-badge tour-badge-near">📍 Il più vicino a te</span>' : ''}
           <div class="tour-title-onimg">${t.title}</div>
         </div>
       </div>
@@ -171,9 +210,71 @@ function render(){
         </div>
       </div>
     </a>
+  `;
+}
+
+function render(){
+  const query = document.getElementById('searchInput').value.trim();
+  const filtered = filterTours(query);
+  const el = document.getElementById('tours');
+  const emptyHint = document.getElementById('emptyHint');
+
+  if(filtered.length === 0){
+    el.innerHTML = '';
+    emptyHint.style.display = 'block';
+    return;
+  }
+  emptyHint.style.display = 'none';
+
+  // calcolo distanze se disponibile la posizione
+  let withDist = filtered;
+  let nearestSlug = null;
+  if(userPos){
+    withDist = filtered.map(t => ({...t, dist: haversineKm(userPos.lat, userPos.lon, t.lat, t.lon)}));
+    nearestSlug = withDist.reduce((a,b) => a.dist < b.dist ? a : b).slug;
+  }
+
+  // raggruppo per paese, mantenendo l'ordine di prima apparizione
+  const groups = {};
+  const countryOrder = [];
+  withDist.forEach(t => {
+    if(!groups[t.country]){ groups[t.country] = []; countryOrder.push(t.country); }
+    groups[t.country].push(t);
+  });
+
+  // ordino i gruppi e i tour interni per vicinanza, se nota
+  let orderedCountries = countryOrder;
+  if(userPos){
+    countryOrder.forEach(c => groups[c].sort((a,b) => a.dist - b.dist));
+    orderedCountries = [...countryOrder].sort((a,b) => {
+      const da = Math.min(...groups[a].map(t => t.dist));
+      const db = Math.min(...groups[b].map(t => t.dist));
+      return da - db;
+    });
+  }
+
+  el.innerHTML = orderedCountries.map(country => `
+    <div class="group-header">${country}</div>
+    ${groups[country].map(t => cardHtml(t, t.slug === nearestSlug)).join('')}
   `).join('');
 }
+
+function requestLocation(){
+  if(!navigator.geolocation) return;
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      userPos = { lat: pos.coords.latitude, lon: pos.coords.longitude };
+      render();
+    },
+    () => { /* posizione negata o non disponibile: nessun problema, resta l'ordine di default */ },
+    { timeout: 6000, maximumAge: 300000 }
+  );
+}
+
+document.getElementById('searchInput').addEventListener('input', render);
 render();
+requestLocation();
+
 </script>
 </body>
 </html>
