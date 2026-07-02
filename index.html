@@ -32,7 +32,10 @@
 
   .wrap{max-width:520px;margin:0 auto;padding:0 0 60px 0;}
 
-  header{padding:calc(36px + env(safe-area-inset-top)) 20px 8px;}
+  header{padding:36px 20px 8px;}
+  @media (display-mode: standalone){
+    header{padding-top:calc(36px + env(safe-area-inset-top));}
+  }
   .brand{display:flex; align-items:center; gap:12px; margin-bottom:22px;}
   .logo-img{height:56px; width:auto; display:block;}
 
