@@ -606,6 +606,7 @@ document.getElementById('playerCloseBtn').onclick = () => {
   state.currentStopId = null;
   render();
   zoomToOverview();
+  stopAllVideos();
 };
 
 // ---- Reset sessione ----
@@ -744,8 +745,15 @@ function openTextModal(stopId){
   }
   textModalOverlay.classList.add('show');
 }
-document.getElementById('textModalClose').onclick = () => textModalOverlay.classList.remove('show');
-textModalOverlay.onclick = (e) => { if(e.target === textModalOverlay) textModalOverlay.classList.remove('show'); };
+function stopAllVideos(){
+  document.querySelectorAll('.yt-video-embed').forEach(embed => {
+    embed.innerHTML = '';
+    embed.style.display = 'none';
+    delete embed.dataset.loaded;
+  });
+}
+document.getElementById('textModalClose').onclick = () => { textModalOverlay.classList.remove('show'); stopAllVideos(); };
+textModalOverlay.onclick = (e) => { if(e.target === textModalOverlay){ textModalOverlay.classList.remove('show'); stopAllVideos(); } };
 
 // ---- Overlay fine tappa con approfondimenti ----
 const endOverlay = document.getElementById('endOverlay');
@@ -770,6 +778,7 @@ document.getElementById('endCloseBtn').onclick = () => {
   state.currentStopId = null;
   render();
   zoomToOverview();
+  stopAllVideos();
 };
 
 // ---- Geolocalizzazione ----
