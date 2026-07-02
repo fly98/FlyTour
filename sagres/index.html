@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="FlyTour">
+<meta name="theme-color" content="#2a2622">
+<link rel="manifest" href="../manifest.json">
+<link rel="apple-touch-icon" href="../icons/icon-180.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../icons/icon-32.png">
+<title>Sagres e Cabo de São Vicente — Audioguida</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap');
+
+  :root{
+    --stone:#2a2622;
+    --stone-2:#332e28;
+    --patina:#7c9a82;
+    --patina-dim:#5c7566;
+    --ochre:#c97d4b;
+    --limestone:#ede6d8;
+    --limestone-dim:#b3a996;
+    --line: rgba(237,230,216,0.12);
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color: transparent;}
+  html,body{margin:0;padding:0;background:var(--stone);color:var(--limestone);
+    font-family:'Inter',-apple-system,sans-serif; min-height:100vh;
+    -webkit-font-smoothing:antialiased;}
+
+  .wrap{max-width:520px;margin:0 auto;padding:0 0 120px 0;}
+
+  header{padding:28px 20px 18px; position:sticky; top:0; z-index:20;
+    background:linear-gradient(var(--stone) 82%, transparent);}
+  @media (display-mode: standalone){
+    header{padding-top:calc(8px + env(safe-area-inset-top));}
+  }
+  .eyebrow{font-size:12px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--patina); font-weight:600; margin-bottom:6px;}
+  h1{font-family:'Fraunces',serif; font-weight:600; font-size:30px; line-height:1.05;
+    margin:0 0 4px 0; letter-spacing:-0.01em;}
+  .subtitle{color:var(--limestone-dim); font-size:14px; margin:0;}
+  .back-link{display:inline-block; font-size:12px; color:var(--limestone-dim); text-decoration:none;
+    margin-bottom:10px;}
+
+  /* trail of stops, like sampietrini paving */
+  .trail{display:flex; align-items:center; gap:5px; padding:18px 20px 4px;}
+  .dot{width:20px;height:20px;border-radius:50%;background:var(--stone-2); flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    font-size:10px; font-weight:700; color:var(--limestone-dim);
+    border:1px solid var(--line);
+    transition:background .4s, transform .3s, color .3s, border-color .3s;}
+  .dot.done{background:var(--patina); color:#1a231d; border-color:var(--patina);}
+  .dot.active{background:var(--ochre); color:#241a12; border-color:var(--ochre); transform:scale(1.15);}
+  .trail-line{flex:1; height:2px; background:var(--line); border-radius:2px; min-width:6px;}
+  .trail-line.done{background:var(--patina-dim);}
+
+  .toggle-row{display:flex; align-items:center; justify-content:space-between;
+    margin:14px 20px 8px; padding:12px 14px; background:var(--stone-2);
+    border-radius:14px; border:1px solid var(--line);}
+  .toggle-label{font-size:13.5px; color:var(--limestone-dim);}
+  .toggle-label b{color:var(--limestone); font-weight:600;}
+  .switch{position:relative; width:44px; height:26px; flex-shrink:0;}
+  .switch input{opacity:0; width:0; height:0;}
+  .slider{position:absolute; inset:0; background:var(--line); border-radius:999px;
+    cursor:pointer; transition:.25s;}
+  .slider:before{content:""; position:absolute; width:20px; height:20px; left:3px; top:3px;
+    background:var(--limestone); border-radius:50%; transition:.25s;}
+  input:checked + .slider{background:var(--patina);}
+  input:checked + .slider:before{transform:translateX(18px);}
+
+  .gps-status{margin:4px 20px 18px; font-size:12.5px; color:var(--limestone-dim);
+    display:flex; align-items:center; gap:7px;}
+  .gps-status span{flex:1;}
+  .reset-link{background:none; border:none; color:var(--limestone-dim); text-decoration:underline;
+    font-size:11.5px; cursor:pointer; flex-shrink:0; padding:2px 0;}
+  .gps-dot{width:7px;height:7px;border-radius:50%; background:var(--patina-dim);}
+  .gps-dot.live{background:var(--patina); box-shadow:0 0 0 3px rgba(124,154,130,0.25);}
+
+  .stops{padding:0 20px; display:flex; flex-direction:column; gap:10px;}
+  .stop{background:var(--stone-2); border:1px solid var(--line); border-radius:16px;
+    padding:16px 16px; display:flex; align-items:center; gap:14px; cursor:pointer;
+    transition:border-color .2s, transform .15s;}
+  .stop:active{transform:scale(0.98);}
+  .stop.current{border-color:var(--ochre);}
+  .stop.done{opacity:0.55;}
+  .stop.pending{opacity:0.5;}
+  .stop-num{font-family:'Fraunces',serif; font-size:20px; color:var(--limestone-dim);
+    width:26px; text-align:center; flex-shrink:0;}
+  .stop.done .stop-num{color:var(--patina);}
+  .stop-body{flex:1; min-width:0;}
+  .stop-name{font-family:'Fraunces',serif; font-size:17px; font-weight:600; margin:0 0 2px;}
+  .stop-desc{font-size:12.5px; color:var(--limestone-dim); margin:0; line-height:1.4;}
+  .stop-icon{width:34px;height:34px; border-radius:50%; background:rgba(124,154,130,0.14);
+    display:flex; align-items:center; justify-content:center; flex-shrink:0; color:var(--patina);}
+
+  /* arrival prompt */
+  .arrival-overlay{position:fixed; inset:0; background:rgba(20,17,14,0.72);
+    backdrop-filter:blur(3px); z-index:600; display:flex; align-items:flex-end;
+    justify-content:center; opacity:0; pointer-events:none; transition:opacity .25s;}
+  .arrival-overlay.show{opacity:1; pointer-events:auto;}
+  .arrival-card{width:100%; max-width:520px; background:var(--stone-2);
+    border-radius:22px 22px 0 0; padding:26px 22px calc(26px + env(safe-area-inset-bottom));
+    border:1px solid var(--line); border-bottom:none;
+    transform:translateY(20px); transition:transform .3s;}
+  .arrival-overlay.show .arrival-card{transform:translateY(0);}
+  .arrival-eyebrow{font-size:12px; text-transform:uppercase; letter-spacing:.1em;
+    color:var(--ochre); font-weight:600; margin-bottom:8px;}
+  .arrival-title{font-family:'Fraunces',serif; font-size:22px; font-weight:600; margin:0 0 18px;}
+  .arrival-actions{display:flex; gap:10px;}
+  .btn{flex:1; padding:14px; border-radius:12px; border:none; font-size:15px;
+    font-weight:600; font-family:'Inter',sans-serif; cursor:pointer;}
+  .btn-primary{background:var(--ochre); color:#241a12;}
+  .btn-ghost{background:transparent; color:var(--limestone-dim); border:1px solid var(--line);}
+
+  /* player */
+  .player{position:fixed; left:50%; bottom:0; z-index:500; width:100%; max-width:520px;
+    max-height:90vh; overflow-y:auto;
+    background:var(--stone-2); border-top:1px solid var(--line);
+    border-radius:20px 20px 0 0;
+    padding:16px 20px calc(16px + env(safe-area-inset-bottom));
+    transform:translateX(-50%) translateY(110%); transition:transform .3s;}
+  .player.show{transform:translateX(-50%) translateY(0);}
+  .player-top{display:flex; align-items:center; gap:12px; margin-bottom:10px;}
+  .player-name{font-family:'Fraunces',serif; font-size:15px; font-weight:600; flex:1;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .play-btn{width:40px;height:40px;border-radius:50%; background:var(--patina); border:none;
+    display:flex; align-items:center; justify-content:center; flex-shrink:0; cursor:pointer;}
+  .play-btn svg{width:16px;height:16px;}
+  audio{width:100%; height:32px;}
+  audio::-webkit-media-controls-panel{background-color:var(--stone-2);}
+
+  footer{text-align:center; padding:24px 20px; font-size:11.5px; color:var(--limestone-dim);
+    opacity:0.6;}
+
+  /* mappa */
+  .map-wrap{margin:14px 20px 4px; border-radius:16px; overflow:hidden;
+    border:1px solid var(--line); position:relative; z-index:1;}
+  #map{height:220px; width:100%; background:var(--stone-2);}
+  .leaflet-control-attribution{font-size:9px !important;}
+  .stop-marker{width:26px;height:26px;border-radius:50% 50% 50% 0; background:var(--ochre);
+    transform:rotate(-45deg); display:flex; align-items:center; justify-content:center;
+    border:2px solid var(--stone); box-shadow:0 2px 6px rgba(0,0,0,0.4);}
+  .stop-marker span{transform:rotate(45deg); font-family:'Fraunces',serif; font-size:11px;
+    font-weight:700; color:#241a12;}
+  .stop-marker.done{background:var(--patina);}
+  .stop-marker.pending{background:var(--stone-2); opacity:0.6;}
+  .me-marker{width:16px;height:16px;border-radius:50%; background:#4a9eff;
+    border:3px solid white; box-shadow:0 0 0 5px rgba(74,158,255,0.3);}
+  .stop-tooltip{background:rgba(42,38,34,0.92) !important; border:1px solid var(--line) !important;
+    color:var(--limestone) !important; font-family:'Inter',sans-serif !important; font-size:10.5px !important;
+    font-weight:600; padding:2px 7px !important; box-shadow:none !important;
+    border-radius:6px !important;}
+  .stop-tooltip::before{display:none !important;}
+
+  .stop-actions{display:flex; align-items:center; gap:6px; flex-shrink:0;}
+  .nav-link{width:34px;height:34px;border-radius:50%; background:rgba(124,154,130,0.14);
+    display:flex; align-items:center; justify-content:center; color:var(--patina); flex-shrink:0;}
+  .nav-link svg{width:16px;height:16px;}
+
+  /* modal testo */
+  .text-modal-overlay{position:fixed; inset:0; background:rgba(20,17,14,0.85); z-index:610;
+    display:flex; align-items:flex-end; justify-content:center; opacity:0; pointer-events:none;
+    transition:opacity .25s;}
+  .text-modal-overlay.show{opacity:1; pointer-events:auto;}
+  .text-modal{width:100%; max-width:520px; max-height:82vh; overflow-y:auto;
+    background:var(--stone-2); border-radius:22px 22px 0 0; padding:22px 22px calc(22px + env(safe-area-inset-bottom));
+    transform:translateY(20px); transition:transform .3s;}
+  .text-modal-overlay.show .text-modal{transform:translateY(0);}
+  .text-modal-header{display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;}
+  .text-modal-title{font-family:'Fraunces',serif; font-size:20px; font-weight:600;}
+  .text-modal-close{background:none; border:none; color:var(--limestone-dim); font-size:22px; cursor:pointer; line-height:1;}
+  .text-modal-body{font-size:14.5px; line-height:1.65; color:var(--limestone-dim);}
+  .text-modal-body a{color:var(--patina);}
+  .yt-links{margin-top:18px; padding-top:14px; border-top:1px solid var(--line);}
+  .yt-eyebrow{font-size:11px; text-transform:uppercase; letter-spacing:.08em; color:var(--limestone-dim); margin-bottom:8px;}
+  .yt-link{display:flex; align-items:center; gap:8px; padding:9px 0; color:var(--limestone);
+    font-size:13.5px; text-decoration:none;}
+  .yt-link svg{width:18px; height:18px; flex-shrink:0; color:var(--patina);}
+  .stop-text-btn{background:none; border:1px solid var(--line); color:var(--limestone-dim);
+    border-radius:9px; padding:6px 10px; font-size:11.5px; flex-shrink:0; cursor:pointer;}
+  .pending-tag{font-size:10.5px; color:var(--limestone-dim); background:var(--stone);
+    padding:3px 8px; border-radius:7px; flex-shrink:0;}
+
+  /* player esteso */
+  .seek-row{display:flex; align-items:center; gap:8px; margin-bottom:8px;}
+  .time-label{font-size:11px; color:var(--limestone-dim); font-variant-numeric:tabular-nums;
+    width:38px; flex-shrink:0;}
+  .time-label.right{text-align:right;}
+  input[type="range"].seek{flex:1; -webkit-appearance:none; appearance:none; height:4px;
+    background:var(--line); border-radius:2px; outline:none;}
+  input[type="range"].seek::-webkit-slider-thumb{-webkit-appearance:none; width:14px; height:14px;
+    border-radius:50%; background:var(--ochre); cursor:pointer;}
+  .transport{display:flex; align-items:center; justify-content:center; gap:22px;}
+  .skip-btn{background:none; border:none; color:var(--limestone); cursor:pointer;
+    display:flex; flex-direction:column; align-items:center; gap:2px; padding:4px;}
+  .skip-btn svg{width:24px;height:24px;}
+  .skip-btn span{font-size:9px; color:var(--limestone-dim);}
+
+  /* pannello foto */
+  .photo-panel{position:relative; margin-bottom:12px; border-radius:14px; overflow:hidden;
+    background:var(--stone); aspect-ratio: 4/3; max-height:52vh;}
+  .photo-panel img{width:100%; height:100%; object-fit:cover; display:block;
+    opacity:0; transition:opacity .6s ease;}
+  .photo-panel img.show{opacity:1;}
+  .photo-caption{position:absolute; left:0; right:0; bottom:0; padding:8px 12px 7px;
+    background:linear-gradient(transparent, rgba(0,0,0,0.75)); font-size:11.5px;
+    color:var(--limestone); line-height:1.3;}
+  .player-close{position:absolute; top:10px; right:10px; width:32px; height:32px; border-radius:50%;
+    background:rgba(20,17,14,0.55); backdrop-filter:blur(4px); border:none; color:var(--limestone);
+    font-size:15px; display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:2;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a href="../index.html" class="back-link">← Tutti i percorsi</a>
+    <div class="eyebrow">Passeggiata narrata · ~3h · 6 km (lineare, andata)</div>
+    <h1>Sagres e Cabo de São Vicente</h1>
+    <p class="subtitle">Un cammino verso la fine del mondo conosciuto, tra fortezze, scogliere e migrazioni di uccelli. Percorso lineare: torna a piedi, in bus o in taxi. Cammina, e ti racconto io.</p>
+  </header>
+
+  <div class="trail" id="trail"></div>
+
+  <div class="map-wrap"><div id="map"></div></div>
+
+  <div class="toggle-row">
+    <div class="toggle-label"><b>Riproduzione automatica</b><br>Parte da sola quando arrivi a una tappa</div>
+    <label class="switch">
+      <input type="checkbox" id="autoplayToggle" checked>
+      <span class="slider"></span>
+    </label>
+  </div>
+
+  <div class="gps-status">
+    <div class="gps-dot" id="gpsDot"></div>
+    <span id="gpsText">Posizione non attiva — tocca "Attiva GPS" qui sotto</span>
+    <button class="reset-link" id="resetBtn">Ricomincia il giro</button>
+  </div>
+
+  <div class="stops" id="stops"></div>
+
+  <footer>Genera audio con Google Cloud TTS · fatto per camminarci sopra</footer>
+</div>
+
+<div class="arrival-overlay" id="arrivalOverlay">
+  <div class="arrival-card">
+    <div class="arrival-eyebrow">Sei arrivato</div>
+    <div class="arrival-title" id="arrivalTitle">—</div>
+    <div class="arrival-actions">
+      <button class="btn btn-ghost" id="laterBtn">Più tardi</button>
+      <button class="btn btn-primary" id="playNowBtn">▶ Riproduci</button>
+    </div>
+  </div>
+</div>
+
+<div class="text-modal-overlay" id="textModalOverlay">
+  <div class="text-modal">
+    <div class="text-modal-header">
+      <div class="text-modal-title" id="textModalTitle">—</div>
+      <button class="text-modal-close" id="textModalClose">✕</button>
+    </div>
+    <div class="text-modal-body" id="textModalBody"></div>
+    <div class="yt-links" id="ytLinks" style="display:none;">
+      <div class="yt-eyebrow">Approfondisci</div>
+      <div id="ytLinksList"></div>
+    </div>
+  </div>
+</div>
+
+<div class="arrival-overlay" id="endOverlay">
+  <div class="arrival-card">
+    <div class="arrival-eyebrow">Tappa completata</div>
+    <div class="arrival-title" id="endTitle">—</div>
+    <div class="yt-links" id="endYtLinks" style="display:none;">
+      <div class="yt-eyebrow">Approfondisci</div>
+      <div id="endYtLinksList"></div>
+    </div>
+    <div class="arrival-actions" style="margin-top:16px;">
+      <button class="btn btn-primary" id="endCloseBtn">Continua a camminare</button>
+    </div>
+  </div>
+</div>
+
+<div class="player" id="player">
+  <div class="photo-panel" id="photoPanel">
+    <img id="photoImg" src="" alt="">
+    <button class="player-close" id="playerCloseBtn">✕</button>
+    <div class="photo-caption" id="photoCaption"></div>
+  </div>
+  <div class="player-top">
+    <div class="player-name" id="playerName">—</div>
+  </div>
+  <div class="seek-row">
+    <span class="time-label" id="timeElapsed">0:00</span>
+    <input type="range" class="seek" id="seekBar" min="0" max="100" value="0" step="0.1">
+    <span class="time-label right" id="timeRemaining">-0:00</span>
+  </div>
+  <div class="transport">
+    <button class="skip-btn" id="backBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 19l-7-7 7-7M4 12h13a4 4 0 000-8"/></svg>
+      <span>15s</span>
+    </button>
+    <button class="play-btn" id="playPauseBtn" style="width:52px;height:52px;">
+      <svg viewBox="0 0 24 24" fill="#241a12" style="width:20px;height:20px;"><path id="playIcon" d="M8 5v14l11-7z"/></svg>
+    </button>
+    <button class="skip-btn" id="fwdBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 5l7 7-7 7M20 12H7a4 4 0 010-8"/></svg>
+      <span>15s</span>
+    </button>
+  </div>
+  <audio id="audioEl" style="display:none;"></audio>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+// ---- Dati tappe (pilota: 2 tappe) ----
+const STOPS = [
+  {
+    id: 1, ready: true,
+    name: "Porto de Pesca da Baleeira",
+    desc: "Il porto e la capitale europea del birdwatching",
+    lat: 37.0096584, lon: -8.9292962,
+    audio: "audio/tappa1.mp3",
+    photos: [
+      { time: 0, url: "img/t1_porto1.jpg",
+        caption: "Il Porto de Pesca da Baleeira", credit: "Wikimedia Commons" },
+      { time: 14, url: "img/t1_porto2.jpg",
+        caption: "Il porto di lavoro con le barche", credit: "Wikimedia Commons" },
+      { time: 35, url: "img/t1_porto3.jpg",
+        caption: "Il porto, punto di osservazione per gli ornitologi", credit: "Wikimedia Commons" }
+    ],
+    fullText: `Sei arrivato al Porto de Pesca da Baleeira, il porto peschereccio di Sagres. Guarda le barche ormeggiate: questo è ancora oggi un porto di lavoro vero.<br><br>
+Ogni pomeriggio feriale, verso le tre, qui si tiene un'asta del pesce che i ristoranti affacciati sul porto lasciano osservare dalle vetrate — un rito commerciale antico quanto il porto stesso.<br><br>
+Ma Sagres è famosa ben oltre la pesca: è considerata una delle capitali europee del birdwatching. Ogni autunno, tra fine agosto e dicembre, centinaia di migliaia di uccelli migratori passano da qui verso l'Africa — dai passeriformi alle aquile di Bonelli, ai falchi pellegrini. A ottobre la città ospita un festival dedicato, con uscite in barca per specie marine rare come la berta minore, a rischio critico di estinzione.<br><br>
+Quando sei pronto, dirigiti verso Praia da Mareta.`,
+    deepen: [
+      { type: "link", title: "Sagres Birdwatching Festival", url: "https://www.visitalgarve.pt/en/agenda/sagres-birdwatching-festival/" }
+    ]
+  },
+  {
+    id: 2, ready: true,
+    name: "Praia da Mareta",
+    desc: "La baia riparata e la flora endemica della Costa Vicentina",
+    lat: 37.0053993, lon: -8.9388513,
+    audio: "audio/tappa2.mp3",
+    photos: [
+      { time: 0, url: "img/t2_mareta1.jpg",
+        caption: "Praia da Mareta, la baia riparata", credit: "Wikimedia Commons" },
+      { time: 42, url: "img/t2_mareta2.jpg",
+        caption: "La flora endemica delle scogliere", credit: "Wikimedia Commons" }
+    ],
+    fullText: `Sei arrivato a Praia da Mareta, la spiaggia principale di Sagres, riparata dentro un'ampia baia a ferro di cavallo. L'acqua qui è più calma delle spiagge esposte a ovest — per questo si concentrano le scuole di surf per principianti.<br><br>
+Il nome "Mareta" richiama il movimento delle maree: fin dall'epoca delle grandi scoperte, questa baia offriva uno dei pochi ripari sicuri lungo una costa sferzata dal vento, dove le caravelle ancoravano prima di affrontare il promontorio.<br><br>
+Le scogliere che chiudono la baia fanno parte del Parque Natural do Sudoeste Alentejano e Costa Vicentina, tra le aree costiere meglio conservate d'Europa. Qui cresce una flora particolarissima, alcune specie endemiche che non si trovano in nessun altro posto al mondo, aggrappate a una terra rossa e pietrosa che sembra ostile a ogni forma di vita.<br><br>
+Quando sei pronto, dirigiti verso la Fortaleza de Sagres.`,
+    deepen: []
+  },
+  {
+    id: 3, ready: true,
+    name: "Fortaleza de Sagres",
+    desc: "Enrico il Navigatore e la Rosa dos Ventos",
+    lat: 37.0006581, lon: -8.9482365,
+    audio: "audio/tappa3.mp3",
+    photos: [
+      { time: 0, url: "img/t3_forte1.jpg",
+        caption: "Il promontorio della Fortaleza de Sagres", credit: "Wikimedia Commons" },
+      { time: 55, url: "img/t3_forte2.jpg",
+        caption: "La Rosa dos Ventos, 43 metri di diametro", credit: "Wikimedia Commons" },
+      { time: 84, url: "img/t3_forte3.jpg",
+        caption: "Il promontorio spazzato dal vento", credit: "Wikimedia Commons" }
+    ],
+    fullText: `Sei arrivato alla Fortaleza de Sagres, forse il luogo più carico di mito del Portogallo. Un chilometro di lunghezza, difeso su tre lati non da mura ma dalla scogliera a strapiombo.<br><br>
+Secondo la tradizione, qui nel Quattrocento l'Infante Enrico il Navigatore fondò la sua leggendaria scuola nautica — anche se gli storici dibattono quanto sia mito costruito a posteriori. Enrico morì qui nel 1460. La sua eredità è ambivalente: fu anche lui ad avviare la tratta degli schiavi lungo le rotte atlantiche africane.<br><br>
+Cerca la Rosa dos Ventos: un cerchio di pietra di 43 metri di diametro, riscoperto solo nel 1928. Nessuno sa con certezza a cosa servisse — bussola per l'addestramento, meridiana, o elemento decorativo successivo.<br><br>
+Se il vento è forte, ascolta: in un punto del promontorio una struttura circolare produce un ronzio innaturale quando il vento si infila in un pozzo sotterraneo — la "camera del suono".<br><br>
+Il forte fu devastato dal terremoto di Lisbona del 1755 e assaltato dal corsaro inglese Francis Drake.<br><br>
+Quando sei pronto, dirigiti verso Praia do Beliche, circa tre chilometri lungo la costa.`,
+    deepen: [
+      { type: "link", title: "Fortezza di Sagres — Wikipedia", url: "https://it.wikipedia.org/wiki/Fortezza_di_Sagres" }
+    ]
+  },
+  {
+    id: 4, ready: true,
+    name: "Praia do Beliche",
+    desc: "Surf, scogliere e microclima estremo",
+    lat: 37.025631, lon: -8.964114,
+    audio: "audio/tappa4.mp3",
+    photos: [
+      { time: 0, url: "img/t4_beliche1.jpg",
+        caption: "Praia do Beliche vista dalla scogliera", credit: "Wikimedia Commons" }
+    ],
+    fullText: `Sei arrivato a Praia do Beliche, una delle spiagge più spettacolari ed esposte della costa. La lunga scalinata di accesso è impegnativa apposta, ed è uno dei motivi per cui resta meno affollata nonostante la bellezza.<br><br>
+Questo è territorio di surfisti seri: le onde atlantiche arrivano senza ostacoli per migliaia di chilometri, e con l'alta marea gran parte dell'arenile scompare sott'acqua. Sagres è oggi una delle mete di surf più rinomate d'Europa.<br><br>
+Le scogliere calcaree e scistose che racchiudono la baia ospitano colonie di uccelli marini nidificanti — cormorani, e più a nord, lungo la Costa Vicentina, le rarissime cicogne bianche che nidificano direttamente sulle scogliere a picco sull'oceano, un comportamento unico al mondo.<br><br>
+Il microclima qui è tra i più estremi del Portogallo: vento costante e un'umidità che sfiora l'80% per la nebbia salina quasi ogni notte.<br><br>
+Quando sei pronto, risali verso la Fortaleza do Beliche, a pochi passi da qui.`,
+    deepen: []
+  },
+  {
+    id: 5, ready: true,
+    name: "Fortaleza do Beliche",
+    desc: "Il forte del re scomparso e i falchi pellegrini",
+    lat: 37.0247, lon: -8.9633,
+    audio: "audio/tappa5.mp3",
+    photos: [
+      { time: 0, url: "img/t5_beliche_forte.jpg",
+        caption: "La Fortaleza do Beliche in rovina", credit: "Wikimedia Commons" }
+    ],
+    fullText: `Sei arrivato alla Fortaleza do Beliche, un piccolo forte in rovina a 86 metri sul mare. Le mura risalgono almeno al Cinquecento e portano lo stemma del re Sebastiano, scomparso misteriosamente in battaglia in Marocco nel 1578 — la sua fine alimentò per secoli il "sebastianismo", il mito di un suo fantomatico ritorno, sopravvissuto in Portogallo fino al Novecento.<br><br>
+Accanto al forte sorge la piccola Capela de Santa Catarina, voluta anch'essa da Enrico il Navigatore. Il complesso ospitò per un periodo persino un piccolo albergo turistico, ma dagli anni Novanta è chiuso al pubblico. L'erosione della falesia ha reso il terreno instabile, e l'Università dell'Algarve segue tuttora il fenomeno.<br><br>
+Non puoi entrare, ma puoi affacciarti oltre le mura e scendere un breve sentiero verso il mare — le pareti offrono riparo dal vento incessante, perfette per un picnic con vista.<br><br>
+Guarda in alto: queste scogliere sono tra i punti preferiti dai birdwatcher per i falchi pellegrini, che qui cacciano in picchiata a oltre 300 km/h — il record assoluto nel mondo animale.<br><br>
+Quando sei pronto, l'ultimo tratto ti porta al Cabo de São Vicente.`,
+    deepen: []
+  },
+  {
+    id: 6, ready: true,
+    name: "Cabo de São Vicente",
+    desc: "La fine del mondo conosciuto",
+    lat: 37.0230468, lon: -8.9964565,
+    audio: "audio/tappa6.mp3",
+    photos: [
+      { time: 0, url: "img/t6_cabo1.jpg",
+        caption: "Il faro del Cabo de São Vicente", credit: "Wikimedia Commons" },
+      { time: 18, url: "img/t6_cabo2.jpg",
+        caption: "Le rovine del convento sotto il faro", credit: "Wikimedia Commons" },
+      { time: 77, url: "img/t6_cabo3.jpg",
+        caption: "Le scogliere a picco sull'Atlantico", credit: "Wikimedia Commons" }
+    ],
+    fullText: `Sei arrivato al Cabo de São Vicente — il punto più sudoccidentale del continente europeo, e qui chiudiamo il nostro cammino.<br><br>
+Il faro rosso davanti a te risale al 1846, alto 24 metri, visibile fino a 60 km di distanza. Sorge sulle rovine di un convento francescano dedicato a San Vincenzo, il diacono martirizzato dai romani nel 304, il cui corpo fu ritrovato secondo la leggenda proprio su queste scogliere.<br><br>
+Un dettaglio utile per quando sarai a Lisbona: nel 1173 le reliquie del santo furono trasportate via mare fino alla capitale, scortate — narra la leggenda — da due corvi. Ancora oggi lo stemma di Lisbona raffigura esattamente questo: una nave fiancheggiata da due corvi.<br><br>
+I romani chiamavano questo luogo Promontorium Sacrum: credevano che qui il sole morisse ogni sera nell'oceano per rinascere a est. Per secoli segnò il bordo del mondo conosciuto.<br><br>
+Guarda le scogliere che precipitano per 75 metri: soprattutto in autunno, centinaia di aquile, nibbi e cicogne nere sorvolano il capo prima di attraversare oltre 400 km di mare aperto verso l'Africa — un'autostrada invisibile che gli ornitologi vengono a osservare da tutta Europa.<br><br>
+Nel 1587 il corsaro inglese Francis Drake attaccò e saccheggiò il convento che sorgeva qui.<br><br>
+Grazie per aver camminato con noi fino alla fine della terra.`,
+    deepen: [
+      { type: "link", title: "Cabo de São Vicente — Wikipedia", url: "https://it.wikipedia.org/wiki/Capo_di_San_Vincenzo" }
+    ]
+  }
+];
+
+// Percorso pedonale reale (OpenRouteService, foot-walking) — [lat, lon]
+const ROUTE_COORDS = [[37.009841, -8.929411], [37.009725, -8.9297], [37.009977, -8.929948], [37.010379, -8.930203], [37.010318, -8.930427], [37.010298, -8.930501], [37.010278, -8.930605], [37.010242, -8.930759], [37.010183, -8.930971], [37.010102, -8.931046], [37.010086, -8.931112], [37.010034, -8.931149], [37.010031, -8.931233], [37.009924, -8.931836], [37.009895, -8.932096], [37.009884, -8.932156], [37.009946, -8.932272], [37.009992, -8.932406], [37.009985, -8.932467], [37.009937, -8.932567], [37.00989, -8.932644], [37.009704, -8.932976], [37.009152, -8.934602], [37.009146, -8.934598], [37.009115, -8.934581], [37.009034, -8.934872], [37.008977, -8.935123], [37.008954, -8.935114], [37.008946, -8.935111], [37.008751, -8.936021], [37.008734, -8.936095], [37.008718, -8.9361], [37.008566, -8.936834], [37.008579, -8.936862], [37.00853, -8.93708], [37.00846, -8.937149], [37.008402, -8.937161], [37.008394, -8.9372], [37.007969, -8.937066], [37.007846, -8.937154], [37.007805, -8.937227], [37.007651, -8.937972], [37.007599, -8.93825], [37.007458, -8.938898], [37.007262, -8.938825], [37.007052, -8.938768], [37.006871, -8.938756], [37.006677, -8.938795], [37.006459, -8.938892], [37.006413, -8.938791], [37.006407, -8.938728], [37.00655, -8.938293], [37.006555, -8.938241], [37.006538, -8.938202], [37.006466, -8.938178], [37.006173, -8.93818], [37.006058, -8.938203], [37.005998, -8.938254], [37.005947, -8.938352], [37.005931, -8.938481], [37.005947, -8.938352], [37.005998, -8.938254], [37.006058, -8.938203], [37.006173, -8.93818], [37.006466, -8.938178], [37.006538, -8.938202], [37.006555, -8.938241], [37.00655, -8.938293], [37.006407, -8.938728], [37.006413, -8.938791], [37.006459, -8.938892], [37.006247, -8.939085], [37.006158, -8.93922], [37.006098, -8.939366], [37.006063, -8.939491], [37.005971, -8.939963], [37.005972, -8.940207], [37.006027, -8.940482], [37.00613, -8.940697], [37.006267, -8.940843], [37.006454, -8.940965], [37.00641, -8.941025], [37.006163, -8.941611], [37.005914, -8.942013], [37.005642, -8.942268], [37.005562, -8.942296], [37.00543, -8.942285], [37.005295, -8.942329], [37.005231, -8.942379], [37.00509, -8.94265], [37.004998, -8.942779], [37.004764, -8.943238], [37.00472, -8.943366], [37.004613, -8.943676], [37.00455, -8.943768], [37.004261, -8.944189], [37.004167, -8.944354], [37.004104, -8.944464], [37.00408, -8.944613], [37.004242, -8.944718], [37.004164, -8.944798], [37.004139, -8.944822], [37.004125, -8.944835], [37.003112, -8.945877], [37.003068, -8.945922], [37.003047, -8.945942], [37.003007, -8.945982], [37.002935, -8.946055], [37.002322, -8.946681], [37.002189, -8.946818], [37.001652, -8.947367], [37.001471, -8.947552], [37.00144, -8.947627], [37.001463, -8.94777], [37.000904, -8.948183], [37.000658, -8.948235], [37.000904, -8.948183], [37.001463, -8.94777], [37.001502, -8.947829], [37.001609, -8.947864], [37.001825, -8.947764], [37.00361, -8.946905], [37.00571, -8.945899], [37.005841, -8.945835], [37.00606, -8.94573], [37.006398, -8.945569], [37.00646, -8.945557], [37.006537, -8.945585], [37.006643, -8.945716], [37.006666, -8.945696], [37.00751, -8.947097], [37.007577, -8.947145], [37.007626, -8.947181], [37.007678, -8.947112], [37.007735, -8.94695], [37.00778, -8.946837], [37.007821, -8.946797], [37.007867, -8.946771], [37.008015, -8.946758], [37.008074, -8.946724], [37.008288, -8.946551], [37.008696, -8.94727], [37.008741, -8.94735], [37.008718, -8.947382], [37.008995, -8.947868], [37.00914, -8.948117], [37.009329, -8.948395], [37.009537, -8.948602], [37.009632, -8.948682], [37.009949, -8.948949], [37.01055, -8.949465], [37.011553, -8.950328], [37.012209, -8.950894], [37.013482, -8.95199], [37.014777, -8.953111], [37.01778, -8.955654], [37.018353, -8.956132], [37.019455, -8.957005], [37.020116, -8.957507], [37.021532, -8.958617], [37.022313, -8.959213], [37.024236, -8.960729], [37.025977, -8.962081], [37.026203, -8.962269], [37.026345, -8.962379], [37.026389, -8.962414], [37.026319, -8.962526], [37.026289, -8.962677], [37.026156, -8.962848], [37.025912, -8.963095], [37.025834, -8.963137], [37.025898, -8.963205], [37.026086, -8.963291], [37.026255, -8.963503], [37.026203, -8.963623], [37.026229, -8.963833], [37.026203, -8.963623], [37.026255, -8.963503], [37.026086, -8.963291], [37.025898, -8.963205], [37.025834, -8.963137], [37.025912, -8.963095], [37.026156, -8.962848], [37.026289, -8.962677], [37.026319, -8.962526], [37.026389, -8.962414], [37.026345, -8.962379], [37.026274, -8.962521], [37.026137, -8.962505], [37.026108, -8.962444], [37.026029, -8.962458], [37.025942, -8.962351], [37.025836, -8.962459], [37.025509, -8.962437], [37.025234, -8.962566], [37.02515, -8.962727], [37.024953, -8.962813], [37.024816, -8.96292], [37.024619, -8.962996], [37.024581, -8.963021], [37.024619, -8.962996], [37.024816, -8.96292], [37.024953, -8.962813], [37.02515, -8.962727], [37.025234, -8.962566], [37.025509, -8.962437], [37.025836, -8.962459], [37.025942, -8.962351], [37.026029, -8.962458], [37.026108, -8.962444], [37.026137, -8.962505], [37.026274, -8.962521], [37.026345, -8.962379], [37.026389, -8.962414], [37.026548, -8.962533], [37.026689, -8.962653], [37.026894, -8.962811], [37.027095, -8.962968], [37.027164, -8.963023], [37.027325, -8.963181], [37.027434, -8.963358], [37.027493, -8.963527], [37.027527, -8.963697], [37.027547, -8.963951], [37.0276, -8.967004], [37.027613, -8.967492], [37.027641, -8.96894], [37.027485, -8.971445], [37.027241, -8.974466], [37.027187, -8.975198], [37.027181, -8.975749], [37.027222, -8.976071], [37.027341, -8.976678], [37.027577, -8.977982], [37.027679, -8.978566], [37.02821, -8.981597], [37.028234, -8.981817], [37.028248, -8.982094], [37.028206, -8.983431], [37.028185, -8.983706], [37.028164, -8.983818], [37.028086, -8.984123], [37.027452, -8.985644], [37.027323, -8.985956], [37.025671, -8.989927], [37.025483, -8.990404], [37.025385, -8.990644], [37.02398, -8.994057], [37.023918, -8.994203], [37.023852, -8.994353], [37.023792, -8.994493], [37.023823, -8.994512], [37.023577, -8.995075], [37.023497, -8.995228], [37.023376, -8.995471], [37.023268, -8.995678], [37.023164, -8.995874], [37.023141, -8.995918], [37.023154, -8.995976], [37.023193, -8.996041], [37.023268, -8.996205], [37.023253, -8.996456], [37.023233, -8.996473]];
+
+// ---- Mappa ----
+const map = L.map('map', {zoomControl:false, attributionControl:true}).setView(
+  [STOPS[0].lat, STOPS[0].lon], 16
+);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+  attribution: '&copy; OpenStreetMap &copy; CARTO',
+  maxZoom: 19
+}).addTo(map);
+
+const routeLatLngs = STOPS.map(s => [s.lat, s.lon]);
+L.polyline(ROUTE_COORDS, {color:'#7c9a82', weight:4, opacity:0.85, lineJoin:'round'}).addTo(map);
+
+const stopMarkers = {};
+STOPS.forEach(s => {
+  const icon = L.divIcon({
+    className: '', html: `<div class="stop-marker${s.ready ? '' : ' pending'}" id="marker-${s.id}"><span>${s.id}</span></div>`,
+    iconSize:[26,26], iconAnchor:[13,26]
+  });
+  const m = L.marker([s.lat, s.lon], {icon}).addTo(map);
+  stopMarkers[s.id] = m;
+});
+map.fitBounds(ROUTE_COORDS, {padding:[40,40]});
+setTimeout(() => {
+  map.invalidateSize();
+  map.fitBounds(ROUTE_COORDS, {padding:[24,24]});
+}, 300);
+
+let meMarker = null;
+function updateMeMarker(lat, lon){
+  if(!meMarker){
+    const icon = L.divIcon({className:'', html:'<div class="me-marker"></div>', iconSize:[16,16], iconAnchor:[8,8]});
+    meMarker = L.marker([lat, lon], {icon, zIndexOffset:1000}).addTo(map);
+  } else {
+    meMarker.setLatLng([lat, lon]);
+  }
+}
+function refreshStopMarkers(){
+  STOPS.forEach(s => {
+    const el = document.getElementById('marker-' + s.id);
+    if(el) el.classList.toggle('done', state.played.has(s.id));
+  });
+}
+
+const RADIUS_METERS = 45;
+const state = {
+  played: new Set(JSON.parse(localStorage.getItem('trastevere_played') || '[]')),
+  autoplay: localStorage.getItem('trastevere_autoplay') !== 'false',
+  currentStopId: null,
+  wakeLock: null,
+  watchId: null
+};
+
+// ---- Utils ----
+function haversine(lat1, lon1, lat2, lon2){
+  const R = 6371000;
+  const toRad = d => d * Math.PI/180;
+  const dLat = toRad(lat2-lat1), dLon = toRad(lon2-lon1);
+  const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLon/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+function savePlayed(){ localStorage.setItem('trastevere_played', JSON.stringify([...state.played])); }
+function saveAutoplay(){ localStorage.setItem('trastevere_autoplay', state.autoplay); }
+
+// ---- Render lista tappe + trail ----
+function render(){
+  const stopsEl = document.getElementById('stops');
+  const trailEl = document.getElementById('trail');
+  stopsEl.innerHTML = '';
+  trailEl.innerHTML = '';
+  refreshStopMarkers();
+
+  STOPS.forEach((s, i) => {
+    const done = state.played.has(s.id);
+    const current = state.currentStopId === s.id;
+
+    // trail dot
+    const dot = document.createElement('div');
+    dot.className = 'dot' + (done ? ' done' : '') + (current ? ' active' : '');
+    dot.textContent = s.id;
+    trailEl.appendChild(dot);
+    if(i < STOPS.length - 1){
+      const line = document.createElement('div');
+      line.className = 'trail-line' + (done ? ' done' : '');
+      trailEl.appendChild(line);
+    }
+
+    // stop card
+    const el = document.createElement('div');
+    el.className = 'stop' + (done ? ' done' : '') + (current ? ' current' : '') + (!s.ready ? ' pending' : '');
+    const navUrl = `https://maps.apple.com/?daddr=${s.lat},${s.lon}&dirflg=w`;
+    el.innerHTML = `
+      <div class="stop-num">${String(s.id).padStart(2,'0')}</div>
+      <div class="stop-body">
+        <p class="stop-name">${s.name}</p>
+        <p class="stop-desc">${s.desc}</p>
+      </div>
+      <div class="stop-actions">
+        <a class="nav-link" href="${navUrl}" target="_blank" title="Naviga fin qui" data-navlink>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l18-8-8 18-2-8-8-2z"/></svg>
+        </a>
+        ${s.ready
+          ? `<button class="stop-text-btn" data-textbtn="${s.id}">Leggi</button><div class="stop-icon" data-playicon>${done ? '✓' : '▶'}</div>`
+          : `<span class="pending-tag">in arrivo</span>`}
+      </div>
+    `;
+    el.querySelector('[data-navlink]').onclick = (e) => e.stopPropagation();
+    if(s.ready){
+      el.querySelector('.stop-body').onclick = () => playStop(s.id, true);
+      el.querySelector('[data-playicon]').onclick = () => playStop(s.id, true);
+      el.querySelector('[data-textbtn]').onclick = (e) => { e.stopPropagation(); openTextModal(s.id); };
+    }
+    stopsEl.appendChild(el);
+  });
+}
+
+// ---- Player ----
+const audioEl = document.getElementById('audioEl');
+const playerEl = document.getElementById('player');
+const playPauseBtn = document.getElementById('playPauseBtn');
+const playIcon = document.getElementById('playIcon');
+const seekBar = document.getElementById('seekBar');
+const timeElapsed = document.getElementById('timeElapsed');
+const timeRemaining = document.getElementById('timeRemaining');
+
+function fmtTime(sec){
+  if(!isFinite(sec) || sec < 0) sec = 0;
+  const m = Math.floor(sec / 60), s = Math.floor(sec % 60);
+  return `${m}:${String(s).padStart(2,'0')}`;
+}
+
+function playStop(id, manual){
+  const stop = STOPS.find(s => s.id === id);
+  if(!stop) return;
+  state.currentStopId = id;
+  currentPhotoUrl = null;
+  document.getElementById('playerName').textContent = stop.name;
+  audioEl.src = stop.audio;
+  audioEl.play().catch(()=>{ /* iOS può richiedere un tap: il bottone play resta disponibile */ });
+  playerEl.classList.add('show');
+  state.played.add(id);
+  savePlayed();
+  render();
+  requestWakeLock();
+}
+
+playPauseBtn.onclick = () => {
+  if(audioEl.paused){ audioEl.play(); } else { audioEl.pause(); }
+};
+document.getElementById('backBtn').onclick = () => { audioEl.currentTime = Math.max(0, audioEl.currentTime - 15); };
+document.getElementById('fwdBtn').onclick = () => { audioEl.currentTime = Math.min(audioEl.duration || 0, audioEl.currentTime + 15); };
+document.getElementById('playerCloseBtn').onclick = () => {
+  audioEl.pause();
+  playerEl.classList.remove('show');
+  state.currentStopId = null;
+  render();
+};
+
+// ---- Reset sessione ----
+document.getElementById('resetBtn').onclick = () => {
+  if(!confirm('Ricominciare il giro da capo? Le tappe già ascoltate torneranno disponibili.')) return;
+  audioEl.pause();
+  playerEl.classList.remove('show');
+  state.played = new Set();
+  state.currentStopId = null;
+  currentPhotoUrl = null;
+  localStorage.removeItem('trastevere_played');
+  render();
+};
+
+audioEl.onplay = () => { playIcon.setAttribute('d','M6 5h4v14H6zM14 5h4v14h-4z'); };
+audioEl.onpause = () => { playIcon.setAttribute('d','M8 5v14l11-7z'); };
+audioEl.onended = () => { showEndOverlay(state.currentStopId); };
+audioEl.onloadedmetadata = () => { seekBar.max = audioEl.duration; };
+audioEl.ontimeupdate = () => {
+  if(!seekBar.matches(':active')){ seekBar.value = audioEl.currentTime; }
+  timeElapsed.textContent = fmtTime(audioEl.currentTime);
+  timeRemaining.textContent = '-' + fmtTime((audioEl.duration || 0) - audioEl.currentTime);
+  updatePhoto(audioEl.currentTime);
+};
+seekBar.addEventListener('input', () => { audioEl.currentTime = seekBar.value; });
+
+// ---- Pannello foto sincronizzato ----
+const photoImg = document.getElementById('photoImg');
+const photoCaption = document.getElementById('photoCaption');
+let currentPhotoUrl = null;
+
+function updatePhoto(t){
+  const stop = STOPS.find(s => s.id === state.currentStopId);
+  if(!stop || !stop.photos || !stop.photos.length) return;
+  let active = stop.photos[0];
+  for(const p of stop.photos){ if(t >= p.time) active = p; }
+  if(active.url !== currentPhotoUrl){
+    currentPhotoUrl = active.url;
+    photoImg.classList.remove('show');
+    setTimeout(() => {
+      photoImg.src = active.url;
+      photoCaption.textContent = active.caption + ' · ' + active.credit;
+      photoImg.onload = () => photoImg.classList.add('show');
+    }, 300);
+  }
+}
+
+// ---- Overlay arrivo tappa (quando autoplay è OFF) ----
+const overlay = document.getElementById('arrivalOverlay');
+let pendingStopId = null;
+
+function showArrival(stopId){
+  const stop = STOPS.find(s => s.id === stopId);
+  pendingStopId = stopId;
+  document.getElementById('arrivalTitle').textContent = stop.name;
+  overlay.classList.add('show');
+}
+document.getElementById('playNowBtn').onclick = () => {
+  overlay.classList.remove('show');
+  if(pendingStopId) playStop(pendingStopId, false);
+};
+document.getElementById('laterBtn').onclick = () => {
+  overlay.classList.remove('show');
+};
+
+document.getElementById('autoplayToggle').onchange = (e) => {
+  state.autoplay = e.target.checked;
+  saveAutoplay();
+};
+document.getElementById('autoplayToggle').checked = state.autoplay;
+
+// ---- Rendering condiviso approfondimenti (video + link) ----
+const ICON_VIDEO = `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 15.5l6-3.5-6-3.5v7zM12 3C7 3 2.7 3.3 2.7 3.3S2 3.4 1.4 3.7C.9 4 .5 4.5.3 5.1c0 0-.3 1.8-.3 3.5v2.7c0 1.8.3 3.5.3 3.5.2.6.6 1.1 1.1 1.4.6.3 1.3.4 1.3.4S7 17 12 17s5-.3 5-.3.7-.1 1.3-.4c.5-.3.9-.8 1.1-1.4 0 0 .3-1.8.3-3.5V8.6c0-1.8-.3-3.5-.3-3.5-.2-.6-.6-1.1-1.1-1.4C17.7 3.4 17 3.3 17 3.3S12 3 12 3z"/></svg>`;
+const ICON_LINK = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 007.07 0l2.83-2.83a5 5 0 00-7.07-7.07L11.5 4.5M14 11a5 5 0 00-7.07 0L4.1 13.83a5 5 0 007.07 7.07L12.5 19.5"/></svg>`;
+
+function renderDeepenList(items){
+  return items.map(v => `
+    <a class="yt-link" href="${v.url}" target="_blank">
+      ${v.type === 'video' ? ICON_VIDEO : ICON_LINK}
+      ${v.title}
+    </a>`).join('');
+}
+
+// ---- Modal testo scritto ----
+const textModalOverlay = document.getElementById('textModalOverlay');
+function openTextModal(stopId){
+  const stop = STOPS.find(s => s.id === stopId);
+  if(!stop) return;
+  document.getElementById('textModalTitle').textContent = stop.name;
+  document.getElementById('textModalBody').innerHTML = stop.fullText || '';
+  const ytWrap = document.getElementById('ytLinks');
+  const ytList = document.getElementById('ytLinksList');
+  if(stop.deepen && stop.deepen.length){
+    ytList.innerHTML = renderDeepenList(stop.deepen);
+    ytWrap.style.display = 'block';
+  } else {
+    ytWrap.style.display = 'none';
+  }
+  textModalOverlay.classList.add('show');
+}
+document.getElementById('textModalClose').onclick = () => textModalOverlay.classList.remove('show');
+textModalOverlay.onclick = (e) => { if(e.target === textModalOverlay) textModalOverlay.classList.remove('show'); };
+
+// ---- Overlay fine tappa con approfondimenti ----
+const endOverlay = document.getElementById('endOverlay');
+function showEndOverlay(stopId){
+  const stop = STOPS.find(s => s.id === stopId);
+  if(!stop) return;
+  document.getElementById('endTitle').textContent = stop.name + ' — completata';
+  const ytWrap = document.getElementById('endYtLinks');
+  const ytList = document.getElementById('endYtLinksList');
+  if(stop.deepen && stop.deepen.length){
+    ytList.innerHTML = renderDeepenList(stop.deepen);
+    ytWrap.style.display = 'block';
+  } else {
+    ytWrap.style.display = 'none';
+  }
+  endOverlay.classList.add('show');
+}
+document.getElementById('endCloseBtn').onclick = () => endOverlay.classList.remove('show');
+
+// ---- Geolocalizzazione ----
+const gpsDot = document.getElementById('gpsDot');
+const gpsText = document.getElementById('gpsText');
+
+function onPosition(pos){
+  gpsDot.classList.add('live');
+  const { latitude, longitude } = pos.coords;
+  updateMeMarker(latitude, longitude);
+
+  let nearest = null, nearestDist = Infinity;
+  STOPS.forEach(s => {
+    if(state.played.has(s.id)) return; // già ascoltata, non ritriggerare
+    const d = haversine(latitude, longitude, s.lat, s.lon);
+    if(d < nearestDist){ nearestDist = d; nearest = s; }
+  });
+
+  if(nearest){
+    gpsText.textContent = `A ${Math.round(nearestDist)} m dalla prossima tappa — ${nearest.name}`;
+    if(nearestDist <= RADIUS_METERS && state.currentStopId !== nearest.id){
+      if(state.autoplay){
+        playStop(nearest.id, false);
+      } else {
+        showArrival(nearest.id);
+      }
+    }
+  } else {
+    gpsText.textContent = "Hai ascoltato tutte le tappe del pilota 🎉";
+  }
+}
+function onGpsError(err){
+  gpsDot.classList.remove('live');
+  gpsText.textContent = "GPS non disponibile (" + err.message + ") — usa la lista qui sotto";
+}
+
+function startGps(){
+  if(!navigator.geolocation){
+    gpsText.textContent = "Il browser non supporta la geolocalizzazione";
+    return;
+  }
+  state.watchId = navigator.geolocation.watchPosition(onPosition, onGpsError, {
+    enableHighAccuracy: true, maximumAge: 5000, timeout: 15000
+  });
+}
+
+// ---- Wake Lock (schermo sempre acceso mentre l'app è in uso) ----
+async function requestWakeLock(){
+  try{
+    if('wakeLock' in navigator){
+      state.wakeLock = await navigator.wakeLock.request('screen');
+    }
+  }catch(e){ /* silenzioso: non tutti i browser lo supportano */ }
+}
+document.addEventListener('visibilitychange', () => {
+  if(document.visibilityState === 'visible' && state.currentStopId) requestWakeLock();
+});
+
+// ---- Avvio ----
+render();
+startGps();
+requestWakeLock();
+</script>
+</body>
+</html>
