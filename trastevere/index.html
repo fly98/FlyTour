@@ -482,9 +482,9 @@ const ROUTE_COORDS = [[41.891777, 12.470232], [41.891671, 12.47008], [41.891493,
 const map = L.map('map', {zoomControl:false, attributionControl:true}).setView(
   [STOPS[0].lat, STOPS[0].lon], 16
 );
-L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
   attribution: '&copy; OpenStreetMap &copy; CARTO',
-  maxZoom: 19
+  maxZoom: 20
 }).addTo(map);
 
 const routeLatLngs = STOPS.map(s => [s.lat, s.lon]);
@@ -504,6 +504,13 @@ setTimeout(() => {
   map.invalidateSize();
   map.fitBounds(ROUTE_COORDS, {padding:[24,24]});
 }, 300);
+
+function zoomToStop(stop){
+  map.flyTo([stop.lat, stop.lon], 18, {duration: 0.6});
+}
+function zoomToOverview(){
+  map.flyToBounds(ROUTE_COORDS, {padding:[24,24], duration: 0.6});
+}
 
 let meMarker = null;
 function updateMeMarker(lat, lon){
@@ -612,6 +619,7 @@ function playStop(id, manual){
   const stop = STOPS.find(s => s.id === id);
   if(!stop) return;
   state.currentStopId = id;
+  zoomToStop(stop);
   currentPhotoUrl = null;
   document.getElementById('playerName').textContent = stop.name;
   audioEl.src = stop.audio;
@@ -633,6 +641,7 @@ document.getElementById('playerCloseBtn').onclick = () => {
   playerEl.classList.remove('show');
   state.currentStopId = null;
   render();
+  zoomToOverview();
 };
 
 // ---- Reset sessione ----
@@ -643,6 +652,7 @@ document.getElementById('resetBtn').onclick = () => {
   state.played = new Set();
   state.currentStopId = null;
   currentPhotoUrl = null;
+  zoomToOverview();
   localStorage.removeItem('trastevere_played');
   render();
 };
@@ -758,6 +768,7 @@ document.getElementById('endCloseBtn').onclick = () => {
   playerEl.classList.remove('show');
   state.currentStopId = null;
   render();
+  zoomToOverview();
 };
 
 // ---- Geolocalizzazione ----
