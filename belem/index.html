@@ -855,27 +855,30 @@ async function requestWakeLock(){
     }
   }catch(e){ /* silenzioso: non tutti i browser lo supportano */ }
 }
+function restartGps(reason){
+  if(state.watchId != null){
+    navigator.geolocation.clearWatch(state.watchId);
+  }
+  renderGpsDebug(`${reason} alle ${fmtTime()} · riavvio GPS...`);
+  startGps();
+  // richiesta immediata di un fix singolo, senza aspettare il prossimo giro del watch
+  navigator.geolocation.getCurrentPosition(onPosition, onGpsError, {
+    enableHighAccuracy: true, maximumAge: 0, timeout: 15000
+  });
+}
 document.addEventListener('visibilitychange', () => {
   if(document.visibilityState === 'visible'){
     if(state.currentStopId) requestWakeLock();
     // iOS può congelare/uccidere il watchPosition mentre la pagina è in background:
     // al ritorno in primo piano lo cancelliamo e lo riavviamo da zero per essere sicuri
     // di ricevere aggiornamenti freschi invece di restare agganciati a un watch morto.
-    if(state.watchId != null){
-      navigator.geolocation.clearWatch(state.watchId);
-    }
-    renderGpsDebug(`pagina tornata visibile alle ${fmtTime()} · riavvio GPS...`);
-    startGps();
-    // richiesta immediata di un fix singolo, senza aspettare il prossimo giro del watch
-    navigator.geolocation.getCurrentPosition(onPosition, onGpsError, {
-      enableHighAccuracy: true, maximumAge: 0, timeout: 15000
-    });
+    restartGps('pagina tornata visibile');
   }
 });
 
 // ---- Avvio ----
 render();
-startGps();
+restartGps('avvio app');
 requestWakeLock();
 </script>
 </body>
