@@ -245,6 +245,8 @@
     <button class="reset-link" id="resetBtn">Ricomincia il giro</button>
   </div>
 
+  <div id="gpsDebug" style="font-size:11px; opacity:0.6; padding:4px 20px 0; font-family:monospace; line-height:1.5;"></div>
+
   <div class="stops" id="stops"></div>
 
   <footer>Genera audio con Google Cloud TTS · fatto per camminarci sopra</footer>
@@ -830,10 +832,22 @@ document.getElementById('endCloseBtn').onclick = () => {
 // ---- Geolocalizzazione ----
 const gpsDot = document.getElementById('gpsDot');
 const gpsText = document.getElementById('gpsText');
+const gpsDebug = document.getElementById('gpsDebug');
+let gpsUpdateCount = 0;
+let gpsErrorCount = 0;
+function fmtTime(){
+  const d = new Date();
+  return d.toLocaleTimeString('it-IT', {hour12:false});
+}
+function renderGpsDebug(extra){
+  gpsDebug.textContent = `debug GPS · aggiornamenti ricevuti: ${gpsUpdateCount} · errori: ${gpsErrorCount} · ${extra}`;
+}
 
 function onPosition(pos){
   gpsDot.classList.add('live');
-  const { latitude, longitude } = pos.coords;
+  gpsUpdateCount++;
+  const { latitude, longitude, accuracy } = pos.coords;
+  renderGpsDebug(`ultimo fix: ${fmtTime()} · precisione: ${Math.round(accuracy)}m · lat/lon: ${latitude.toFixed(5)}, ${longitude.toFixed(5)}`);
   updateMeMarker(latitude, longitude);
 
   let nearest = null, nearestDist = Infinity;
@@ -858,14 +872,18 @@ function onPosition(pos){
 }
 function onGpsError(err){
   gpsDot.classList.remove('live');
+  gpsErrorCount++;
+  renderGpsDebug(`ultimo errore: ${fmtTime()} · codice ${err.code} · "${err.message}"`);
   gpsText.textContent = "GPS non disponibile (" + err.message + ") — usa la lista qui sotto";
 }
 
 function startGps(){
   if(!navigator.geolocation){
     gpsText.textContent = "Il browser non supporta la geolocalizzazione";
+    renderGpsDebug("navigator.geolocation non disponibile");
     return;
   }
+  renderGpsDebug(`watch avviato: ${fmtTime()} · in attesa del primo fix...`);
   state.watchId = navigator.geolocation.watchPosition(onPosition, onGpsError, {
     enableHighAccuracy: true, maximumAge: 5000, timeout: 15000
   });
@@ -880,7 +898,21 @@ async function requestWakeLock(){
   }catch(e){ /* silenzioso: non tutti i browser lo supportano */ }
 }
 document.addEventListener('visibilitychange', () => {
-  if(document.visibilityState === 'visible' && state.currentStopId) requestWakeLock();
+  if(document.visibilityState === 'visible'){
+    if(state.currentStopId) requestWakeLock();
+    // iOS può congelare/uccidere il watchPosition mentre la pagina è in background:
+    // al ritorno in primo piano lo cancelliamo e lo riavviamo da zero per essere sicuri
+    // di ricevere aggiornamenti freschi invece di restare agganciati a un watch morto.
+    if(state.watchId != null){
+      navigator.geolocation.clearWatch(state.watchId);
+    }
+    renderGpsDebug(`pagina tornata visibile alle ${fmtTime()} · riavvio GPS...`);
+    startGps();
+    // richiesta immediata di un fix singolo, senza aspettare il prossimo giro del watch
+    navigator.geolocation.getCurrentPosition(onPosition, onGpsError, {
+      enableHighAccuracy: true, maximumAge: 0, timeout: 15000
+    });
+  }
 });
 
 // ---- Avvio ----
