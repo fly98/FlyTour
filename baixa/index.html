@@ -239,13 +239,13 @@
     </label>
   </div>
 
-  <div class="gps-status">
+  <div class="gps-status" id="gpsStatusRow" style="cursor:pointer;">
     <div class="gps-dot" id="gpsDot"></div>
     <span id="gpsText">Posizione non attiva — tocca "Attiva GPS" qui sotto</span>
     <button class="reset-link" id="resetBtn">Ricomincia il giro</button>
   </div>
 
-  <div id="gpsDebug" style="font-size:11px; opacity:0.6; padding:4px 20px 0; font-family:monospace; line-height:1.5;"></div>
+  <div id="gpsDebug" style="display:none; font-size:11px; opacity:0.6; padding:4px 20px 0; font-family:monospace; line-height:1.5;"></div>
 
   <div class="stops" id="stops"></div>
 
@@ -814,6 +814,10 @@ document.getElementById('endCloseBtn').onclick = () => {
 const gpsDot = document.getElementById('gpsDot');
 const gpsText = document.getElementById('gpsText');
 const gpsDebug = document.getElementById('gpsDebug');
+document.getElementById('gpsStatusRow').addEventListener('click', (e) => {
+  if(e.target.closest('#resetBtn')) return; // non interferire col pulsante ricomincia
+  gpsDebug.style.display = gpsDebug.style.display === 'none' ? 'block' : 'none';
+});
 let gpsUpdateCount = 0;
 let gpsErrorCount = 0;
 function fmtTime(){
