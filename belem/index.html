@@ -797,7 +797,7 @@ document.getElementById('gpsStatusRow').addEventListener('click', (e) => {
 });
 let gpsUpdateCount = 0;
 let gpsErrorCount = 0;
-function fmtTime(){
+function fmtClockTime(){
   const d = new Date();
   return d.toLocaleTimeString('it-IT', {hour12:false});
 }
@@ -809,7 +809,7 @@ function onPosition(pos){
   gpsDot.classList.add('live');
   gpsUpdateCount++;
   const { latitude, longitude, accuracy } = pos.coords;
-  renderGpsDebug(`ultimo fix: ${fmtTime()} · precisione: ${Math.round(accuracy)}m · lat/lon: ${latitude.toFixed(5)}, ${longitude.toFixed(5)}`);
+  renderGpsDebug(`ultimo fix: ${fmtClockTime()} · precisione: ${Math.round(accuracy)}m · lat/lon: ${latitude.toFixed(5)}, ${longitude.toFixed(5)}`);
   updateMeMarker(latitude, longitude);
 
   let nearest = null, nearestDist = Infinity;
@@ -835,7 +835,7 @@ function onPosition(pos){
 function onGpsError(err){
   gpsDot.classList.remove('live');
   gpsErrorCount++;
-  renderGpsDebug(`ultimo errore: ${fmtTime()} · codice ${err.code} · "${err.message}"`);
+  renderGpsDebug(`ultimo errore: ${fmtClockTime()} · codice ${err.code} · "${err.message}"`);
   gpsText.textContent = "GPS non disponibile (" + err.message + ") — usa la lista qui sotto";
 }
 
@@ -845,7 +845,7 @@ function startGps(){
     renderGpsDebug("navigator.geolocation non disponibile");
     return;
   }
-  renderGpsDebug(`watch avviato: ${fmtTime()} · in attesa del primo fix...`);
+  renderGpsDebug(`watch avviato: ${fmtClockTime()} · in attesa del primo fix...`);
   state.watchId = navigator.geolocation.watchPosition(onPosition, onGpsError, {
     enableHighAccuracy: true, maximumAge: 5000, timeout: 15000
   });
@@ -863,7 +863,7 @@ function restartGps(reason){
   if(state.watchId != null){
     navigator.geolocation.clearWatch(state.watchId);
   }
-  renderGpsDebug(`${reason} alle ${fmtTime()} · riavvio GPS...`);
+  renderGpsDebug(`${reason} alle ${fmtClockTime()} · riavvio GPS...`);
   startGps();
   // richiesta immediata di un fix singolo, senza aspettare il prossimo giro del watch
   navigator.geolocation.getCurrentPosition(onPosition, onGpsError, {
