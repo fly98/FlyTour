@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="FlyTour">
+<meta name="theme-color" content="#2a2622">
+<link rel="manifest" href="../manifest.json">
+<link rel="apple-touch-icon" href="../icons/icon-180.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../icons/icon-32.png">
+<title>Tram 28 — Audioguida</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet" href="../shared/app.css">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a href="../index.html" class="back-link">← Tutti i percorsi</a>
+    <div class="eyebrow">Viaggio narrato in tram · ~45 min · 6,3 km (lineare)</div>
+    <h1>Tram 28</h1>
+    <p class="subtitle">Il tram più famoso di Lisbona, da capolinea a capolinea: carrozze di legno degli anni Trenta, vicoli larghi due metri, un Parlamento nato monastero e un cimitero che è un museo a cielo aperto. Sali a bordo, e ti racconto io.</p>
+  </header>
+
+  <div class="trail" id="trail"></div>
+
+  <div class="map-wrap"><div id="map"></div></div>
+
+  <div class="toggle-row">
+    <div class="toggle-label"><b>Riproduzione automatica</b><br>Parte da sola quando arrivi a una tappa</div>
+    <label class="switch">
+      <input type="checkbox" id="autoplayToggle" checked>
+      <span class="slider"></span>
+    </label>
+  </div>
+
+  <div class="gps-status" id="gpsStatusRow" style="cursor:pointer;">
+    <div class="gps-dot" id="gpsDot"></div>
+    <span id="gpsText">Posizione non attiva — tocca "Attiva GPS" qui sotto</span>
+    <button class="reset-link" id="resetBtn">Ricomincia il giro</button>
+  </div>
+
+  <div id="gpsDebug" style="display:none; font-size:11px; opacity:0.6; padding:4px 20px 0; font-family:monospace; line-height:1.5;"></div>
+
+  <div class="stops" id="stops"></div>
+
+  <footer>Genera audio con Google Cloud TTS · fatto per camminarci sopra</footer>
+</div>
+
+<div class="arrival-overlay" id="arrivalOverlay">
+  <div class="arrival-card">
+    <div class="arrival-eyebrow">Sei arrivato</div>
+    <div class="arrival-title" id="arrivalTitle">—</div>
+    <div class="arrival-actions">
+      <button class="btn btn-ghost" id="laterBtn">Più tardi</button>
+      <button class="btn btn-primary" id="playNowBtn">▶ Riproduci</button>
+    </div>
+  </div>
+</div>
+
+<div class="text-modal-overlay" id="textModalOverlay">
+  <div class="text-modal">
+    <div class="text-modal-header">
+      <div class="text-modal-title" id="textModalTitle">—</div>
+      <button class="text-modal-close" id="textModalClose">✕</button>
+    </div>
+    <div class="text-modal-body" id="textModalBody"></div>
+    <div class="yt-links" id="ytLinks" style="display:none;">
+      <div class="yt-eyebrow">Approfondisci</div>
+      <div id="ytLinksList"></div>
+    </div>
+  </div>
+</div>
+
+<div class="arrival-overlay" id="endOverlay">
+  <div class="arrival-card">
+    <div class="arrival-eyebrow">Tappa completata</div>
+    <div class="arrival-title" id="endTitle">—</div>
+    <div class="yt-links" id="endYtLinks" style="display:none;">
+      <div class="yt-eyebrow">Approfondisci</div>
+      <div id="endYtLinksList"></div>
+    </div>
+    <div class="arrival-actions" style="margin-top:16px;">
+      <button class="btn btn-primary" id="endCloseBtn">Continua a camminare</button>
+    </div>
+  </div>
+</div>
+
+<div class="player" id="player">
+  <div class="photo-panel" id="photoPanel">
+    <img id="photoImg" src="" alt="">
+    <button class="player-close" id="playerCloseBtn">✕</button>
+    <div class="photo-caption" id="photoCaption"></div>
+  </div>
+  <div class="player-top">
+    <div class="player-name" id="playerName">—</div>
+  </div>
+  <div class="seek-row">
+    <span class="time-label" id="timeElapsed">0:00</span>
+    <input type="range" class="seek" id="seekBar" min="0" max="100" value="0" step="0.1">
+    <span class="time-label right" id="timeRemaining">-0:00</span>
+  </div>
+  <div class="transport">
+    <button class="skip-btn" id="backBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 19l-7-7 7-7M4 12h13a4 4 0 000-8"/></svg>
+      <span>15s</span>
+    </button>
+    <button class="play-btn" id="playPauseBtn" style="width:52px;height:52px;">
+      <svg viewBox="0 0 24 24" fill="#241a12" style="width:20px;height:20px;"><path id="playIcon" d="M8 5v14l11-7z"/></svg>
+    </button>
+    <button class="skip-btn" id="fwdBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 5l7 7-7 7M20 12H7a4 4 0 010-8"/></svg>
+      <span>15s</span>
+    </button>
+  </div>
+  <audio id="audioEl" style="display:none;"></audio>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+// ---- Dati tappe (pilota: 2 tappe) ----
+const STOPS = [
+  {
+    id: 1, ready: true,
+    name: "Praça Martim Moniz",
+    desc: "Il tram Remodelado e lo scartamento stretto",
+    lat: 38.7160206, lon: -9.1367671,
+    audio: "audio/tappa1.mp3",
+    photos: [
+      { time: 0, url: "img/t1_moniz1.jpg",
+        caption: "Praça Martim Moniz", credit: "Wikimedia Commons" },
+      { time: 17, url: "img/t1_tram1.jpg",
+        caption: "Il tram Remodelado, largo appena due metri", credit: "Wikimedia Commons" }
+    ],
+    fullText: `Sei salito sul Tram 28 a Praça Martim Moniz, il capolinea orientale — e da qui comincia un viaggio diverso dagli altri: stavolta non cammini, ti lasci portare, e il protagonista non è un monumento ma il tram stesso.<br><br>
+Guarda la carrozza in cui sei seduto: è un modello "Remodelado", legno e ottone, largo appena due metri, costruito su misura negli anni Trenta apposta per infilarsi nei vicoli medievali che stai per attraversare — nessun tram moderno ci passerebbe. Lo scartamento dei binari è ridotto apposta, "scartamento stretto", una misura quasi da trenino giocattolo adottata proprio per la larghezza delle strade di Alfama e Graça.<br><br>
+Piazza Martim Moniz stessa racconta la Lisbona meno da cartolina: da decenni è il cuore multiculturale della città, con comunità cinesi, indiane, bengalesi, africane che si intrecciano attorno alla piazza. Il nome viene da un cavaliere che, secondo la leggenda, morì bloccando con il proprio corpo un portone del Castello di São Jorge durante l'assedio del 1147 — la stessa storia che forse hai già sentito se hai fatto il giro di Alfama.<br><br>
+Quando il tram riparte, tieniti pronto: si va in salita verso Graça.`,
+    deepen: [
+      { type: "video", title: "Eléctrico 28: uma viagem por Lisboa — video", url: "https://www.youtube.com/watch?v=pvMZENbG6IA" },
+      { type: "link", title: "Tram 28 — guida in italiano", url: "https://www.nomadotravel.app/it/attractions/tram-28" }
+    ]
+  },
+  {
+    id: 2, ready: true,
+    name: "Largo da Graça",
+    desc: "La salita più ripida della linea",
+    lat: 38.7170798, lon: -9.1302338,
+    audio: "audio/tappa2.mp3",
+    photos: [
+      { time: 0, url: "img/t2_graca1.jpg",
+        caption: "Il tram in salita verso il Largo da Graça", credit: "Wikimedia Commons" }
+    ],
+    fullText: `Il tram è arrivato al Largo da Graça, in cima a una delle salite più ripide di tutta la linea. Ascolta il motore: qui il Remodelado fatica visibilmente, il suono cambia, quasi un respiro affannato — sono gli stessi motori elettrici originali, non sostituiti da decenni, a fare tutto il lavoro.<br><br>
+Se hai già fatto il giro a piedi di Alfama e Graça, conosci già questi luoghi — ma dal tram si vedono diversamente: più veloci, più ravvicinati, con la sensazione fisica della pendenza che a piedi non si percepisce allo stesso modo. Il conducente suona il campanello — quel "ding" ottone che è diventato il suono più riconoscibile di Lisbona — soprattutto qui, dove i vicoli si restringono e i pedoni distratti sono un classico.<br><br>
+Quando sei pronto, tieni d'occhio i panni stesi tra le finestre: la prossima tappa è il punto più fotografato dell'intera linea.`,
+    deepen: []
+  },
+  {
+    id: 3, ready: true,
+    name: "Largo Portas do Sol",
+    desc: "Il tratto più stretto e più fotografato",
+    lat: 38.7123345, lon: -9.1305044,
+    audio: "audio/tappa3.mp3",
+    photos: [
+      { time: 0, url: "img/t3_portas1.jpg",
+        caption: "Il tram tra le case strette di Alfama", credit: "Wikimedia Commons" }
+    ],
+    fullText: `Sei nel tratto di Largo Portas do Sol, il punto più stretto e più fotografato dell'intera linea 28. Guarda fuori dal finestrino: il tram passa così vicino alle case che a volte sembra sfiorare i panni stesi ad asciugare da una finestra all'altra — non è una messa in scena per turisti, è semplicemente l'unico modo in cui un veicolo può attraversare questi vicoli.<br><br>
+Un consiglio pratico se sei seduto: il lato destro, salendo verso Alfama, regala di solito la vista migliore sui tetti e sul fiume nei tratti panoramici; il sinistro è meglio per i dettagli architettonici ravvicinati delle case.<br><br>
+Questo tratto è anche tristemente famoso per un altro motivo: la linea 28 è il posto numero uno a Lisbona per i borseggiatori, proprio per l'affollamento e la lentezza obbligata del tram nei vicoli stretti. Tieni borse e tasche sotto controllo, soprattutto quando sale molta gente.<br><br>
+Quando sei pronto, il tram scende verso la Sé.`,
+    deepen: [
+      { type: "link", title: "Tram 28: itinerario e consigli — Lisbona Magazine", url: "https://lisbonamagazine.com/tram-28-lisbona-guida/" }
+    ]
+  },
+  {
+    id: 4, ready: true,
+    name: "Sé de Lisboa",
+    desc: "Dal vicolo medievale alla griglia pombalina",
+    lat: 38.7098339, lon: -9.1329535,
+    audio: "audio/tappa4.mp3",
+    photos: [
+      { time: 0, url: "img/t4_se1.jpg",
+        caption: "Il tram davanti alla Sé di Lisbona", credit: "Wikimedia Commons" }
+    ],
+    fullText: `Il tram è arrivato davanti alla Sé di Lisboa, la cattedrale-fortezza che probabilmente hai già visitato a piedi se hai fatto il giro di Alfama. Da qui in poi il 28 lascia il quartiere medievale e scende verso la Baixa pombalina, il centro ricostruito dopo il terremoto del 1755.<br><br>
+È il punto in cui la geografia di Lisbona cambia bruscamente: i vicoli stretti e in salita lasciano spazio alle strade larghe e dritte del piano urbanistico di Pombal, quello che hai visto se hai fatto quel giro. Il tram stesso lo percepisce: il binario si fa più dolce, meno curve strette, quasi un sollievo meccanico dopo la salita di Graça.<br><br>
+Da qui il 28 attraversa rapidamente la Baixa e risale verso il Chiado — un cambio di scenario totale nel giro di pochi minuti, la stessa velocità con cui è cambiata la storia di questa città in una sola mattina di novembre del Settecento.<br><br>
+Quando sei pronto, scendi a Praça Luís de Camões.`,
+    deepen: [
+      { type: "link", title: "Tram 28: fermate e itinerario — Lisbona Magazine", url: "https://lisbonamagazine.com/tram-28-di-lisbona-tutte-le-fermate/" }
+    ]
+  },
+  {
+    id: 5, ready: true,
+    name: "Praça Luís de Camões",
+    desc: "Il confine tra Chiado e Bairro Alto",
+    lat: 38.7105849, lon: -9.1434764,
+    audio: "audio/tappa5.mp3",
+    photos: [
+      { time: 0, url: "img/t5_camoes1.jpg",
+        caption: "Praça Luís de Camões", credit: "Wikimedia Commons" }
+    ],
+    fullText: `Sei sceso a Praça Luís de Camões, la piazza che segna il confine tra il Chiado elegante e il Bairro Alto, quartiere della vita notturna lisboeta. Guarda la statua al centro: raffigura Luís de Camões, il poeta nazionale portoghese, cieco da un occhio per una ferita di guerra in Marocco, autore dei Lusiadi — il poema epico che racconta proprio il viaggio di Vasco da Gama verso l'India.<br><br>
+Questa piazza è uno snodo simbolico prima ancora che geografico: da un lato il Chiado, con i suoi caffè storici e le librerie che ospitarono generazioni di intellettuali portoghesi; dall'altro il Bairro Alto, che di giorno sembra un quieto quartiere residenziale e di notte si trasforma in uno dei distretti di locali e musica dal vivo più densi d'Europa.<br><br>
+Se ti va di una pausa in stile letterario, il Café A Brasileira — storico dal 1905, a due passi da qui verso il Chiado — è dove Fernando Pessoa veniva a scrivere: la sua statua in bronzo siede ancora oggi a un tavolino fuori, pronta per una foto mentre sorseggi una bica, il caffè espresso alla lisboeta.<br><br>
+Qui convergono anche tre linee storiche di tram — la 28 che stai percorrendo, insieme alla 12 e alla 24 — rendendo questa piazza uno dei nodi di trasporto più antichi della città vecchia.<br><br>
+Quando sei pronto, il tram prosegue verso il Palazzo di São Bento.`,
+    deepen: [
+      { type: "video", title: "Explorando a Praça Luís de Camões — video", url: "https://www.youtube.com/watch?v=OgMrYpJKca8" }
+    ]
+  },
+  {
+    id: 6, ready: true,
+    name: "Palácio de São Bento",
+    desc: "Da monastero a Parlamento",
+    lat: 38.7125529, lon: -9.1538565,
+    audio: "audio/tappa6.mp3",
+    photos: [
+      { time: 0, url: "img/t6_bento1.jpg",
+        caption: "Il Palácio de São Bento", credit: "Wikimedia Commons" }
+    ],
+    fullText: `Sei arrivato davanti al Palácio de São Bento, sede del Parlamento portoghese dal 1834. Guarda le guardie in uniforme che si muovono con passo cadenzato davanti all'ingresso — una delle poche cerimonie militari ancora visibili quotidianamente nel centro di Lisbona.<br><br>
+Questo edificio nacque nel 1598 come monastero benedettino. Quando nel 1834 il governo liberale soppresse gli ordini religiosi in tutto il Portogallo, i monaci furono espulsi e l'edificio requisito per ospitare l'Assemblea. Un incendio nel 1895 distrusse gran parte degli interni, portando alla ricostruzione neoclassica che vedi oggi — ma alcune parti più interne risalgono ancora al Seicento monastico originale.<br><br>
+Curiosità: a differenza di quasi ogni altro monumento di Lisbona, questo palazzo è visitabile solo con visite guidate su prenotazione per gruppi di almeno dieci persone — il singolo visitatore curioso deve accontentarsi, come te ora, di ammirarlo dall'esterno mentre il tram rallenta.<br><br>
+Quando sei pronto, il tram risale verso la Basílica da Estrela.`,
+    deepen: [
+      { type: "video", title: "De Mosteiro a Parlamento — video", url: "https://www.youtube.com/watch?v=AN_1r1RNbqE" }
+    ]
+  },
+  {
+    id: 7, ready: true,
+    name: "Basílica da Estrela",
+    desc: "Il voto di una regina, il lutto di una madre",
+    lat: 38.7131218, lon: -9.1608626,
+    audio: "audio/tappa7.mp3",
+    photos: [
+      { time: 0, url: "img/t7_estrela1.jpg",
+        caption: "La Basílica da Estrela", credit: "Wikimedia Commons" },
+      { time: 41, url: "img/t7_estrela2.jpg",
+        caption: "La cupola vista da vicino", credit: "Wikimedia Commons" }
+    ],
+    fullText: `Sei arrivato alla Basílica da Estrela, con la sua cupola bianca visibile da gran parte della Lisbona occidentale. Guarda la facciata: un misto insolito di barocco e neoclassico, costruita tra il 1779 e il 1789 per volere della regina Maria I, come voto per la nascita di un figlio maschio erede al trono.<br><br>
+L'ironia della storia: il principe per cui fu costruita, José, morì di vaiolo prima ancora che la basilica fosse completata. La regina lo pianse a lungo proprio in questa chiesa, che porta ancora tracce di quel lutto nelle decorazioni interne.<br><br>
+Se hai tempo per scendere dal tram, l'ingresso alla basilica è gratuito, e per pochi euro si può salire fin sulla cupola: la vista da lassù è considerata da molti lisboeti superiore a quella di miradouros più famosi e affollati, semplicemente perché quasi nessun turista sa che esiste questa opzione. Di fronte, il giardim da Estrela offre un parco ombreggiato perfetto per una pausa, con voliere e un piccolo laghetto.<br><br>
+Quando sei pronto, l'ultima tappa del nostro viaggio è il capolinea: il Cemitério dos Prazeres.`,
+    deepen: [
+      { type: "video", title: "Basílica da Estrela in 4K — video", url: "https://www.youtube.com/watch?v=Z9Y-MF3CEfA" }
+    ]
+  },
+  {
+    id: 8, ready: true,
+    name: "Cemitério dos Prazeres",
+    desc: "Il capolinea più silenzioso di Lisbona",
+    lat: 38.7138134, lon: -9.1705863,
+    audio: "audio/tappa8.mp3",
+    photos: [
+      { time: 0, url: "img/t8_prazeres1.jpg",
+        caption: "Uno dei mausolei del Cemitério dos Prazeres", credit: "Wikimedia Commons" }
+    ],
+    fullText: `Sei arrivato al Cemitério dos Prazeres, il capolinea occidentale della linea e la nostra ultima tappa — un finale insolito per un giro turistico, ma tra i più suggestivi di Lisbona. Il nome, "Prazeres", significa letteralmente "piaceri": un'ironia involontaria per il più importante cimitero monumentale della città.<br><br>
+Fu aperto nel 1833, dopo un'epidemia di colera che rese improvvisamente urgente smettere di seppellire i morti nei cortili delle chiese cittadine, come si era fatto per secoli. Le famiglie più ricche di Lisbona iniziarono a costruire qui mausolei privati in stile neoclassico, alcuni grandi quanto piccole cappelle — il più imponente, quello della famiglia Palmela, è considerato il più grande mausoleo privato di tutta la penisola iberica.<br><br>
+Tra i vialetti ombreggiati da cipressi riposano personaggi come lo scrittore Eça de Queirós, che ambientò proprio in questi luoghi alcune scene dei suoi romanzi, e la voce simbolo del fado, Amália Rodrigues, che avevi già incontrato nella tappa del Museo del Fado ad Alfama, se hai fatto quel giro. Passeggiare tra questi mausolei nel tardo pomeriggio, con la luce che filtra tra i cipressi, è probabilmente l'esperienza più silenziosa e riflessiva di tutta Lisbona.<br><br>
+Da qui il tram 28 riparte in direzione opposta, verso Martim Moniz da cui sei partito — un intero secolo di storia di Lisbona attraversato in poco più di quaranta minuti. Grazie per aver viaggiato con noi.`,
+    deepen: [
+      { type: "video", title: "Mistérios do Cemitério dos Prazeres — video", url: "https://www.youtube.com/watch?v=9hq0PsAOXu8" }
+    ]
+  }
+];
+const ROUTE_COORDS = [[38.716012, -9.136737], [38.716564, -9.136468], [38.716577, -9.136462], [38.716561, -9.136411], [38.716577, -9.136403], [38.716744, -9.136318], [38.716781, -9.136299], [38.716851, -9.136239], [38.716914, -9.136144], [38.716943, -9.136055], [38.71695, -9.135936], [38.717013, -9.135926], [38.71696, -9.135752], [38.716931, -9.135667], [38.716886, -9.135416], [38.716851, -9.135308], [38.716832, -9.135246], [38.716691, -9.134982], [38.716722, -9.134848], [38.716895, -9.13456], [38.716909, -9.134461], [38.716966, -9.134152], [38.717031, -9.133982], [38.717122, -9.133656], [38.717106, -9.133408], [38.717532, -9.133224], [38.717644, -9.133404], [38.717804, -9.133095], [38.718137, -9.132468], [38.71811, -9.132445], [38.718149, -9.132055], [38.718128, -9.131963], [38.718093, -9.131916], [38.717935, -9.131819], [38.717863, -9.131749], [38.717815, -9.13165], [38.717796, -9.131536], [38.71781, -9.131422], [38.717885, -9.131278], [38.717963, -9.131219], [38.718107, -9.131168], [38.718139, -9.131127], [38.718155, -9.131018], [38.718146, -9.130913], [38.718088, -9.130562], [38.718059, -9.130376], [38.718016, -9.129974], [38.717591, -9.130032], [38.717546, -9.130078], [38.717493, -9.130045], [38.717462, -9.130082], [38.717285, -9.130148], [38.717076, -9.130212], [38.71669, -9.130329], [38.716512, -9.130373], [38.716257, -9.130296], [38.716196, -9.1303], [38.716158, -9.13035], [38.716055, -9.130616], [38.715891, -9.130824], [38.715839, -9.130898], [38.715741, -9.131216], [38.715697, -9.131253], [38.71503, -9.131061], [38.714555, -9.130866], [38.714466, -9.130797], [38.714327, -9.130699], [38.714272, -9.130706], [38.714182, -9.130764], [38.714037, -9.130671], [38.713933, -9.13065], [38.713747, -9.130636], [38.713386, -9.130607], [38.713372, -9.130606], [38.713146, -9.130601], [38.712951, -9.130592], [38.712862, -9.130578], [38.712751, -9.130601], [38.712681, -9.130633], [38.712614, -9.130662], [38.712559, -9.130675], [38.712462, -9.130644], [38.712333, -9.130506], [38.712216, -9.130381], [38.712198, -9.130409], [38.712161, -9.130363], [38.712109, -9.130348], [38.711997, -9.1304], [38.711887, -9.130516], [38.71187, -9.130477], [38.711859, -9.130455], [38.711779, -9.130484], [38.711755, -9.130486], [38.711732, -9.130464], [38.71163, -9.130501], [38.711628, -9.130526], [38.711606, -9.130534], [38.711515, -9.130567], [38.711355, -9.130583], [38.711339, -9.130585], [38.711141, -9.130563], [38.711006, -9.130607], [38.710873, -9.13071], [38.710741, -9.130829], [38.710686, -9.130916], [38.710705, -9.130936], [38.710471, -9.131323], [38.710292, -9.131844], [38.710263, -9.131829], [38.710255, -9.131852], [38.710246, -9.13188], [38.710196, -9.132031], [38.71018, -9.132056], [38.710164, -9.132047], [38.710134, -9.132139], [38.710116, -9.132133], [38.710097, -9.13214], [38.71006, -9.132155], [38.710084, -9.132353], [38.710047, -9.132791], [38.710043, -9.132836], [38.710014, -9.133061], [38.709997, -9.133207], [38.709953, -9.133283], [38.709806, -9.133376], [38.709815, -9.133261], [38.709815, -9.133255], [38.709822, -9.133166], [38.709815, -9.133255], [38.709815, -9.133261], [38.709806, -9.133376], [38.709681, -9.133319], [38.709653, -9.133263], [38.709647, -9.133266], [38.709624, -9.133276], [38.709578, -9.133295], [38.709825, -9.133928], [38.709844, -9.133933], [38.709879, -9.133911], [38.709908, -9.133984], [38.709933, -9.134049], [38.710111, -9.13448], [38.710258, -9.134844], [38.710254, -9.134893], [38.710233, -9.134966], [38.71016, -9.135081], [38.710109, -9.135158], [38.709988, -9.135622], [38.710037, -9.135642], [38.710021, -9.135711], [38.710583, -9.135938], [38.710626, -9.136123], [38.710578, -9.136324], [38.71057, -9.136358], [38.710495, -9.136666], [38.710492, -9.136679], [38.71048, -9.13673], [38.710475, -9.136751], [38.710465, -9.136789], [38.71046, -9.136811], [38.710391, -9.137096], [38.710382, -9.137134], [38.710372, -9.137173], [38.710303, -9.137461], [38.710285, -9.137532], [38.710268, -9.137603], [38.710308, -9.137619], [38.710238, -9.137908], [38.710231, -9.137948], [38.710843, -9.138187], [38.710764, -9.138512], [38.710804, -9.138528], [38.710799, -9.138547], [38.710787, -9.138599], [38.710774, -9.138652], [38.71077, -9.138668], [38.710689, -9.139004], [38.710678, -9.139035], [38.710662, -9.139087], [38.710642, -9.139187], [38.710649, -9.139189], [38.710667, -9.139195], [38.710643, -9.139313], [38.71063, -9.139379], [38.710606, -9.139497], [38.710588, -9.139491], [38.710579, -9.139488], [38.710504, -9.139888], [38.710489, -9.140398], [38.710617, -9.140719], [38.710624, -9.140714], [38.710734, -9.140973], [38.710751, -9.141047], [38.710735, -9.141113], [38.710696, -9.141365], [38.7107, -9.141398], [38.710704, -9.141431], [38.71067, -9.141661], [38.710657, -9.14169], [38.71066, -9.141724], [38.710628, -9.14194], [38.710614, -9.141972], [38.710603, -9.142047], [38.710568, -9.142064], [38.710492, -9.142104], [38.710464, -9.14212], [38.710505, -9.142278], [38.710475, -9.142289], [38.710441, -9.142295], [38.710426, -9.142353], [38.710431, -9.142371], [38.710442, -9.142417], [38.710493, -9.142851], [38.710511, -9.142917], [38.710542, -9.14291], [38.71051, -9.143012], [38.710459, -9.143111], [38.710386, -9.143514], [38.710289, -9.143481], [38.710164, -9.14349], [38.710125, -9.143513], [38.710166, -9.143529], [38.710292, -9.143519], [38.710577, -9.143562], [38.710292, -9.143519], [38.710166, -9.143529], [38.710125, -9.143513], [38.710164, -9.14349], [38.710289, -9.143481], [38.710386, -9.143514], [38.710352, -9.14371], [38.71033, -9.143841], [38.710232, -9.144426], [38.710222, -9.144485], [38.710102, -9.145203], [38.710089, -9.145277], [38.710254, -9.146008], [38.710358, -9.146513], [38.710398, -9.146671], [38.710475, -9.146594], [38.710657, -9.147237], [38.71029, -9.147499], [38.71043, -9.148367], [38.710519, -9.149062], [38.710454, -9.149391], [38.710353, -9.149848], [38.710636, -9.150143], [38.710946, -9.150335], [38.710953, -9.150263], [38.711857, -9.15039], [38.711857, -9.151034], [38.711919, -9.151419], [38.711974, -9.151615], [38.712011, -9.151905], [38.712106, -9.152777], [38.712188, -9.152774], [38.712184, -9.152809], [38.712182, -9.152891], [38.712196, -9.15293], [38.712209, -9.152963], [38.712221, -9.152996], [38.712228, -9.153014], [38.712236, -9.153036], [38.712242, -9.153053], [38.712247, -9.153067], [38.712342, -9.15332], [38.71238, -9.153422], [38.712386, -9.153439], [38.712415, -9.153518], [38.712386, -9.153439], [38.71238, -9.153422], [38.711843, -9.153773], [38.711824, -9.153785], [38.711867, -9.153893], [38.711834, -9.153914], [38.711788, -9.153922], [38.711884, -9.154139], [38.711943, -9.154288], [38.712098, -9.154693], [38.712345, -9.155397], [38.712542, -9.156045], [38.712592, -9.156274], [38.712668, -9.156837], [38.712737, -9.15756], [38.71279, -9.15792], [38.712856, -9.15811], [38.712963, -9.158346], [38.712997, -9.158424], [38.713036, -9.158396], [38.713361, -9.159117], [38.71368, -9.159751], [38.713766, -9.159986], [38.713815, -9.16024], [38.713779, -9.160253], [38.713723, -9.160276], [38.713661, -9.160301], [38.713629, -9.160314], [38.713575, -9.160238], [38.713559, -9.160283], [38.713525, -9.160266], [38.713471, -9.160277], [38.713467, -9.160255], [38.713104, -9.160359], [38.713467, -9.160255], [38.713471, -9.160277], [38.713445, -9.160318], [38.713451, -9.160347], [38.713471, -9.160444], [38.713491, -9.160555], [38.713498, -9.160585], [38.713534, -9.16061], [38.713539, -9.160635], [38.713545, -9.160663], [38.713508, -9.160688], [38.713579, -9.161052], [38.713561, -9.161066], [38.713622, -9.161415], [38.713577, -9.161523], [38.713484, -9.161631], [38.713522, -9.161687], [38.713574, -9.161768], [38.713591, -9.161795], [38.7136, -9.161809], [38.713595, -9.161835], [38.713579, -9.161856], [38.713669, -9.161958], [38.713666, -9.162008], [38.713631, -9.162144], [38.713506, -9.162574], [38.713348, -9.163297], [38.713249, -9.163762], [38.712818, -9.164864], [38.712762, -9.165023], [38.712744, -9.165195], [38.712761, -9.165377], [38.712855, -9.165753], [38.712862, -9.165887], [38.712834, -9.166083], [38.712772, -9.166293], [38.71277, -9.166409], [38.712671, -9.166839], [38.71265, -9.167019], [38.712664, -9.167563], [38.712652, -9.167751], [38.712556, -9.168138], [38.712548, -9.168252], [38.712568, -9.168332], [38.71261, -9.168407], [38.712692, -9.168481], [38.713273, -9.168783], [38.713254, -9.168876], [38.713206, -9.169156], [38.713207, -9.169237], [38.713233, -9.169297], [38.713714, -9.169651], [38.713767, -9.169674], [38.714057, -9.169801], [38.714009, -9.169955], [38.713964, -9.170118], [38.713834, -9.170595]];
+</script>
+<script src="../shared/app.js"></script>
+</body>
+</html>
