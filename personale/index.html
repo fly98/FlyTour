@@ -135,8 +135,8 @@ function filterTours(query){
   if(!query) return base.slice();
   const q = query.toLowerCase();
   return base.filter(t =>
-    t.title.toLowerCase().includes(q) ||
-    t.desc.toLowerCase().includes(q) ||
+    t.title.it.toLowerCase().includes(q) ||
+    t.desc.it.toLowerCase().includes(q) ||
     t.city.toLowerCase().includes(q) ||
     t.country.toLowerCase().includes(q)
   );
@@ -151,11 +151,11 @@ function cardHtml(t, isNearest){
           <span class="tour-badge">${t.city}</span>
           <span class="tour-badge tour-badge-ochre">${t.stops} tappe</span>
           ${isNearest ? '<span class="tour-badge tour-badge-near">📍 Il più vicino a te</span>' : ''}
-          <div class="tour-title-onimg">${t.title}</div>
+          <div class="tour-title-onimg">${t.title.it}</div>
         </div>
       </div>
       <div class="tour-body">
-        <p class="tour-desc">${t.desc}</p>
+        <p class="tour-desc">${t.desc.it}</p>
         <div class="tour-meta">
           <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>${t.duration}</span>
           <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 12a9 9 0 0118 0"/></svg>${t.distance}</span>
