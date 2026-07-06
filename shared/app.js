@@ -77,7 +77,7 @@ const state = {
 };
 let currentLang = localStorage.getItem(STORAGE_KEY + '_lang') || 'it';
 function saveLang(){ localStorage.setItem(STORAGE_KEY + '_lang', currentLang); }
-function L(stop, field){
+function T(stop, field){
   return (stop.i18n && stop.i18n[currentLang]) ? stop.i18n[currentLang][field] : stop[field];
 }
 
@@ -122,8 +122,8 @@ function render(){
     el.innerHTML = `
       <div class="stop-num">${String(s.id).padStart(2,'0')}</div>
       <div class="stop-body">
-        <p class="stop-name">${L(s,'name')}</p>
-        <p class="stop-desc">${L(s,'desc')}</p>
+        <p class="stop-name">${T(s,'name')}</p>
+        <p class="stop-desc">${T(s,'desc')}</p>
       </div>
       <div class="stop-actions">
         <a class="nav-link" href="${navUrl}" target="_blank" title="Naviga fin qui" data-navlink>
@@ -165,8 +165,8 @@ function playStop(id, manual){
   state.currentStopId = id;
   zoomToStop(stop);
   currentPhotoUrl = null;
-  document.getElementById('playerName').textContent = L(stop,'name');
-  audioEl.src = L(stop,'audio');
+  document.getElementById('playerName').textContent = T(stop,'name');
+  audioEl.src = T(stop,'audio');
   audioEl.play().catch(()=>{ /* iOS può richiedere un tap: il bottone play resta disponibile */ });
   playerEl.classList.add('show');
   state.played.add(id);
@@ -222,7 +222,7 @@ let currentPhotoUrl = null;
 
 function updatePhoto(t){
   const stop = STOPS.find(s => s.id === state.currentStopId);
-  const photos = stop && L(stop,'photos');
+  const photos = stop && T(stop,'photos');
   if(!stop || !photos || !photos.length) return;
   let active = photos[0];
   for(const p of photos){ if(t >= p.time) active = p; }
@@ -244,7 +244,7 @@ let pendingStopId = null;
 function showArrival(stopId){
   const stop = STOPS.find(s => s.id === stopId);
   pendingStopId = stopId;
-  document.getElementById('arrivalTitle').textContent = L(stop,'name');
+  document.getElementById('arrivalTitle').textContent = T(stop,'name');
   overlay.classList.add('show');
 }
 document.getElementById('playNowBtn').onclick = () => {
@@ -315,11 +315,11 @@ const textModalOverlay = document.getElementById('textModalOverlay');
 function openTextModal(stopId){
   const stop = STOPS.find(s => s.id === stopId);
   if(!stop) return;
-  document.getElementById('textModalTitle').textContent = L(stop,'name');
-  document.getElementById('textModalBody').innerHTML = L(stop,'fullText') || '';
+  document.getElementById('textModalTitle').textContent = T(stop,'name');
+  document.getElementById('textModalBody').innerHTML = T(stop,'fullText') || '';
   const ytWrap = document.getElementById('ytLinks');
   const ytList = document.getElementById('ytLinksList');
-  const deepen = L(stop,'deepen');
+  const deepen = T(stop,'deepen');
   if(deepen && deepen.length){
     ytList.innerHTML = renderDeepenList(deepen);
     ytWrap.style.display = 'block';
@@ -343,10 +343,10 @@ const endOverlay = document.getElementById('endOverlay');
 function showEndOverlay(stopId){
   const stop = STOPS.find(s => s.id === stopId);
   if(!stop) return;
-  document.getElementById('endTitle').textContent = L(stop,'name') + ' — completata';
+  document.getElementById('endTitle').textContent = T(stop,'name') + ' — completata';
   const ytWrap = document.getElementById('endYtLinks');
   const ytList = document.getElementById('endYtLinksList');
-  const deepen = L(stop,'deepen');
+  const deepen = T(stop,'deepen');
   if(deepen && deepen.length){
     ytList.innerHTML = renderDeepenList(deepen);
     ytWrap.style.display = 'block';
@@ -400,9 +400,9 @@ if(langToggleBtn){
         if(state.currentStopId){
           const stop = STOPS.find(s => s.id === state.currentStopId);
           if(stop){
-            document.getElementById('playerName').textContent = L(stop,'name');
+            document.getElementById('playerName').textContent = T(stop,'name');
             const wasPlaying = !audioEl.paused;
-            audioEl.src = L(stop,'audio');
+            audioEl.src = T(stop,'audio');
             if(wasPlaying) audioEl.play().catch(()=>{});
           }
         }
