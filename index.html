@@ -296,7 +296,7 @@ function cardHtml(t, isNearest){
 
 function render(){
   const query = document.getElementById('searchInput').value.trim();
-  const filtered = filterTours(query);
+  const filtered = cityLock ? TOURS.filter(t => t.city.toLowerCase() === cityLock.toLowerCase()) : filterTours(query);
   const el = document.getElementById('tours');
   const emptyHint = document.getElementById('emptyHint');
 
@@ -352,7 +352,15 @@ function requestLocation(){
   );
 }
 
-document.getElementById('searchInput').addEventListener('input', render);
+let cityLock = null;
+const urlParams = new URLSearchParams(location.search);
+const cityParam = urlParams.get('city');
+if(cityParam){
+  cityLock = cityParam;
+  document.getElementById('searchInput').value = cityParam;
+}
+
+document.getElementById('searchInput').addEventListener('input', () => { cityLock = null; render(); });
 render();
 requestLocation();
 
