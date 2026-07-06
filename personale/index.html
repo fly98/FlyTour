@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="FlyTour">
+<meta name="theme-color" content="#2a2622">
+<link rel="manifest" href="../manifest.json">
+<link rel="apple-touch-icon" href="../icons/icon-180.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../icons/icon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="../icons/icon-16.png">
+<title>FlyTour — Passeggiate narrate</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap');
+
+  :root{
+    --stone:#2a2622;
+    --stone-2:#332e28;
+    --patina:#7c9a82;
+    --patina-dim:#5c7566;
+    --ochre:#c97d4b;
+    --limestone:#ede6d8;
+    --limestone-dim:#b3a996;
+    --line: rgba(237,230,216,0.12);
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color: transparent;}
+  html,body{margin:0;padding:0;background:var(--stone);color:var(--limestone);
+    font-family:'Inter',-apple-system,sans-serif; min-height:100vh;
+    -webkit-font-smoothing:antialiased;}
+
+  .wrap{max-width:520px;margin:0 auto;padding:0 0 60px 0;}
+
+  header{padding:36px 20px 8px;}
+  @media (display-mode: standalone){
+    header{padding-top:calc(10px + env(safe-area-inset-top));}
+  }
+  .brand{display:flex; align-items:center; gap:12px; margin-bottom:22px;}
+  .logo-img{height:56px; width:auto; display:block;}
+
+  .eyebrow{font-size:12px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--patina); font-weight:600; margin-bottom:8px;}
+  h1{font-family:'Fraunces',serif; font-weight:600; font-size:28px; line-height:1.1;
+    margin:0 0 6px 0; letter-spacing:-0.01em;}
+  .subtitle{color:var(--limestone-dim); font-size:14px; margin:0 0 8px 0; line-height:1.5;}
+
+  .search-row{margin:20px 20px 6px;}
+  .search-box{display:flex; align-items:center; gap:10px; background:var(--stone-2);
+    border:1px solid var(--line); border-radius:14px; padding:12px 14px;}
+  .search-box svg{width:16px;height:16px; color:var(--limestone-dim); flex-shrink:0;}
+  .search-box input{background:none; border:none; outline:none; color:var(--limestone);
+    font-family:'Inter',sans-serif; font-size:13.5px; width:100%; padding:0;}
+  .search-box input::placeholder{color:var(--limestone-dim);}
+  .search-note{font-size:10.5px; color:var(--limestone-dim); margin:6px 2px 0; text-align:right;}
+
+  .tours{padding:14px 20px 0; display:flex; flex-direction:column; gap:14px;}
+  .group-header{font-family:'Fraunces',serif; font-weight:600; font-size:15px;
+    color:var(--limestone-dim); letter-spacing:.02em; margin:10px 2px 0;
+    display:flex; align-items:center; gap:8px;}
+  .group-header:first-child{margin-top:0;}
+  .group-header::after{content:""; flex:1; height:1px; background:var(--line);}
+
+  .tour-card{display:block; text-decoration:none; color:inherit; background:var(--stone-2);
+    border:1px solid var(--line); border-radius:18px; overflow:hidden;
+    transition:transform .15s, border-color .2s;}
+  .tour-card:active{transform:scale(0.98);}
+  .tour-cover{position:relative; aspect-ratio: 16/9; background:var(--stone);
+    display:flex; align-items:flex-end;}
+  .tour-cover img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover;}
+  .tour-cover-overlay{position:relative; z-index:1; width:100%; padding:14px 16px 12px;
+    background:linear-gradient(transparent, rgba(0,0,0,0.75));}
+  .tour-badge{display:inline-block; font-size:10.5px; text-transform:uppercase; letter-spacing:.08em;
+    font-weight:700; color:#1a231d; background:var(--patina); padding:3px 9px; border-radius:7px;
+    margin-bottom:6px; margin-right:6px;}
+  .tour-badge-ochre{background:var(--ochre); color:#241a12;}
+  .tour-badge-near{background:var(--limestone); color:#1a231d;}
+  .tour-title-onimg{font-family:'Fraunces',serif; font-weight:600; font-size:19px; color:var(--limestone);}
+  .tour-body{padding:14px 16px 16px;}
+  .tour-desc{font-size:13px; color:var(--limestone-dim); line-height:1.5; margin:0 0 10px;}
+  .tour-meta{display:flex; align-items:center; gap:14px; font-size:11.5px; color:var(--limestone-dim);}
+  .tour-meta span{display:flex; align-items:center; gap:5px;}
+  .tour-meta svg{width:13px;height:13px;}
+
+  .empty-hint{margin:26px 20px 0; padding:16px; border:1px dashed var(--line); border-radius:14px;
+    font-size:12.5px; color:var(--limestone-dim); text-align:center; line-height:1.5;}
+
+  footer{text-align:center; padding:34px 20px 10px; font-size:11px; color:var(--limestone-dim);
+    opacity:0.55;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <img src="../logo-lockup.png" alt="FlyTour" class="logo-img">
+    </div>
+    <div class="eyebrow">Audioguide GPS narrate</div>
+    <h1>I tuoi percorsi</h1>
+    <p class="subtitle">Passeggiate a piedi con racconto sincronizzato alla posizione. Scegli un giro per iniziare.</p>
+  </header>
+
+  <div class="search-row">
+    <div class="search-box">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      <input type="text" id="searchInput" placeholder="Cerca un percorso, una città…" autocomplete="off">
+    </div>
+    <div class="search-note" id="searchNote"></div>
+  </div>
+
+  <div class="tours" id="tours"></div>
+
+  <div class="empty-hint" id="emptyHint" style="display:none;">Nessun percorso trovato. Prova con un altro termine.</div>
+
+  <footer>FlyTour · fatto per camminarci sopra</footer>
+</div>
+
+<script>
+// Pagina personale: nessun filtro per audience, mostra sempre tutti i giri
+const TOURS = [
+  {
+    slug: "trastevere",
+    country: "Italia",
+    city: "Roma",
+    audience: "guest",
+    title: "Trastevere Nascosta",
+    desc: "Il lato del rione che i turisti non vedono. 8 tappe tra vicoli, chiostri e piazzette dimenticate.",
+    duration: "~2h30",
+    distance: "4-5 km",
+    stops: 8,
+    lat: 41.8917821, lon: 12.4702261,
+    cover: "https://commons.wikimedia.org/wiki/Special:FilePath/Trastevere_-_piazza_Trilussa_-_monumento_a_Trilussa_1531.JPG?width=700",
+    url: "../trastevere/index.html"
+  },
+  {
+    slug: "ghetto-testaccio",
+    country: "Italia",
+    city: "Roma",
+    audience: "guest",
+    title: "Dal Ghetto al Mattatoio",
+    desc: "La storia della cucina povera romana, dai carciofi alla giudia alla coda alla vaccinara. 8 tappe dal Ghetto ebraico a Testaccio.",
+    duration: "~2h30",
+    distance: "4-5 km",
+    stops: 8,
+    lat: 41.8925126, lon: 12.4785372,
+    cover: "https://commons.wikimedia.org/wiki/Special:FilePath/S_Angelo_-_via_del_Portico_d%27Ottavia_1000373.JPG?width=700",
+    url: "../ghetto-testaccio/index.html"
+  },
+  {
+    slug: "perugia",
+    country: "Italia",
+    city: "Perugia",
+    audience: "personal",
+    title: "Perugia Etrusca e Medievale",
+    desc: "Un anello nel cuore della città: un pozzo di duemilatrecento anni, un arco intatto dai romani, e una città intera sepolta sotto una fortezza rinascimentale. 7 tappe, breve e comodo.",
+    duration: "~1h-1h30",
+    distance: "1,7 km ad anello",
+    stops: 7,
+    lat: 43.1120271, lon: 12.3889699,
+    cover: "https://commons.wikimedia.org/wiki/Special:FilePath/Fontana%20Maggiore%2C%20Perugia.jpg?width=700",
+    url: "../perugia/index.html"
+  },
+  {
+    slug: "evora",
+    country: "Portogallo",
+    city: "Évora",
+    audience: "personal",
+    title: "Évora, la Città Museo",
+    desc: "Duemila anni di storia iberica in poche centinaia di metri, tra templi romani e cappelle di ossa. 6 tappe nel cuore dell'Alentejo.",
+    duration: "~2h",
+    distance: "2-3 km",
+    stops: 6,
+    lat: 38.5758082, lon: -7.9126708,
+    cover: "https://commons.wikimedia.org/wiki/Special:FilePath/%C3%89vora_-_Templo_Romano_01.jpg?width=700",
+    url: "../evora/index.html"
+  },
+  {
+    slug: "milfontes",
+    country: "Portogallo",
+    city: "Vila Nova de Milfontes",
+    audience: "personal",
+    title: "Vila Nova de Milfontes",
+    desc: "Un anello contemplativo tra pirati, fiume e oceano, sulla Costa Vicentina. 5 tappe intorno alla foce del Mira, perfetto al tramonto.",
+    duration: "~1h15",
+    distance: "2,4 km ad anello",
+    stops: 5,
+    lat: 37.7227299, lon: -8.7829060,
+    cover: "https://commons.wikimedia.org/wiki/Special:FilePath/Forte_de_Milfontes_(2).jpg?width=700",
+    url: "../milfontes/index.html"
+  },
+  {
+    slug: "sagres",
+    country: "Portogallo",
+    city: "Sagres",
+    audience: "personal",
+    title: "Sagres e Cabo de São Vicente",
+    desc: "Un cammino verso la fine del mondo conosciuto, tra fortezze, scogliere e migrazioni di uccelli. 6 tappe da Sagres al Capo di San Vincenzo.",
+    duration: "~3h",
+    distance: "6 km (lineare)",
+    stops: 6,
+    lat: 37.0096584, lon: -8.9292962,
+    cover: "https://commons.wikimedia.org/wiki/Special:FilePath/Fortaleza_-_The_end_of_the_world_-_Sagres_-_The_Algarve,_Portugal_(1387619873).jpg?width=700",
+    url: "../sagres/index.html"
+  },
+  {
+    slug: "alfama",
+    country: "Portogallo",
+    city: "Lisbona",
+    audience: "personal",
+    title: "Alfama e Graça",
+    desc: "Un anello attraverso il quartiere più antico di Lisbona: castelli, fado, corvi leggendari e panorami sui sette colli. 9 tappe, mezza giornata.",
+    duration: "~3h30-4h",
+    distance: "5,2 km ad anello",
+    stops: 9,
+    lat: 38.7098339, lon: -9.1329535,
+    cover: "https://commons.wikimedia.org/wiki/Special:FilePath/Castelo_de_S%C3%A3o_Jorge,_Lisboa_116.jpg?width=700",
+    url: "../alfama/index.html"
+  },
+  {
+    slug: "baixa",
+    country: "Portogallo",
+    city: "Lisbona",
+    audience: "personal",
+    title: "Baixa Pombalina",
+    desc: "Il quartiere rinato dal terremoto del 1755: piazze simmetriche, un ascensore in stile Eiffel, e una chiesa senza tetto lasciata così di proposito. 7 tappe, anello breve e pianeggiante.",
+    duration: "~1h30",
+    distance: "2,2 km ad anello",
+    stops: 7,
+    lat: 38.7072828, lon: -9.1363613,
+    cover: "https://commons.wikimedia.org/wiki/Special:FilePath/Arco%20Triunfal%20da%20Rua%20Augusta%2C%20Plaza%20del%20Comercio%2C%20Lisboa%2C%20Portugal%2C%202012-05-12%2C%20DD%2001.JPG?width=700",
+    url: "../baixa/index.html"
+  },
+  {
+    slug: "belem",
+    country: "Portogallo",
+    city: "Lisbona",
+    audience: "personal",
+    title: "Belém",
+    desc: "Il quartiere da cui è partita l'epoca delle grandi scoperte: un monastero pagato col pepe, una torre col rinoceronte, e i dolcetti più famosi del Portogallo. 6 tappe lungo il fiume.",
+    duration: "~2h30-3h",
+    distance: "4,2 km ad anello",
+    stops: 6,
+    lat: 38.6978909, lon: -9.2067039,
+    cover: "https://commons.wikimedia.org/wiki/Special:FilePath/Jeronimos-SouthFacade.jpg?width=700",
+    url: "../belem/index.html"
+  },
+  {
+    slug: "tram28",
+    country: "Portogallo",
+    city: "Lisbona",
+    audience: "personal",
+    title: "Tram 28",
+    desc: "Il tram più famoso di Lisbona, da capolinea a capolinea: carrozze di legno degli anni Trenta, vicoli larghi due metri, un Parlamento nato monastero e un cimitero che è un museo a cielo aperto.",
+    duration: "~45 min",
+    distance: "6,3 km (lineare)",
+    stops: 8,
+    lat: 38.7160206, lon: -9.1367671,
+    cover: "https://commons.wikimedia.org/wiki/Special:FilePath/El%C3%A9ctrico%2028%2C%20Lisbo%C3%A3%20(42110049232).jpg?width=700",
+    url: "../tram28/index.html"
+  }
+];
+
+let userPos = null;
+
+function haversineKm(lat1, lon1, lat2, lon2){
+  const R = 6371;
+  const toRad = d => d * Math.PI / 180;
+  const dLat = toRad(lat2 - lat1);
+  const dLon = toRad(lon2 - lon1);
+  const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon/2)**2;
+  return 2 * R * Math.asin(Math.sqrt(a));
+}
+
+function filterTours(query){
+  const base = TOURS.slice();
+  if(!query) return base.slice();
+  const q = query.toLowerCase();
+  return base.filter(t =>
+    t.title.toLowerCase().includes(q) ||
+    t.desc.toLowerCase().includes(q) ||
+    t.city.toLowerCase().includes(q) ||
+    t.country.toLowerCase().includes(q)
+  );
+}
+
+function cardHtml(t, isNearest){
+  return `
+    <a class="tour-card" href="${t.url}">
+      <div class="tour-cover">
+        <img src="${t.cover}" alt="" loading="lazy">
+        <div class="tour-cover-overlay">
+          <span class="tour-badge">${t.city}</span>
+          <span class="tour-badge tour-badge-ochre">${t.stops} tappe</span>
+          ${isNearest ? '<span class="tour-badge tour-badge-near">📍 Il più vicino a te</span>' : ''}
+          <div class="tour-title-onimg">${t.title}</div>
+        </div>
+      </div>
+      <div class="tour-body">
+        <p class="tour-desc">${t.desc}</p>
+        <div class="tour-meta">
+          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>${t.duration}</span>
+          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 12a9 9 0 0118 0"/></svg>${t.distance}</span>
+        </div>
+      </div>
+    </a>
+  `;
+}
+
+function render(){
+  const query = document.getElementById('searchInput').value.trim();
+  const filtered = cityLock ? TOURS.filter(t => t.city.toLowerCase() === cityLock.toLowerCase()) : filterTours(query);
+  const el = document.getElementById('tours');
+  const emptyHint = document.getElementById('emptyHint');
+
+  if(filtered.length === 0){
+    el.innerHTML = '';
+    emptyHint.style.display = 'block';
+    return;
+  }
+  emptyHint.style.display = 'none';
+
+  // calcolo distanze se disponibile la posizione
+  let withDist = filtered;
+  let nearestSlug = null;
+  if(userPos){
+    withDist = filtered.map(t => ({...t, dist: haversineKm(userPos.lat, userPos.lon, t.lat, t.lon)}));
+    nearestSlug = withDist.reduce((a,b) => a.dist < b.dist ? a : b).slug;
+  }
+
+  // raggruppo per paese, mantenendo l'ordine di prima apparizione
+  const groups = {};
+  const countryOrder = [];
+  withDist.forEach(t => {
+    if(!groups[t.country]){ groups[t.country] = []; countryOrder.push(t.country); }
+    groups[t.country].push(t);
+  });
+
+  // ordino i gruppi e i tour interni per vicinanza, se nota
+  let orderedCountries = countryOrder;
+  if(userPos){
+    countryOrder.forEach(c => groups[c].sort((a,b) => a.dist - b.dist));
+    orderedCountries = [...countryOrder].sort((a,b) => {
+      const da = Math.min(...groups[a].map(t => t.dist));
+      const db = Math.min(...groups[b].map(t => t.dist));
+      return da - db;
+    });
+  }
+
+  el.innerHTML = orderedCountries.map(country => `
+    <div class="group-header">${country}</div>
+    ${groups[country].map(t => cardHtml(t, t.slug === nearestSlug)).join('')}
+  `).join('');
+}
+
+function requestLocation(){
+  if(!navigator.geolocation) return;
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      userPos = { lat: pos.coords.latitude, lon: pos.coords.longitude };
+      render();
+    },
+    () => { /* posizione negata o non disponibile: nessun problema, resta l'ordine di default */ },
+    { timeout: 6000, maximumAge: 300000 }
+  );
+}
+
+let cityLock = null;
+const urlParams = new URLSearchParams(location.search);
+const cityParam = urlParams.get('city');
+if(cityParam){
+  cityLock = cityParam;
+  document.getElementById('searchInput').value = cityParam;
+}
+
+document.getElementById('searchInput').addEventListener('input', () => { cityLock = null; render(); });
+render();
+requestLocation();
+
+</script>
+</body>
+<!-- rebuild trigger -->
+</html>
