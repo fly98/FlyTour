@@ -348,6 +348,18 @@ document.getElementById('endCloseBtn').onclick = () => {
 
 // ---- Toggle lingua (solo per giri bilingue: STOPS[0].i18n presente) ----
 const langToggleBtn = document.getElementById('langToggle');
+
+// ---- Link "Tutti i percorsi": torna alla pagina di provenienza (root o personale) invece che sempre alla root ----
+const backLinkEl = document.querySelector('.back-link');
+if(backLinkEl){
+  backLinkEl.addEventListener('click', (e) => {
+    if(document.referrer && document.referrer.includes(location.host)){
+      e.preventDefault();
+      history.back();
+    }
+  });
+}
+
 const isBilingual = !!(STOPS[0] && STOPS[0].i18n);
 if(langToggleBtn){
   if(isBilingual){
