@@ -49,13 +49,19 @@ function refreshStopMarkers(){
 }
 
 const RADIUS_METERS = 45;
+const STORAGE_KEY = 'flytour' + location.pathname.replace(/[^a-z0-9]/gi, '_');
 const state = {
-  played: new Set(JSON.parse(localStorage.getItem('trastevere_played') || '[]')),
-  autoplay: localStorage.getItem('trastevere_autoplay') !== 'false',
+  played: new Set(JSON.parse(localStorage.getItem(STORAGE_KEY + '_played') || '[]')),
+  autoplay: localStorage.getItem(STORAGE_KEY + '_autoplay') !== 'false',
   currentStopId: null,
   wakeLock: null,
   watchId: null
 };
+let currentLang = localStorage.getItem(STORAGE_KEY + '_lang') || 'it';
+function saveLang(){ localStorage.setItem(STORAGE_KEY + '_lang', currentLang); }
+function L(stop, field){
+  return (stop.i18n && stop.i18n[currentLang]) ? stop.i18n[currentLang][field] : stop[field];
+}
 
 // ---- Utils ----
 function haversine(lat1, lon1, lat2, lon2){
@@ -65,8 +71,8 @@ function haversine(lat1, lon1, lat2, lon2){
   const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLon/2)**2;
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 }
-function savePlayed(){ localStorage.setItem('trastevere_played', JSON.stringify([...state.played])); }
-function saveAutoplay(){ localStorage.setItem('trastevere_autoplay', state.autoplay); }
+function savePlayed(){ localStorage.setItem(STORAGE_KEY + '_played', JSON.stringify([...state.played])); }
+function saveAutoplay(){ localStorage.setItem(STORAGE_KEY + '_autoplay', state.autoplay); }
 
 // ---- Render lista tappe + trail ----
 function render(){
@@ -98,8 +104,8 @@ function render(){
     el.innerHTML = `
       <div class="stop-num">${String(s.id).padStart(2,'0')}</div>
       <div class="stop-body">
-        <p class="stop-name">${s.name}</p>
-        <p class="stop-desc">${s.desc}</p>
+        <p class="stop-name">${L(s,'name')}</p>
+        <p class="stop-desc">${L(s,'desc')}</p>
       </div>
       <div class="stop-actions">
         <a class="nav-link" href="${navUrl}" target="_blank" title="Naviga fin qui" data-navlink>
@@ -141,8 +147,8 @@ function playStop(id, manual){
   state.currentStopId = id;
   zoomToStop(stop);
   currentPhotoUrl = null;
-  document.getElementById('playerName').textContent = stop.name;
-  audioEl.src = stop.audio;
+  document.getElementById('playerName').textContent = L(stop,'name');
+  audioEl.src = L(stop,'audio');
   audioEl.play().catch(()=>{ /* iOS può richiedere un tap: il bottone play resta disponibile */ });
   playerEl.classList.add('show');
   state.played.add(id);
@@ -174,7 +180,7 @@ document.getElementById('resetBtn').onclick = () => {
   state.currentStopId = null;
   currentPhotoUrl = null;
   zoomToOverview();
-  localStorage.removeItem('trastevere_played');
+  localStorage.removeItem(STORAGE_KEY + '_played');
   render();
 };
 
@@ -197,9 +203,10 @@ let currentPhotoUrl = null;
 
 function updatePhoto(t){
   const stop = STOPS.find(s => s.id === state.currentStopId);
-  if(!stop || !stop.photos || !stop.photos.length) return;
-  let active = stop.photos[0];
-  for(const p of stop.photos){ if(t >= p.time) active = p; }
+  const photos = stop && L(stop,'photos');
+  if(!stop || !photos || !photos.length) return;
+  let active = photos[0];
+  for(const p of photos){ if(t >= p.time) active = p; }
   if(active.url !== currentPhotoUrl){
     currentPhotoUrl = active.url;
     photoImg.classList.remove('show');
@@ -218,7 +225,7 @@ let pendingStopId = null;
 function showArrival(stopId){
   const stop = STOPS.find(s => s.id === stopId);
   pendingStopId = stopId;
-  document.getElementById('arrivalTitle').textContent = stop.name;
+  document.getElementById('arrivalTitle').textContent = L(stop,'name');
   overlay.classList.add('show');
 }
 document.getElementById('playNowBtn').onclick = () => {
@@ -289,12 +296,13 @@ const textModalOverlay = document.getElementById('textModalOverlay');
 function openTextModal(stopId){
   const stop = STOPS.find(s => s.id === stopId);
   if(!stop) return;
-  document.getElementById('textModalTitle').textContent = stop.name;
-  document.getElementById('textModalBody').innerHTML = stop.fullText || '';
+  document.getElementById('textModalTitle').textContent = L(stop,'name');
+  document.getElementById('textModalBody').innerHTML = L(stop,'fullText') || '';
   const ytWrap = document.getElementById('ytLinks');
   const ytList = document.getElementById('ytLinksList');
-  if(stop.deepen && stop.deepen.length){
-    ytList.innerHTML = renderDeepenList(stop.deepen);
+  const deepen = L(stop,'deepen');
+  if(deepen && deepen.length){
+    ytList.innerHTML = renderDeepenList(deepen);
     ytWrap.style.display = 'block';
   } else {
     ytWrap.style.display = 'none';
@@ -316,11 +324,12 @@ const endOverlay = document.getElementById('endOverlay');
 function showEndOverlay(stopId){
   const stop = STOPS.find(s => s.id === stopId);
   if(!stop) return;
-  document.getElementById('endTitle').textContent = stop.name + ' — completata';
+  document.getElementById('endTitle').textContent = L(stop,'name') + ' — completata';
   const ytWrap = document.getElementById('endYtLinks');
   const ytList = document.getElementById('endYtLinksList');
-  if(stop.deepen && stop.deepen.length){
-    ytList.innerHTML = renderDeepenList(stop.deepen);
+  const deepen = L(stop,'deepen');
+  if(deepen && deepen.length){
+    ytList.innerHTML = renderDeepenList(deepen);
     ytWrap.style.display = 'block';
   } else {
     ytWrap.style.display = 'none';
@@ -336,6 +345,46 @@ document.getElementById('endCloseBtn').onclick = () => {
   zoomToOverview();
   stopAllVideos();
 };
+
+// ---- Toggle lingua (solo per giri bilingue: STOPS[0].i18n presente) ----
+const langToggleBtn = document.getElementById('langToggle');
+const isBilingual = !!(STOPS[0] && STOPS[0].i18n);
+if(langToggleBtn){
+  if(isBilingual){
+    langToggleBtn.style.display = 'flex';
+    function renderLangToggle(){
+      langToggleBtn.querySelectorAll('[data-lang]').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.lang === currentLang);
+      });
+    }
+    langToggleBtn.querySelectorAll('[data-lang]').forEach(btn => {
+      btn.onclick = () => {
+        if(btn.dataset.lang === currentLang) return;
+        currentLang = btn.dataset.lang;
+        saveLang();
+        renderLangToggle();
+        render();
+        // se una tappa è aperta nel player, ricarica testo/audio nella nuova lingua
+        if(state.currentStopId){
+          const stop = STOPS.find(s => s.id === state.currentStopId);
+          if(stop){
+            document.getElementById('playerName').textContent = L(stop,'name');
+            const wasPlaying = !audioEl.paused;
+            audioEl.src = L(stop,'audio');
+            if(wasPlaying) audioEl.play().catch(()=>{});
+          }
+        }
+        // se il modal testo è aperto, ricarica nella nuova lingua
+        if(textModalOverlay.classList.contains('show') && state.currentStopId){
+          openTextModal(state.currentStopId);
+        }
+      };
+    });
+    renderLangToggle();
+  } else {
+    langToggleBtn.style.display = 'none';
+  }
+}
 
 // ---- Geolocalizzazione ----
 const gpsDot = document.getElementById('gpsDot');
