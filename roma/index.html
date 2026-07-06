@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="FlyTour">
+<meta name="theme-color" content="#2a2622">
+<link rel="manifest" href="../manifest.json">
+<link rel="apple-touch-icon" href="../icons/icon-180.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../icons/icon-32.png">
+<title>Roma in un Giorno — Audioguida</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet" href="../shared/app.css">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a href="../index.html" class="back-link">← Tutti i percorsi</a>
+    <div class="eyebrow">Passeggiata narrata · Giornata intera · Bilingue IT/EN</div>
+    <h1>Roma in un Giorno</h1>
+    <p class="subtitle">Le tappe imperdibili del centro storico e dell'area archeologica, per chi ha solo un giorno per scoprire Roma. Dal Colosseo a Trastevere, quattordici soste con audioguida completa in italiano e inglese.</p>
+  </header>
+
+  <div id="langToggle">
+    <button data-lang="it">Italiano</button>
+    <button data-lang="en">English</button>
+  </div>
+
+  <div class="trail" id="trail"></div>
+
+  <div class="map-wrap"><div id="map"></div></div>
+
+  <div class="toggle-row">
+    <div class="toggle-label"><b>Riproduzione automatica</b><br>Parte da sola quando arrivi a una tappa</div>
+    <label class="switch">
+      <input type="checkbox" id="autoplayToggle" checked>
+      <span class="slider"></span>
+    </label>
+  </div>
+
+  <div class="gps-status" id="gpsStatusRow" style="cursor:pointer;">
+    <div class="gps-dot" id="gpsDot"></div>
+    <span id="gpsText">Posizione non attiva — tocca "Attiva GPS" qui sotto</span>
+    <button class="reset-link" id="resetBtn">Ricomincia il giro</button>
+  </div>
+
+  <div id="gpsDebug" style="display:none; font-size:11px; opacity:0.6; padding:4px 20px 0; font-family:monospace; line-height:1.5;"></div>
+
+  <div class="stops" id="stops"></div>
+
+  <footer>Genera audio con Google Cloud TTS · fatto per camminarci sopra</footer>
+</div>
+
+<div class="arrival-overlay" id="arrivalOverlay">
+  <div class="arrival-card">
+    <div class="arrival-eyebrow">Sei arrivato</div>
+    <div class="arrival-title" id="arrivalTitle">—</div>
+    <div class="arrival-actions">
+      <button class="btn btn-ghost" id="laterBtn">Più tardi</button>
+      <button class="btn btn-primary" id="playNowBtn">▶ Riproduci</button>
+    </div>
+  </div>
+</div>
+
+<div class="text-modal-overlay" id="textModalOverlay">
+  <div class="text-modal">
+    <div class="text-modal-header">
+      <div class="text-modal-title" id="textModalTitle">—</div>
+      <button class="text-modal-close" id="textModalClose">✕</button>
+    </div>
+    <div class="text-modal-body" id="textModalBody"></div>
+    <div class="yt-links" id="ytLinks" style="display:none;">
+      <div class="yt-eyebrow">Approfondisci</div>
+      <div id="ytLinksList"></div>
+    </div>
+  </div>
+</div>
+
+<div class="arrival-overlay" id="endOverlay">
+  <div class="arrival-card">
+    <div class="arrival-eyebrow">Tappa completata</div>
+    <div class="arrival-title" id="endTitle">—</div>
+    <div class="yt-links" id="endYtLinks" style="display:none;">
+      <div class="yt-eyebrow">Approfondisci</div>
+      <div id="endYtLinksList"></div>
+    </div>
+    <div class="arrival-actions" style="margin-top:16px;">
+      <button class="btn btn-primary" id="endCloseBtn">Continua a camminare</button>
+    </div>
+  </div>
+</div>
+
+<div class="player" id="player">
+  <div class="photo-panel" id="photoPanel">
+    <img id="photoImg" src="" alt="">
+    <button class="player-close" id="playerCloseBtn">✕</button>
+    <div class="photo-caption" id="photoCaption"></div>
+  </div>
+  <div class="player-top">
+    <div class="player-name" id="playerName">—</div>
+  </div>
+  <div class="seek-row">
+    <span class="time-label" id="timeElapsed">0:00</span>
+    <input type="range" class="seek" id="seekBar" min="0" max="100" value="0" step="0.1">
+    <span class="time-label right" id="timeRemaining">-0:00</span>
+  </div>
+  <div class="transport">
+    <button class="skip-btn" id="backBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 19l-7-7 7-7M4 12h13a4 4 0 000-8"/></svg>
+      <span>15s</span>
+    </button>
+    <button class="play-btn" id="playPauseBtn" style="width:52px;height:52px;">
+      <svg viewBox="0 0 24 24" fill="#241a12" style="width:20px;height:20px;"><path id="playIcon" d="M8 5v14l11-7z"/></svg>
+    </button>
+    <button class="skip-btn" id="fwdBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 5l7 7-7 7M20 12H7a4 4 0 010-8"/></svg>
+      <span>15s</span>
+    </button>
+  </div>
+  <audio id="audioEl" style="display:none;"></audio>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+// ---- Dati tappe (pilota: 2 tappe) ----
+const STOPS = [
+  {
+    id: 1, ready: true,
+    lat: 41.8902102, lon: 12.4922309,
+    i18n: {
+      it: {
+        name: "Colosseo",
+        desc: "L'anfiteatro simbolo di Roma, tra gladiatori e leggende",
+        audio: "audio/it/tappa1.mp3",
+        photos: [
+      { time: 0, url: "img/t1_colosseo1.jpg", caption: "Colosseo", credit: "Wikimedia Commons" },
+      { time: 83, url: "img/t1_colosseo2.jpg", caption: "Colosseo, dettaglio", credit: "Wikimedia Commons" }
+    ],
+        fullText: `Sei arrivato al Colosseo, il simbolo più riconoscibile di Roma nel mondo. Guarda le arcate che si susseguono su quattro livelli. Furono inaugurate nell'ottanta dopo Cristo dall'imperatore Tito, dopo appena otto anni di lavori. Un tempo di costruzione record per un edificio di queste dimensioni.<br><br>
+Il nome originale era Anfiteatro Flavio, dalla dinastia degli imperatori che lo vollero. Il nome "Colosseo" arrivò solo nel Medioevo. Deriva da un colosso, un'enorme statua bronzea di Nerone alta oltre trenta metri, che sorgeva proprio qui accanto. La statua fu poi modificata più volte, trasformata persino in un dio Sole, prima di scomparire nel tempo.<br><br>
+Poteva ospitare fino a settantamila spettatori. Aveva un sistema di ingressi numerati e biglietti in terracotta, non troppo diverso concettualmente da uno stadio moderno. Il velario, un'enorme tenda retrattile azionata da marinai della flotta romana, proteggeva il pubblico dal sole. Sotto l'arena, oggi visibile, si estendeva l'ipogeo: un dedalo di corridoi e montacarichi che sollevavano gladiatori e animali direttamente nell'arena, con un sistema di argani considerato un capolavoro di ingegneria per l'epoca.<br><br>
+Contrariamente al mito diffuso, non esistono prove storiche certe che i cristiani siano stati martirizzati proprio in questo anfiteatro. Quella narrazione si consolidò soprattutto nel Settecento. Papa Benedetto Quattordicesimo dichiarò il luogo sacro per il sangue dei martiri. Favorì così la conservazione dell'edificio invece della sua demolizione, già avviata in parte per recuperare materiali da costruzione.<br><br>
+Nel corso dei secoli il Colosseo fu cava di marmo e travertino per altri monumenti romani, inclusa parte di San Pietro. Subì anche un grave terremoto nel 1349. Fece crollare l'intero lato meridionale, quello che vedi oggi mancante. Fu adibito a fortezza, poi a orti e persino a piccola cava agricola, prima che gli scavi archeologici dell'Ottocento e del Novecento restituissero dignità storica al monumento.<br><br>
+Un dettaglio che sorprende sempre i visitatori: il pavimento dell'arena che vedi oggi ricostruito parzialmente non è originale, ma una ricostruzione moderna installata solo nel 2021. Per gran parte del Novecento l'ipogeo sottostante era completamente visibile dall'alto, privo di qualunque copertura, esattamente come lo vedi nelle vecchie fotografie in bianco e nero dei primi del Novecento. La nuova piattaforma, removibile, permette oggi ai visitatori di provare la stessa sensazione di vertigine che provavano gladiatori e animali prima di essere sollevati nell'arena.<br><br>
+I combattimenti tra gladiatori duravano in media meno di quanto si creda. Gli scontri veri e propri, quelli fino alla morte, erano più rari di quanto racconti il cinema. I gladiatori costavano molto da addestrare, e i loro proprietari preferivano tenerli in vita per altri spettacoli futuri. Molto più frequenti erano le cacce agli animali esotici, portati da ogni angolo dell'impero. Leoni dall'Africa, orsi dalla Britannia, persino ippopotami e giraffe. Erano spettacoli che duravano l'intera giornata, e che dissanguarono letteralmente le popolazioni animali di intere regioni del Mediterraneo.<br><br>
+Quando sei pronto, esci verso l'Arco di Costantino, a pochi passi da qui.`,
+        deepen: []
+      },
+      en: {
+        name: "Colosseum",
+        desc: "Rome's iconic amphitheater, gladiators and legends",
+        audio: "audio/en/tappa1.mp3",
+        photos: [
+      { time: 0, url: "img/t1_colosseo1.jpg", caption: "Colosseum", credit: "Wikimedia Commons" },
+      { time: 74, url: "img/t1_colosseo2.jpg", caption: "Colosseum, detail", credit: "Wikimedia Commons" }
+    ],
+        fullText: `You've arrived at the Colosseum, Rome's most recognizable symbol worldwide. Look at the arches running across four levels. It was inaugurated in 80 AD by Emperor Titus, after just eight years of construction. A record-breaking timeframe for a building of this scale.<br><br>
+Its original name was the Flavian Amphitheatre, after the dynasty of emperors who commissioned it. The name "Colosseum" only appeared in the Middle Ages. It comes from a colossus, an enormous bronze statue of Nero over thirty meters tall, which once stood right next to it. The statue was modified several times, even turned into a Sun god, before disappearing over time.<br><br>
+It could hold up to seventy thousand spectators. It had a system of numbered entrances and terracotta tickets, not so different conceptually from a modern stadium. The velarium, a huge retractable awning operated by sailors from the Roman fleet, protected the audience from the sun. Beneath the arena, visible today, stretched the hypogeum: a maze of corridors and lifts that raised gladiators and animals straight into the arena, a winch system considered an engineering marvel for its time.<br><br>
+Contrary to popular myth, there's no solid historical proof that Christians were actually martyred in this amphitheater. That narrative took hold mostly in the eighteenth century. Pope Benedict the Fourteenth declared the site sacred with the blood of martyrs, favoring the building's preservation instead of its demolition. Demolition had already partly begun, to recover construction materials.<br><br>
+Over the centuries the Colosseum became a quarry of marble and travertine for other Roman monuments, including part of Saint Peter's Basilica. It also suffered a serious earthquake in 1349, which collapsed the entire southern side, the part you see missing today. It was used as a fortress, then as gardens and even a small farming plot, before archaeological excavations in the nineteenth and twentieth centuries restored the monument's historical dignity.<br><br>
+A detail that always surprises visitors: the partially reconstructed arena floor you see today isn't original, but a modern reconstruction installed only in 2021. For most of the twentieth century the hypogeum below was completely visible from above, with no covering at all, exactly as you see it in old black-and-white photographs from the early 1900s. The new removable platform lets today's visitors experience the same vertigo that gladiators and animals once felt before being lifted into the arena.<br><br>
+Gladiator fights typically lasted less time than most people assume: real fights to the death were rarer than the movies suggest, because gladiators were expensive to train, and their owners preferred keeping them alive for future shows. Far more common were hunts of exotic animals brought from every corner of the empire. Lions from Africa, bears from Britain, even hippos and giraffes. These spectacles lasted the entire day, and literally drained animal populations across whole regions of the Mediterranean.<br><br>
+When you're ready, head out toward the Arch of Constantine, just a few steps away.`,
+        deepen: []
+      }
+    }
+  },
+  {
+    id: 2, ready: true,
+    lat: 41.8898113, lon: 12.4906782,
+    i18n: {
+      it: {
+        name: "Arco di Costantino",
+        desc: "La visione di Costantino e la maratona olimpica del 1960",
+        audio: "audio/it/tappa2.mp3",
+        photos: [
+      { time: 0, url: "img/t2_arco1.jpg", caption: "Arco di Costantino", credit: "Wikimedia Commons" },
+      { time: 78, url: "img/t2_arco2.jpg", caption: "Arco di Costantino, dettaglio", credit: "Wikimedia Commons" }
+    ],
+        fullText: `Sei arrivato all'Arco di Costantino, il più grande arco trionfale sopravvissuto di tutta Roma antica. Alto venticinque metri, fu dedicato nel 315 dopo Cristo per celebrare la vittoria dell'imperatore Costantino sul rivale Massenzio, nella battaglia di Ponte Milvio del 312.<br><br>
+Quella battaglia cambiò la storia del mondo occidentale. Secondo la leggenda, prima dello scontro Costantino vide apparire in cielo una croce di luce, con la scritta greca "en touto nika", in questo segno vincerai. La notte successiva, in sogno, Cristo gli avrebbe ordinato di usare quel simbolo come vessillo contro i nemici. Vinta la battaglia, Costantino avviò la strada che avrebbe portato il cristianesimo a diventare religione di stato dell'impero.<br><br>
+Guarda con attenzione i rilievi scolpiti: non sono tutti dello stesso periodo. Per risparmiare tempo e risorse, gran parte delle decorazioni fu riutilizzata da monumenti precedenti, dedicati a Traiano, Adriano e Marco Aurelio. In alcuni casi i volti degli imperatori originali furono letteralmente ritagliati e sostituiti con quello di Costantino. Un vero e proprio collage di duecento anni di storia romana, riassemblato in un solo monumento.<br><br>
+Nel Medioevo l'arco fu inglobato nelle fortificazioni della potente famiglia Frangipane, diventando parte di una torre difensiva tra il Colosseo e il Palatino. Fu liberato dalle sovrastrutture solo nell'Ottocento, per volere di papa Gregorio Sedicesimo, e restituito al suo aspetto isolato attuale.<br><br>
+Una curiosità sportiva novecentesca: nel 1960, durante le Olimpiadi di Roma, questo stesso arco fu il traguardo della maratona olimpica. Vinse, correndo scalzo per l'intera gara di oltre quaranta chilometri, l'atleta etiope Abebe Bikila. Corse alla luce delle torce nella sera romana, in una delle immagini più iconiche nella storia dei Giochi Olimpici.<br><br>
+Guarda anche la piccola gradinata alla base dell'arco, oggi in gran parte scomparsa. Un tempo permetteva l'accesso diretto al monumento. I romani lo attraversavano fisicamente durante le processioni trionfali, non semplicemente lo ammiravano da lontano come facciamo noi oggi. L'arco segnava simbolicamente il passaggio dal mondo militare a quello civile della città, l'ultimo checkpoint cerimoniale prima dell'ingresso trionfale del generale vittorioso nel cuore di Roma.<br><br>
+Il trionfo romano era una cerimonia rigidamente codificata. Il generale, con il volto dipinto di rosso in onore di Giove, sfilava su un carro trainato da cavalli bianchi. Lo seguivano il bottino di guerra, i prigionieri incatenati e le proprie truppe in parata. Uno schiavo, secondo la tradizione, stava dietro di lui sul carro sussurrandogli all'orecchio una frase di ammonimento: "Ricordati che sei mortale", per evitare che il trionfatore si montasse troppo la testa nell'euforia del momento.<br><br>
+Quando sei pronto, dirigiti verso l'ingresso del Foro Romano.`,
+        deepen: []
+      },
+      en: {
+        name: "Arch of Constantine",
+        desc: "Constantine's vision and the 1960 Olympic marathon",
+        audio: "audio/en/tappa2.mp3",
+        photos: [
+      { time: 0, url: "img/t2_arco1.jpg", caption: "Arch of Constantine", credit: "Wikimedia Commons" },
+      { time: 68, url: "img/t2_arco2.jpg", caption: "Arch of Constantine, detail", credit: "Wikimedia Commons" }
+    ],
+        fullText: `You've arrived at the Arch of Constantine, the largest surviving triumphal arch in all of ancient Rome. Standing twenty-five meters tall, it was dedicated in 315 AD to celebrate Emperor Constantine's victory over his rival Maxentius at the Battle of the Milvian Bridge in 312.<br><br>
+That battle changed the course of Western history. According to legend, before the clash Constantine saw a cross of light appear in the sky, with the Greek words "en touto nika", in this sign you will conquer. The following night, in a dream, Christ allegedly told him to use that symbol as his standard against his enemies. Having won the battle, Constantine set Christianity on the path to becoming the empire's state religion.<br><br>
+Look closely at the carved reliefs: they're not all from the same period. To save time and resources, most of the decorations were reused from earlier monuments dedicated to Trajan, Hadrian, and Marcus Aurelius. In some cases the original emperors' faces were literally cut out and replaced with Constantine's. A true collage of two hundred years of Roman history, reassembled into a single monument.<br><br>
+In the Middle Ages the arch was absorbed into the fortifications of the powerful Frangipane family, becoming part of a defensive tower between the Colosseum and the Palatine Hill. It was freed from these additions only in the nineteenth century, by order of Pope Gregory the Sixteenth, and restored to the isolated appearance it has today.<br><br>
+A twentieth-century sporting curiosity: in 1960, during the Rome Olympics, this very arch was the finish line of the Olympic marathon. The winner, running the entire forty-plus kilometer race barefoot, was Ethiopian athlete Abebe Bikila. He finished by torchlight in the Roman evening, in one of the most iconic images in Olympic history.<br><br>
+Look also at the small staircase at the base of the arch, mostly gone today: it once allowed direct access to the monument, which Romans physically walked through during triumphal processions, not simply admired from a distance the way we do now. The arch symbolically marked the passing from the military to the civilian world of the city, the last ceremonial checkpoint before the victorious general's triumphal entry into the heart of Rome.<br><br>
+The Roman triumph was a rigidly codified ceremony: the general, his face painted red in honor of Jupiter, paraded on a chariot pulled by white horses, followed by the spoils of war, the chained prisoners, and his own troops marching behind. A slave, according to tradition, stood behind him on the chariot whispering a warning in his ear: "Remember that you are mortal", to keep the triumphant general from getting too carried away in the moment's euphoria.<br><br>
+When you're ready, head toward the entrance of the Roman Forum.`,
+        deepen: []
+      }
+    }
+  },
+  {
+    id: 3, ready: true,
+    lat: 41.8920906, lon: 12.4864378,
+    i18n: {
+      it: {
+        name: "Foro Romano",
+        desc: "Il cuore politico dell'impero, dal Senato al Campo Vaccino",
+        audio: "audio/it/tappa3.mp3",
+        photos: [
+      { time: 0, url: "img/t3_foro1.jpg", caption: "Foro Romano", credit: "Wikimedia Commons" },
+      { time: 69, url: "img/t3_foro2.jpg", caption: "Foro Romano, dettaglio", credit: "Wikimedia Commons" }
+    ],
+        fullText: `Sei arrivato al Foro Romano, il cuore politico, religioso ed economico dell'antica Roma per oltre mille anni. Quello che vedi come un campo di rovine era in realtà il centro pulsante di un impero che si estendeva dalla Scozia alla Mesopotamia.<br><br>
+Qui si trovava il Senato romano, la Curia Iulia, il cui edificio in mattoni che vedi oggi è in realtà una ricostruzione del terzo secolo dopo Cristo, su un impianto ancora più antico voluto da Giulio Cesare. Proprio in quest'area, secondo la tradizione storica, Cesare fu assassinato nel 44 avanti Cristo, anche se il luogo esatto dell'attentato era in realtà la Curia di Pompeo, oggi sotto Largo Argentina, non qui.<br><br>
+Cammina lungo la Via Sacra, la strada principale del foro, percorsa dai cortei trionfali dei generali vittoriosi che rientravano a Roma. Guarda il Tempio di Vesta, dove ardeva un fuoco sacro mai lasciato spegnere, custodito dalle Vestali: sacerdotesse che giuravano trent'anni di castità, con pene severissime per chi veniva meno al voto, inclusa la sepoltura viva.<br><br>
+L'Arco di Settimio Severo, ancora quasi intatto, celebra le vittorie militari dell'imperatore in Oriente. Poco distante, la Colonna di Foca, l'ultimo monumento eretto nel foro, nel 608 dopo Cristo, quando Roma era ormai ben lontana dallo splendore imperiale.<br><br>
+Il foro cadde lentamente in abbandono dopo la caduta dell'impero d'Occidente. Fu usato come pascolo per il bestiame per secoli, tanto che nel Medioevo veniva chiamato "Campo Vaccino", il campo delle mucche. Solo gli scavi archeologici sistematici, iniziati nell'Ottocento e proseguiti per tutto il Novecento, hanno riportato alla luce gli strati di storia che oggi puoi ammirare. Metro dopo metro, sotto diversi livelli di terra accumulata nei secoli.<br><br>
+Guarda anche il Tempio di Antonino e Faustina, uno dei meglio conservati del foro. Le sue colonne in marmo cipollino sopravvissero perché l'edificio fu trasformato in chiesa cristiana nel Medioevo. Un destino di riconversione che salvò molti monumenti pagani dalla distruzione totale. Le profonde scanalature verticali visibili alla base delle colonne furono scavate secoli dopo da tentativi, mai riusciti, di abbattere le colonne stesse per recuperarne il materiale.<br><br>
+Non lontano si trova anche la Basilica di Massenzio, l'edificio più imponente di tutto il foro per volume, le cui volte a crociera ispirarono direttamente Michelangelo e Bramante nel progettare la nuova Basilica di San Pietro, oltre mille anni dopo. Solo una delle tre navate originali è oggi in piedi. Basta guardarla per capire quanto fossero ardite le tecniche costruttive romane in cemento. Un materiale che l'Europa medievale dimenticò quasi completamente per secoli, riscoprendolo solo in epoca moderna.<br><br>
+Quando sei pronto, sali verso il Colle Palatino, la collina che sovrasta il foro.`,
+        deepen: []
+      },
+      en: {
+        name: "Roman Forum",
+        desc: "The empire's political heart, from the Senate to the cow field",
+        audio: "audio/en/tappa3.mp3",
+        photos: [
+      { time: 0, url: "img/t3_foro1.jpg", caption: "Roman Forum", credit: "Wikimedia Commons" },
+      { time: 63, url: "img/t3_foro2.jpg", caption: "Roman Forum, detail", credit: "Wikimedia Commons" }
+    ],
+        fullText: `You've arrived at the Roman Forum, the political, religious, and economic heart of ancient Rome for over a thousand years. What looks like a field of ruins was once the pulsing center of an empire stretching from Scotland to Mesopotamia.<br><br>
+Here stood the Roman Senate, the Curia Julia, whose brick building you see today is actually a third-century AD reconstruction, built on an even older layout commissioned by Julius Caesar. Right in this area, according to historical tradition, Caesar was assassinated in 44 BC, although the exact spot of the attack was actually the Theatre of Pompey's Curia, today beneath Largo Argentina, not here.<br><br>
+Walk along the Sacred Way, the forum's main street, once walked by the triumphal processions of victorious generals returning to Rome. Look at the Temple of Vesta, where a sacred fire was kept burning at all times, tended by the Vestal Virgins: priestesses who swore thirty years of chastity, facing severe punishments for breaking that vow, including being buried alive.<br><br>
+The Arch of Septimius Severus, still nearly intact, celebrates the emperor's military victories in the East. Not far away, the Column of Phocas, the last monument ever erected in the forum, in 608 AD, when Rome was already far removed from its imperial splendor.<br><br>
+The forum slowly fell into neglect after the fall of the Western Empire. For centuries it was used as cattle pasture, so much so that in the Middle Ages it was nicknamed "Campo Vaccino", the cow field. Only systematic archaeological digs, begun in the nineteenth century and continued throughout the twentieth, uncovered the layers of history you can admire today, meter after meter, beneath several levels of soil accumulated over the centuries.<br><br>
+Look also at the Temple of Antoninus and Faustina, one of the best preserved in the forum: its cipollino marble columns survived because the building was converted into a Christian church in the Middle Ages. Deep vertical grooves visible at the base of the columns were carved centuries later by failed attempts to pull the columns down and salvage their material.<br><br>
+Not far off stands the Basilica of Maxentius, the largest structure in the whole forum by volume, whose cross vaults directly inspired Michelangelo and Bramante when designing the new Saint Peter's Basilica, over a thousand years later. Only one of the three original naves still stands, but it's enough to grasp how bold Roman concrete construction techniques were, a material medieval Europe nearly forgot entirely for centuries, rediscovering it only in modern times.<br><br>
+When you're ready, climb up to the Palatine Hill, the hill overlooking the forum.`,
+        deepen: []
+      }
+    }
+  },
+  {
+    id: 4, ready: true,
+    lat: 41.8886559, lon: 12.4875481,
+    i18n: {
+      it: {
+        name: "Palatino",
+        desc: "Dove nacque Roma, e da cui nacque la parola palazzo",
+        audio: "audio/it/tappa4.mp3",
+        photos: [
+      { time: 0, url: "img/t4_palatino1.jpg", caption: "Palatino", credit: "Wikimedia Commons" },
+      { time: 67, url: "img/t4_palatino2.jpg", caption: "Palatino, dettaglio", credit: "Wikimedia Commons" }
+    ],
+        fullText: `Sei arrivato al Palatino, il più celebre dei sette colli di Roma, e secondo la leggenda il luogo esatto dove Romolo fondò la città nel 753 avanti Cristo. Gli scavi archeologici hanno effettivamente confermato la presenza di capanne risalenti a quel periodo, un dettaglio che rende la leggenda sorprendentemente vicina alla realtà storica.<br><br>
+Da questa collina prende origine la parola stessa "palazzo", in tutte le lingue neolatine e non solo. Qui infatti gli imperatori romani costruirono le loro residenze più sfarzose. La Domus Flavia e la Domus Augustana, volute dall'imperatore Domiziano alla fine del primo secolo dopo Cristo, formavano un complesso talmente vasto e sontuoso da diventare sinonimo stesso di dimora imperiale per i millenni successivi.<br><br>
+Cammina tra i resti dello Stadio Palatino, un giardino privato a forma di ippodromo riservato esclusivamente alla famiglia imperiale. Guarda la vista sul Circo Massimo qui sotto: l'imperatore poteva assistere alle corse dei carri direttamente da una loggia della propria residenza, senza nemmeno doversi mescolare al popolo.<br><br>
+La Casa di Augusto e la Casa di Livia, appartenute al primo imperatore romano e a sua moglie, conservano ancora oggi affreschi straordinariamente ben conservati, con colori vividi che sembrano dipinti ieri invece che duemila anni fa. Furono riscoperte solo in tempi relativamente recenti, e l'accesso è spesso limitato per proteggerne la fragilità.<br><br>
+Da qui il panorama sul Foro Romano da un lato e sul Circo Massimo dall'altro ti fa capire perché gli imperatori scelsero proprio questa collina. Dominava letteralmente, con lo sguardo, tutti e due i centri nevralgici del potere e dello svago della città più potente del mondo antico.<br><br>
+Il nome stesso "Palatino" è all'origine anche della parola inglese "palace" e di equivalenti in molte altre lingue europee, un'eredità linguistica diretta di duemila anni che pochi visitatori considerano mentre camminano tra queste rovine. Ogni residenza reale o presidenziale del mondo occidentale moderno porta, nel proprio nome, un'eco lontana di questa collina romana.<br><br>
+Nel Rinascimento, la famiglia Farnese acquistò parte del colle e vi fece costruire i celebri Orti Farnesiani, tra i primi giardini botanici privati d'Europa costruiti sopra rovine antiche, letteralmente sulle volte dei palazzi imperiali. Passeggiando oggi tra i sentieri ombreggiati, cammini quindi su un doppio strato di storia. Sotto i tuoi piedi, gli imperatori romani. Appena sopra, l'aristocrazia rinascimentale che trasformò le rovine in un giardino di delizie con vista sulla città.<br><br>
+Quando sei pronto, dirigiti verso Piazza del Campidoglio, disegnata da Michelangelo.`,
+        deepen: []
+      },
+      en: {
+        name: "Palatine Hill",
+        desc: "Where Rome was born, and where the word palace comes from",
+        audio: "audio/en/tappa4.mp3",
+        photos: [
+      { time: 0, url: "img/t4_palatino1.jpg", caption: "Palatine Hill", credit: "Wikimedia Commons" },
+      { time: 64, url: "img/t4_palatino2.jpg", caption: "Palatine Hill, detail", credit: "Wikimedia Commons" }
+    ],
+        fullText: `You've arrived at the Palatine Hill, the most famous of Rome's seven hills, and according to legend the exact spot where Romulus founded the city in 753 BC. Archaeological excavations have actually confirmed the presence of huts dating back to that period, a detail that brings the legend surprisingly close to historical reality.<br><br>
+The word "palace" itself, in nearly every Romance language and beyond, originates from this hill's name. Roman emperors built their most lavish residences right here. The Domus Flavia and the Domus Augustana, commissioned by Emperor Domitian at the end of the first century AD, formed a complex so vast and sumptuous it became synonymous with imperial residence for millennia to come.<br><br>
+Walk among the remains of the Stadium of the Palatine, a private garden shaped like a hippodrome, reserved exclusively for the imperial family. Look at the view over the Circus Maximus below: the emperor could watch chariot races directly from a loggia in his own residence, without ever having to mingle with the common crowd.<br><br>
+The House of Augustus and the House of Livia, belonging to Rome's first emperor and his wife, still preserve remarkably well-conserved frescoes today, with colors so vivid they seem painted yesterday rather than two thousand years ago. They were only rediscovered in relatively recent times, and access is often limited to protect their fragility.<br><br>
+The name "Palatine" itself is the origin of the English word "palace" and its equivalents in many other European languages, a direct linguistic legacy spanning two thousand years that few visitors consider while walking among these ruins. Every royal or presidential residence in the modern Western world carries, in its very name, a distant echo of this Roman hill.<br><br>
+During the Renaissance, the Farnese family acquired part of the hill and built the celebrated Farnese Gardens here. They were among the first private botanical gardens in Europe built directly atop ancient ruins, literally over the vaults of the imperial palaces. Walking today along the shaded paths, you're stepping on a double layer of history: beneath your feet, Roman emperors; just above, the Renaissance aristocracy that turned the ruins into a garden of delights overlooking the city.<br><br>
+From here the view over the Roman Forum on one side and the Circus Maximus on the other makes clear why emperors chose precisely this hill. It literally dominated, with a single glance, both nerve centers of power and entertainment in the most powerful city of the ancient world.<br><br>
+When you're ready, head toward Piazza del Campidoglio, designed by Michelangelo.`,
+        deepen: []
+      }
+    }
+  },
+  {
+    id: 5, ready: true,
+    lat: 41.8933592, lon: 12.4828018,
+    i18n: {
+      it: {
+        name: "Piazza del Campidoglio",
+        desc: "Il capolavoro di Michelangelo sul colle più sacro di Roma",
+        audio: "audio/it/tappa5.mp3",
+        photos: [
+      { time: 0, url: "img/t5_campidoglio1.jpg", caption: "Piazza del Campidoglio", credit: "Wikimedia Commons" },
+      { time: 66, url: "img/t5_campidoglio2.jpg", caption: "Piazza del Campidoglio, dettaglio", credit: "Wikimedia Commons" }
+    ],
+        fullText: `Sei arrivato in Piazza del Campidoglio, uno dei capolavori urbanistici del Rinascimento italiano. Fu progettata da Michelangelo Buonarroti a partire dal 1536, su commissione di papa Paolo Terzo, per l'arrivo a Roma dell'imperatore Carlo Quinto.<br><br>
+Guarda il disegno geometrico della pavimentazione: un motivo ovale a stella, con al centro la statua equestre di Marco Aurelio. Quella che vedi oggi è una copia perfetta: l'originale, in bronzo dorato, è conservata nei Musei Capitolini per proteggerla dagli agenti atmosferici. Sopravvisse ai secoli per un curioso errore. Nel Medioevo si credeva erroneamente che la statua raffigurasse l'imperatore Costantino, il primo sovrano cristiano. Per questo fu risparmiata dalla fusione a cui finirono quasi tutte le altre statue bronzee pagane dell'antichità.<br><br>
+Il Colle Capitolino su cui sorge questa piazza fu il centro religioso più sacro dell'intera Roma antica. Qui sorgeva il grandioso Tempio di Giove Ottimo Massimo, il più importante santuario dello stato romano, di cui oggi restano solo poche tracce sotto i Musei Capitolini.<br><br>
+Michelangelo disegnò anche le facciate dei due palazzi laterali, il Palazzo dei Conservatori e il Palazzo Nuovo, che oggi ospitano i Musei Capitolini, il museo pubblico più antico del mondo, aperto al pubblico dal 1734. Il progetto fu completato solo dopo la morte dell'artista, ma rispettando fedelmente il suo disegno originale.<br><br>
+Da un lato della piazza, una scalinata conduce alla terrazza panoramica sul Foro Romano. È uno dei punti di osservazione più spettacolari dell'intera area archeologica, spesso meno affollato rispetto agli ingressi ufficiali del foro stesso.<br><br>
+Guarda anche le due statue colossali di Castore e Polluce, i Dioscuri, che affiancano la scalinata d'accesso alla piazza, la Cordonata, anch'essa disegnata da Michelangelo. Furono ritrovate nel Cinquecento nella zona del Ghetto ebraico e trasportate qui. In un'epoca simile, spostare statue di marmo di quelle dimensioni per l'intera città rappresentava un'impresa ingegneristica non da poco. Servivano carri speciali e giorni interi di lavoro.<br><br>
+Il Campidoglio ospita anche il Palazzo Senatorio, sede tuttora del Comune di Roma. Qui il sindaco della città giura ancora oggi il proprio incarico. L'edificio affonda le fondamenta nell'antico Tabularium romano, l'archivio di stato dell'impero dove venivano custodite le leggi incise su tavole di bronzo. Un filo di continuità amministrativa che collega simbolicamente duemila anni di governo della stessa città, dagli imperatori ai sindaci contemporanei.<br><br>
+Quando sei pronto, scendi verso Piazza della Bocca della Verità.`,
+        deepen: []
+      },
+      en: {
+        name: "Piazza del Campidoglio",
+        desc: "Michelangelo's masterpiece atop Rome's most sacred hill",
+        audio: "audio/en/tappa5.mp3",
+        photos: [
+      { time: 0, url: "img/t5_campidoglio1.jpg", caption: "Piazza del Campidoglio", credit: "Wikimedia Commons" },
+      { time: 64, url: "img/t5_campidoglio2.jpg", caption: "Piazza del Campidoglio, detail", credit: "Wikimedia Commons" }
+    ],
+        fullText: `You've arrived at Piazza del Campidoglio, one of the masterpieces of Italian Renaissance urban design. It was designed by Michelangelo Buonarroti starting in 1536, commissioned by Pope Paul the Third, for the arrival in Rome of Emperor Charles the Fifth.<br><br>
+Look at the geometric pattern of the pavement: an oval star design, with the equestrian statue of Marcus Aurelius at its center. What you see today is a perfect copy: the original, in gilded bronze, is kept inside the Capitoline Museums to protect it from weathering. It survived the centuries thanks to a curious mistake. In the Middle Ages people wrongly believed the statue depicted Emperor Constantine, the first Christian ruler. For that reason it was spared the melting down that claimed nearly every other pagan bronze statue from antiquity.<br><br>
+The Capitoline Hill on which this square sits was the most sacred religious center of all ancient Rome. Here stood the grand Temple of Jupiter Optimus Maximus, the Roman state's most important sanctuary, of which only a few traces remain today beneath the Capitoline Museums.<br><br>
+Michelangelo also designed the facades of the two flanking palaces, the Palazzo dei Conservatori and the Palazzo Nuovo, which today house the Capitoline Museums, the oldest public museum in the world, open to the public since 1734. The project was completed only after the artist's death, but faithfully following his original design.<br><br>
+Look also at the two colossal statues of Castor and Pollux, the Dioscuri, flanking the staircase leading up to the square, the Cordonata, also designed by Michelangelo. They were found in the sixteenth century in the area of the Jewish Ghetto and transported here. In an era like that one, moving marble statues of that size across the entire city was no small engineering feat. It required special carts and entire days of labor.<br><br>
+The Capitoline Hill also houses the Palazzo Senatorio, still today the seat of Rome's City Hall. Here the city's mayor is sworn in even now. The building's foundations reach down into the ancient Roman Tabularium, the empire's state archive where laws engraved on bronze tablets were once kept. A thread of administrative continuity linking two thousand years of governing the same city, from emperors to contemporary mayors.<br><br>
+On one side of the square, a staircase leads to a panoramic terrace overlooking the Roman Forum, one of the most spectacular viewpoints of the entire archaeological area, often less crowded than the forum's official entrances.<br><br>
+When you're ready, head down toward Piazza della Bocca della Verità.`,
+        deepen: []
+      }
+    }
+  },
+  {
+    id: 6, ready: true,
+    lat: 41.8888168, lon: 12.4814711,
+    i18n: {
+      it: {
+        name: "Bocca della Verità",
+        desc: "La maschera che morde i bugiardi, resa celebre da Vacanze Romane",
+        audio: "audio/it/tappa6.mp3",
+        photos: [
+      { time: 0, url: "img/t6_bocca1.jpg", caption: "Bocca della Verità", credit: "Wikimedia Commons" },
+      { time: 68, url: "img/t6_bocca2.jpg", caption: "Bocca della Verità, dettaglio", credit: "Wikimedia Commons" }
+    ],
+        fullText: `Sei arrivato in Piazza della Bocca della Verità, e qui si trova uno dei simboli più fotografati di Roma. La maschera di marmo, murata nel portico della Chiesa di Santa Maria in Cosmedin dal 1632, ha un diametro di quasi due metri e pesa oltre milletrecento chili.<br><br>
+La leggenda medievale, ormai famosa in tutto il mondo, racconta che chiunque menta tenendo la mano dentro quella bocca aperta rischi di vedersela morsa via. Una versione più elaborata narra di una donna sospettata di adulterio: il giorno della prova, il suo amante travestito da pazzo la baciò in pubblico davanti a tutti. Quando lei giurò di non essere mai stata baciata da nessun altro se non da suo marito e da "quel pazzo", tecnicamente disse il vero, e la Bocca non la morse.<br><br>
+Gli storici ritengono più probabile che si trattasse in origine di un semplice tombino di epoca romana, forse raffigurante il dio del mare Oceano, parte del sistema fognario della Cloaca Massima che ancora oggi scorre sotto questa zona della città.<br><br>
+La fama mondiale moderna della maschera arrivò soprattutto grazie al cinema. Nel film "Vacanze Romane" del 1953, Gregory Peck finge di perdere la mano dentro la Bocca per spaventare Audrey Hepburn. Secondo alcuni resoconti dell'epoca, l'attrice credette davvero, per un istante, che lo scherzo fosse reale.<br><br>
+Proprio davanti alla piazza si trova anche il Tempio di Ercole Vincitore, uno dei templi in marmo meglio conservati di tutta Roma, risalente al secondo secolo avanti Cristo. È un tempio circolare che richiama nella forma, seppur in scala minore, edifici come il Pantheon che visiteremo più avanti nel nostro giro.<br><br>
+L'intera zona, chiamata Forum Boarium in epoca romana, ospitava il mercato del bestiame della città, da cui il nome. Fino al 1868 questa stessa piazza fu anche luogo di esecuzioni capitali pubbliche, un contrasto stridente con l'atmosfera oggi rilassata e quasi giocosa attorno alla Bocca della Verità, con turisti in fila sorridenti per una fotografia.<br><br>
+Poco distante si trova anche il Tempio di Portuno, dedicato al dio protettore dei porti fluviali. Ricorda quanto questa zona fosse un tempo il vero porto commerciale di Roma sul Tevere, prima che il centro economico della città si spostasse altrove nei secoli successivi. Osservando insieme questi due templi, rettangolare e circolare, hai davanti agli occhi due dei rarissimi esempi di architettura templare romana sopravvissuti quasi integri fino a oggi. Un'eccezione rara in una città dove la maggior parte dei templi antichi fu spogliata o distrutta.<br><br>
+Quando sei pronto, prendi la metro B fino a Piazza Venezia, oppure cammina se preferisci: sono circa venti minuti a piedi lungo Via del Teatro di Marcello.`,
+        deepen: []
+      },
+      en: {
+        name: "Mouth of Truth",
+        desc: "The mask that bites liars, made famous by Roman Holiday",
+        audio: "audio/en/tappa6.mp3",
+        photos: [
+      { time: 0, url: "img/t6_bocca1.jpg", caption: "Mouth of Truth", credit: "Wikimedia Commons" },
+      { time: 62, url: "img/t6_bocca2.jpg", caption: "Mouth of Truth, detail", credit: "Wikimedia Commons" }
+    ],
+        fullText: `You've arrived at Piazza della Bocca della Verità, home to one of Rome's most photographed symbols. The marble mask, set into the portico of the Church of Santa Maria in Cosmedin since 1632, measures nearly two meters across and weighs over thirteen hundred kilograms.<br><br>
+The medieval legend, famous worldwide by now, says that anyone who lies while keeping their hand inside that open mouth risks having it bitten off. A more elaborate version tells of a woman suspected of adultery: on the day of the test, her lover, disguised as a madman, kissed her in public in front of everyone. When she swore she had never been kissed by anyone except her husband and "that madman", she was technically telling the truth, and the Mouth didn't bite.<br><br>
+Historians believe it was more likely originally a simple Roman-era drain cover, possibly depicting the sea god Oceanus, part of the sewer system of the Cloaca Maxima that still runs beneath this part of the city today.<br><br>
+The mask's modern worldwide fame came mostly from cinema. In the 1953 film "Roman Holiday", Gregory Peck pretends to lose his hand inside the Mouth to scare Audrey Hepburn. Some accounts from the time say she genuinely believed, if only for a moment, that the prank was real.<br><br>
+Right in front of the square stands the Temple of Hercules Victor, one of the best preserved marble temples in all of Rome, dating back to the second century BC. It's a circular temple whose shape echoes, on a smaller scale, buildings like the Pantheon we'll visit later in our tour.<br><br>
+This whole area, called the Forum Boarium in Roman times, hosted the city's cattle market, hence the name. Until 1868 this very square was also a site of public executions, a jarring contrast with today's relaxed, almost playful atmosphere around the Mouth of Truth, with tourists lining up smiling for a photo.<br><br>
+Not far away stands the Temple of Portunus, dedicated to the god who protected river harbors, a reminder that this area was once Rome's real commercial port on the Tiber, before the city's economic center shifted elsewhere in later centuries. Looking at these two temples together, one rectangular and one circular, you're facing two of the rarest examples of Roman temple architecture surviving nearly intact today. An exception in a city where most ancient temples were stripped or destroyed.<br><br>
+When you're ready, take metro line B to Piazza Venezia, or walk if you prefer: it's about twenty minutes on foot along Via del Teatro di Marcello.`,
+        deepen: []
+      }
+    }
+  },
+  {
+    id: 7, ready: true,
+    lat: 41.8959886, lon: 12.4824632,
+    i18n: {
+      it: {
+        name: "Piazza Venezia",
+        desc: "Il Vittoriano, la Tomba del Milite Ignoto e il balcone di Mussolini",
+        audio: "audio/it/tappa7.mp3",
+        photos: [
+      { time: 0, url: "img/t7_venezia1.jpg", caption: "Piazza Venezia", credit: "Wikimedia Commons" },
+      { time: 66, url: "img/t7_venezia2.jpg", caption: "Piazza Venezia, dettaglio", credit: "Wikimedia Commons" }
+    ],
+        fullText: `Sei arrivato in Piazza Venezia, considerata il centro geometrico e simbolico di Roma moderna. È dominata dall'imponente Vittoriano, il monumento bianco che i romani chiamano affettuosamente "la macchina da scrivere" per la sua forma squadrata e monumentale.<br><br>
+Fu costruito tra il 1885 e il 1935 per celebrare Vittorio Emanuele Secondo, primo re d'Italia unita, e per rappresentare simbolicamente l'unità nazionale appena raggiunta dopo secoli di frammentazione politica della penisola. Per costruirlo fu necessario demolire un intero quartiere medievale, inclusa parte del Colle Capitolino. Fu una decisione controversa che i romani dell'epoca non presero affatto bene, protestando pubblicamente contro la distruzione del tessuto storico cittadino.<br><br>
+Al centro del monumento arde la Tomba del Milite Ignoto, dal 1921 luogo di sepoltura simbolica per tutti i soldati italiani caduti e mai identificati nella Prima Guerra Mondiale. Una fiamma perenne brucia giorno e notte, sorvegliata da un picchetto d'onore che si cambia con regolarità cerimoniale davanti ai visitatori.<br><br>
+Il Palazzo Venezia, che dà il nome alla piazza, fu residenza dei papi veneziani e poi ambasciata della Repubblica di Venezia a Roma. Nel Novecento divenne tristemente famoso per il balcone da cui Benito Mussolini teneva i suoi discorsi pubblici, affacciandosi sulla folla radunata appositamente nella piazza sottostante durante il ventennio fascista.<br><br>
+Dalla terrazza panoramica in cima al Vittoriano, raggiungibile con un ascensore panoramico a pagamento, si gode di una delle viste a trecentosessanta gradi più complete su tutta Roma. Spazia dai Fori Imperiali fino alla cupola di San Pietro in lontananza. Un punto di osservazione spesso sottovalutato rispetto ad altri belvedere più celebri della città.<br><br>
+Guarda anche i due leoni egizi in basalto nero ai piedi della scalinata del Vittoriano. Sono autentici reperti dell'antico Egitto, portati a Roma in epoca imperiale come bottino di conquista. Furono riutilizzati qui nell'Ottocento come elemento decorativo di un monumento nato per celebrare, paradossalmente, l'identità nazionale italiana appena unificata.<br><br>
+Il fascio littorio scolpito su alcune facciate degli edifici circostanti la piazza, oggi spesso ignorato dai passanti, ricorda un'epoca diversa. Questa piazza fu il fulcro simbolico del potere fascista in Italia. Da qui Mussolini annunciò l'ingresso del paese nella Seconda Guerra Mondiale nel 1940, davanti a una folla oceanica radunata apposta per l'occasione.<br><br>
+Quando sei pronto, dirigiti verso il Pantheon, a circa dieci minuti a piedi lungo Via del Corso e le vie laterali.`,
+        deepen: []
+      },
+      en: {
+        name: "Piazza Venezia",
+        desc: "The Vittoriano, the Tomb of the Unknown Soldier and Mussolini's balcony",
+        audio: "audio/en/tappa7.mp3",
+        photos: [
+      { time: 0, url: "img/t7_venezia1.jpg", caption: "Piazza Venezia", credit: "Wikimedia Commons" },
+      { time: 60, url: "img/t7_venezia2.jpg", caption: "Piazza Venezia, detail", credit: "Wikimedia Commons" }
+    ],
+        fullText: `You've arrived at Piazza Venezia, considered the geometric and symbolic center of modern Rome, dominated by the imposing Vittoriano, the white monument Romans affectionately call "the typewriter" for its squared, monumental shape.<br><br>
+It was built between 1885 and 1935 to honor Victor Emmanuel the Second, Italy's first king after unification, and to symbolically represent the national unity just achieved after centuries of political fragmentation across the peninsula. Building it required demolishing an entire medieval quarter, including part of the Capitoline Hill. It was a controversial decision that Romans of the time did not take well at all, publicly protesting the destruction of the city's historic fabric.<br><br>
+At the center of the monument burns the Tomb of the Unknown Soldier, since 1921 a symbolic burial place for all Italian soldiers who died and were never identified in the First World War. An eternal flame burns day and night, guarded by an honor detail that changes with ceremonial regularity in front of visitors.<br><br>
+Palazzo Venezia, which gives the square its name, was once home to Venetian popes and later the embassy of the Republic of Venice in Rome. In the twentieth century it became infamous for the balcony from which Benito Mussolini delivered his public speeches, addressing crowds gathered specifically in the square below during the Fascist era.<br><br>
+Look also at the two black basalt Egyptian lions at the foot of the Vittoriano's staircase. They're authentic ancient Egyptian artifacts, brought to Rome in imperial times as war spoils. They were reused here in the nineteenth century as decoration for a monument built, somewhat paradoxically, to celebrate Italy's newly unified national identity.<br><br>
+The fascist emblem carved into some of the facades around the square, often ignored by passersby today, recalls an era when this square was the symbolic core of fascist power in Italy. It was from here that Mussolini announced Italy's entry into the Second World War in 1940, in front of an enormous crowd gathered specifically for the occasion.<br><br>
+From the panoramic terrace atop the Vittoriano, reachable by a paid panoramic elevator, you get one of the most complete three-hundred-sixty degree views over all of Rome. It stretches from the Imperial Forums all the way to the dome of Saint Peter's in the distance, a viewpoint often underrated compared to other more celebrated belvederes in the city.<br><br>
+When you're ready, head toward the Pantheon, about a ten-minute walk along Via del Corso and the side streets.`,
+        deepen: []
+      }
+    }
+  },
+  {
+    id: 8, ready: true,
+    lat: 41.8986111, lon: 12.476898,
+    i18n: {
+      it: {
+        name: "Pantheon",
+        desc: "La cupola più grande mai costruita senza armature, ancora oggi",
+        audio: "audio/it/tappa8.mp3",
+        photos: [
+      { time: 0, url: "img/t8_pantheon1.jpg", caption: "Pantheon", credit: "Wikimedia Commons" },
+      { time: 75, url: "img/t8_pantheon2.jpg", caption: "Pantheon, dettaglio", credit: "Wikimedia Commons" }
+    ],
+        fullText: `Sei arrivato al Pantheon, l'edificio antico meglio conservato di tutta Roma, e uno dei monumenti architettonici più influenti della storia occidentale. La sua cupola in cemento, ancora oggi la più grande cupola non armata mai costruita al mondo, ha ispirato architetti per quasi duemila anni, da Brunelleschi a Michelangelo.<br><br>
+L'iscrizione sulla facciata attribuisce l'edificio a Marco Agrippa, genero dell'imperatore Augusto, che lo fece costruire nel 27 avanti Cristo. Ma quello che vedi oggi è in realtà una ricostruzione quasi totale voluta dall'imperatore Adriano circa un secolo e mezzo dopo. Adriano scelse comunque di mantenere l'iscrizione originale in onore del suo predecessore, un gesto di modestia rarissimo tra gli imperatori romani.<br><br>
+Al centro della cupola si apre l'oculo, un foro circolare di nove metri di diametro, unica fonte di luce naturale dell'intero edificio. Quando piove, l'acqua cade direttamente sul pavimento sottostante, che per questo fu progettato con una lievissima pendenza e piccoli fori di scolo, quasi invisibili, pensati fin dall'origine per gestire proprio questo fenomeno.<br><br>
+Il Pantheon sopravvisse quasi intatto attraverso i secoli grazie a una conversione tutt'altro che scontata. Nel 609 dopo Cristo fu trasformato in chiesa cristiana, dedicata a Santa Maria ad Martyres. Diventò così uno dei pochissimi templi pagani mai consacrati ufficialmente al culto cristiano, invece di essere distrutto o abbandonato.<br><br>
+All'interno riposano personaggi illustri come il pittore Raffaello Sanzio, morto nel 1520, e i primi due re d'Italia unita, Vittorio Emanuele Secondo e Umberto Primo. Una curiosità architettonica che sorprende molti visitatori: l'altezza interna dell'edificio, dal pavimento alla sommità della cupola, è esattamente identica al diametro della base circolare. Una sfera perfetta potrebbe teoricamente essere inscritta all'interno dello spazio, secondo un calcolo geometrico voluto deliberatamente dagli architetti romani duemila anni fa.<br><br>
+Le ventotto colonne di granito che sorreggono il portico d'ingresso, ciascuna di un unico blocco monolitico alto quasi tredici metri, furono trasportate dall'Egitto via nave fino a Roma. Fu un'impresa logistica straordinaria per l'epoca, che richiese anni di pianificazione e il coordinamento di un'intera flotta dedicata al solo trasporto di marmi e graniti pregiati verso la capitale dell'impero.<br><br>
+Nel 1747 papa Benedetto Quattordicesimo fece installare due orologi identici sulla facciata. Uno funzionava all'ora solare, l'altro all'ora italica, un sistema di conteggio del tempo in uso a Roma fino all'Ottocento che faceva iniziare il giorno al tramonto anziché a mezzanotte. Serviva un calcolo complesso per chiunque dovesse coordinare appuntamenti tra sistemi orari diversi.<br><br>
+Quando sei pronto, dirigiti verso Piazza Navona, a pochi minuti a piedi.`,
+        deepen: []
+      },
+      en: {
+        name: "Pantheon",
+        desc: "The largest unreinforced dome ever built, still standing today",
+        audio: "audio/en/tappa8.mp3",
+        photos: [
+      { time: 0, url: "img/t8_pantheon1.jpg", caption: "Pantheon", credit: "Wikimedia Commons" },
+      { time: 67, url: "img/t8_pantheon2.jpg", caption: "Pantheon, detail", credit: "Wikimedia Commons" }
+    ],
+        fullText: `You've arrived at the Pantheon, the best preserved ancient building in all of Rome, and one of the most influential architectural monuments in Western history. Its concrete dome, still the largest unreinforced dome ever built in the world, has inspired architects for nearly two thousand years, from Brunelleschi to Michelangelo.<br><br>
+The inscription on the facade credits the building to Marcus Agrippa, son-in-law of Emperor Augustus, who had it built in 27 BC. But what you see today is actually an almost total reconstruction commissioned by Emperor Hadrian about a century and a half later. He chose to keep the original inscription anyway, in honor of his predecessor, a remarkably humble gesture rare among Roman emperors.<br><br>
+At the center of the dome opens the oculus, a circular opening nine meters across, the building's only source of natural light. When it rains, water falls straight onto the floor below, which was designed with a very slight slope and small, almost invisible drainage holes, planned from the start to handle exactly this phenomenon.<br><br>
+The Pantheon survived nearly intact through the centuries thanks to a conversion that was anything but obvious. In 609 AD it was turned into a Christian church, dedicated to Santa Maria ad Martyres, becoming one of the very few pagan temples ever officially consecrated for Christian worship instead of being destroyed or abandoned.<br><br>
+Inside rest notable figures like the painter Raphael, who died in 1520, and Italy's first two kings after unification, Victor Emmanuel the Second and Umberto the First. An architectural curiosity that surprises many visitors: the building's interior height, from the floor to the top of the dome, is exactly identical to the diameter of the circular base. A perfect sphere could theoretically be inscribed within that space, following a geometric calculation deliberately intended by Roman architects two thousand years ago.<br><br>
+The twenty-eight granite columns supporting the entrance portico, each a single monolithic block nearly thirteen meters tall, were shipped all the way from Egypt to Rome. It was an extraordinary logistical feat for the time, requiring years of planning and coordinating an entire fleet dedicated solely to transporting prized marble and granite to the capital of the empire.<br><br>
+In 1747 Pope Benedict the Fourteenth had two identical clocks installed on the facade, one running on solar time and the other on Italian time. It was a time-counting system used in Rome until the nineteenth century that made the day start at sunset instead of midnight. Coordinating appointments across different time systems required rather complex calculations.<br><br>
+When you're ready, head toward Piazza Navona, just a few minutes' walk away.`,
+        deepen: []
+      }
+    }
+  },
+  {
+    id: 9, ready: true,
+    lat: 41.8991868, lon: 12.4732717,
+    i18n: {
+      it: {
+        name: "Piazza Navona",
+        desc: "Uno stadio romano sotto i piedi, un capolavoro del Bernini sopra",
+        audio: "audio/it/tappa9.mp3",
+        photos: [
+      { time: 0, url: "img/t9_navona1.jpg", caption: "Piazza Navona", credit: "Wikimedia Commons" },
+      { time: 69, url: "img/t9_navona2.jpg", caption: "Piazza Navona, dettaglio", credit: "Wikimedia Commons" }
+    ],
+        fullText: `Sei arrivato in Piazza Navona, una delle piazze barocche più scenografiche al mondo. Fu costruita seguendo esattamente la forma allungata di un antico stadio romano, quello di Domiziano, costruito nell'86 dopo Cristo per ospitare gare atletiche e competizioni greche.<br><br>
+Guarda la forma stessa della piazza: quella curvatura allungata che vedi ancora oggi ricalca perfettamente il tracciato della pista dello stadio antico, sepolto sotto i tuoi piedi a circa quattro metri di profondità. Parte delle antiche gradinate romane è ancora visibile in un percorso archeologico sotterraneo accessibile con biglietto separato, uno dei segreti meno noti di questa piazza.<br><br>
+Al centro domina la Fontana dei Quattro Fiumi, capolavoro assoluto di Gian Lorenzo Bernini, completata nel 1651 su commissione di papa Innocenzo Decimo. Le quattro statue rappresentano i fiumi Nilo, Gange, Danubio e Rio della Plata, simboli dei quattro continenti allora conosciuti dove si estendeva l'influenza della Chiesa cattolica.<br><br>
+Una leggenda urbana, priva di fondamento storico ma molto raccontata dalle guide turistiche, narra di una presunta rivalità artistica tra Bernini e Francesco Borromini, autore della chiesa di Sant'Agnese in Agone che affaccia proprio sulla piazza. Si dice che la statua del Rio della Plata alzi il braccio per proteggersi dal presunto crollo imminente della facciata della chiesa rivale. Il Nilo, invece, si coprirebbe il volto per non doverla guardare. È un aneddoto quasi certamente inventato, dato che la fontana fu completata prima ancora che Borromini iniziasse i lavori sulla facciata della chiesa.<br><br>
+Questa piazza, fin dal Seicento, ospitava anche mercati pubblici. Nei mesi estivi più caldi, veniva volutamente allagata dai romani per creare un'enorme vasca rinfrescante. Le famiglie nobili passeggiavano in carrozza tra gli spruzzi d'acqua, in un rito cittadino che si mantenne fino all'Ottocento inoltrato.<br><br>
+Ai due estremi della piazza si trovano altre due fontane minori, spesso ignorate dai visitatori concentrati sulla fontana centrale del Bernini. La Fontana del Moro, anch'essa in parte disegnata da Bernini, e la Fontana del Nettuno. Quest'ultima fu completata solo nell'Ottocento per creare simmetria con la sua gemella, quasi due secoli dopo le altre due sculture principali della piazza.<br><br>
+Piazza Navona ospita ancora oggi, soprattutto nel periodo natalizio, un mercatino tradizionale dedicato ai presepi e ai giocattoli. È una consuetudine che affonda le radici in secoli di storia popolare romana, e che continua a richiamare famiglie intere ogni dicembre. Una delle poche tradizioni cittadine sopravvissute pressoché immutate fino ai giorni nostri.<br><br>
+Quando sei pronto, dirigiti verso Campo de' Fiori, a pochi minuti a piedi verso sud.`,
+        deepen: []
+      },
+      en: {
+        name: "Piazza Navona",
+        desc: "A Roman stadium underfoot, a Bernini masterpiece above",
+        audio: "audio/en/tappa9.mp3",
+        photos: [
+      { time: 0, url: "img/t9_navona1.jpg", caption: "Piazza Navona", credit: "Wikimedia Commons" },
+      { time: 60, url: "img/t9_navona2.jpg", caption: "Piazza Navona, detail", credit: "Wikimedia Commons" }
+    ],
+        fullText: `You've arrived at Piazza Navona, one of the most scenic Baroque squares in the world, built following exactly the elongated shape of an ancient Roman stadium, Domitian's stadium, built in 86 AD to host athletic games and Greek-style competitions.<br><br>
+Look at the very shape of the square: that elongated curve you see today perfectly traces the layout of the ancient stadium's track, buried beneath your feet about four meters down. Part of the old Roman stands is still visible along an underground archaeological path, accessible with a separate ticket, one of this square's lesser-known secrets.<br><br>
+At the center stands the Fountain of the Four Rivers, an absolute masterpiece by Gian Lorenzo Bernini, completed in 1651 for Pope Innocent the Tenth. The four statues represent the Nile, the Ganges, the Danube, and the Río de la Plata, symbols of the four continents then known to be under the Catholic Church's reach.<br><br>
+An urban legend, with no historical basis but often repeated by tour guides, tells of a supposed artistic rivalry between Bernini and Francesco Borromini, architect of the Sant'Agnese in Agone church facing the square. It's said the statue of the Río de la Plata raises its arm to shield itself from the supposed imminent collapse of the rival church's facade, and that the Nile covers its face so as not to have to look at it. It's an almost certainly invented anecdote, since the fountain was completed before Borromini even began work on the church facade.<br><br>
+At each end of the square stand two smaller fountains, often overlooked by visitors focused on Bernini's central fountain. The Fountain of the Moor, also partly designed by Bernini, and the Fountain of Neptune. The latter was completed only in the nineteenth century to create symmetry with its twin, almost two centuries after the square's other main sculptures.<br><br>
+This square, since the seventeenth century, has also hosted public markets. In the hottest summer months, it was deliberately flooded by Romans to create an enormous cooling pool. Noble families would stroll through in carriages amid the splashing water, in a city ritual that lasted well into the nineteenth century.<br><br>
+Piazza Navona still hosts today, especially around Christmastime, a traditional market devoted to nativity scenes and toys. It's a custom rooted in centuries of Roman popular history that still draws entire families every December. One of the few city traditions that has survived nearly unchanged to this day.<br><br>
+When you're ready, head toward Campo de' Fiori, a few minutes' walk to the south.`,
+        deepen: []
+      }
+    }
+  },
+  {
+    id: 10, ready: true,
+    lat: 41.8955234, lon: 12.4722643,
+    i18n: {
+      it: {
+        name: "Campo de' Fiori",
+        desc: "Il mercato, il rogo di Giordano Bruno, la vita notturna romana",
+        audio: "audio/it/tappa10.mp3",
+        photos: [
+      { time: 0, url: "img/t10_campo1.jpg", caption: "Campo de' Fiori", credit: "Wikimedia Commons" },
+      { time: 68, url: "img/t10_campo2.jpg", caption: "Campo de' Fiori, dettaglio", credit: "Wikimedia Commons" }
+    ],
+        fullText: `Sei arrivato a Campo de' Fiori, una delle piazze più autentiche e vissute del centro storico romano, sede ogni mattina di un colorato mercato di frutta, verdura e fiori che si tiene ininterrottamente da secoli.<br><br>
+Il nome, "campo dei fiori", deriva probabilmente dal prato fiorito che occupava quest'area prima dell'urbanizzazione medievale. Alcuni storici lo collegano invece al nome di Flora, presunta amante dell'antico condottiero romano Pompeo, che aveva fatto costruire qui vicino il suo grande teatro.<br><br>
+Al centro della piazza si erge la statua di Giordano Bruno, filosofo e frate domenicano bruciato vivo proprio in questo luogo nel 1600, condannato dall'Inquisizione romana per eresia. Le sue teorie, tra cui l'idea rivoluzionaria di un universo infinito con infiniti mondi abitati, erano troppo audaci per l'epoca. La statua fu eretta solo nel 1889 dopo l'Unità d'Italia, voluta deliberatamente in chiave anticlericale dal nuovo stato laico. Ancora oggi il suo volto guarda accusatoriamente verso il Vaticano, in direzione della sede storica dell'Inquisizione.<br><br>
+A differenza di quasi ogni altra piazza storica di Roma, Campo de' Fiori non ospita alcuna chiesa. Una scelta insolita per l'epoca medievale, forse legata proprio al passato di piazza delle esecuzioni pubbliche. Alcuni la considerano un luogo non abbastanza sacro da meritare un edificio religioso.<br><br>
+Il mercato mattutino che si tiene ancora oggi qui, tra bancarelle di ortaggi freschi e fiori colorati, contrasta con la storia cupa della piazza. Di sera, gli stessi spazi si riempiono di bar e locali frequentati soprattutto da studenti e giovani romani. L'atmosfera cambia completamente umore tra il giorno e la notte.<br><br>
+Sotto le fondamenta degli edifici che circondano la piazza si trovano ancora oggi i resti del Teatro di Pompeo, il primo teatro permanente in pietra costruito a Roma, capace un tempo di ospitare fino a undicimila spettatori. La curva stessa di alcune strade adiacenti, che sembra inspiegabile a chi cammina distrattamente, ricalca ancora oggi il perimetro semicircolare di quell'antico edificio, scomparso quasi duemila anni fa.<br><br>
+Nonostante il passato cupo legato all'Inquisizione, oggi Campo de' Fiori è conosciuta soprattutto per la sua vita notturna vivace. Decine di piccoli locali si affollano ogni sera di studenti universitari romani e turisti. È un contrasto quasi stridente, ma tipicamente romano, tra la memoria storica più drammatica e la spensieratezza della vita quotidiana contemporanea.<br><br>
+Quando sei pronto, dirigiti verso la Fontana di Trevi: da qui sono circa venticinque minuti a piedi, oppure puoi prendere un autobus lungo Corso Vittorio Emanuele.`,
+        deepen: []
+      },
+      en: {
+        name: "Campo de' Fiori",
+        desc: "The market, Giordano Bruno's execution, Roman nightlife",
+        audio: "audio/en/tappa10.mp3",
+        photos: [
+      { time: 0, url: "img/t10_campo1.jpg", caption: "Campo de' Fiori", credit: "Wikimedia Commons" },
+      { time: 53, url: "img/t10_campo2.jpg", caption: "Campo de' Fiori, detail", credit: "Wikimedia Commons" }
+    ],
+        fullText: `You've arrived at Campo de' Fiori, one of the most authentic and lived-in squares in Rome's historic center, home every morning to a colorful market of fruit, vegetables, and flowers that has been held here continuously for centuries.<br><br>
+The name, "field of flowers", probably comes from the flowering meadow that occupied this area before medieval urbanization. Some historians instead link it to the name of Flora, rumored lover of the ancient Roman general Pompey, who had built his great theater nearby.<br><br>
+At the center of the square stands the statue of Giordano Bruno, philosopher and Dominican friar burned alive right here in 1600, condemned by the Roman Inquisition for heresy. His theories, including the revolutionary idea of an infinite universe with infinite inhabited worlds, were too bold for his time. The statue, erected only in 1889 after Italian unification, was deliberately chosen as an anti-clerical statement by the new secular state. Even today its face stares accusingly toward the Vatican, in the direction of the Inquisition's historic seat.<br><br>
+Unlike almost every other historic square in Rome, Campo de' Fiori has no church at all. It's an unusual choice for the medieval period, perhaps tied to its past as a square for public executions. Some considered it not sacred enough to deserve a religious building.<br><br>
+Beneath the foundations of the buildings surrounding the square still lie the remains of the Theatre of Pompey, the first permanent stone theater built in Rome, once able to hold up to eleven thousand spectators. The curve of some of the nearby streets, which seems inexplicable to someone walking by casually, still traces the semicircular perimeter of that ancient building, gone for nearly two thousand years.<br><br>
+Despite the dark history tied to the Inquisition, today Campo de' Fiori is known mostly for its lively nightlife. Dozens of small bars fill up every evening with Roman university students and tourists. It's a striking, yet typically Roman, contrast between the square's darkest historical memory and the carefree spirit of contemporary daily life.<br><br>
+When you're ready, head toward the Trevi Fountain: it's about a twenty-five minute walk from here, or you can catch a bus along Corso Vittorio Emanuele.`,
+        deepen: []
+      }
+    }
+  },
+  {
+    id: 11, ready: true,
+    lat: 41.9008964, lon: 12.4833355,
+    i18n: {
+      it: {
+        name: "Fontana di Trevi",
+        desc: "La monetina, l'architetto ossessionato, e Fendi che paga il restauro",
+        audio: "audio/it/tappa11.mp3",
+        photos: [
+      { time: 0, url: "img/t11_trevi1.jpg", caption: "Fontana di Trevi", credit: "Wikimedia Commons" },
+      { time: 69, url: "img/t11_trevi2.jpg", caption: "Fontana di Trevi, dettaglio", credit: "Wikimedia Commons" }
+    ],
+        fullText: `Sei arrivato alla Fontana di Trevi, la fontana più famosa del mondo, incastonata sorprendentemente in una piazzetta piccola rispetto alla monumentalità della scultura stessa. Fu completata nel 1762 su progetto di Nicola Salvi, dopo trent'anni di lavori.<br><br>
+La fontana segna il punto d'arrivo dell'Acqua Vergine, un acquedotto romano di duemila anni fa, ancora oggi funzionante e restaurato più volte nei secoli, che porta l'acqua da sorgenti a circa venti chilometri da Roma. Al centro, la statua dell'Oceano su un carro trainato da cavalli marini domina la composizione, circondato da allegorie della salute e dell'abbondanza.<br><br>
+La tradizione del lancio della monetina, oggi conosciuta in tutto il mondo, fu resa celebre soprattutto dal cinema del Novecento, in particolare dal film "Tre soldi nella fontana" del 1954. Secondo la leggenda moderna, lanciare una moneta con la mano destra sopra la spalla sinistra garantisce un futuro ritorno a Roma. Le monete raccolte ogni giorno, si stima circa tremila euro, vengono devolute dal Comune alla Caritas per sostenere progetti di assistenza ai bisognosi della città.<br><br>
+Un aneddoto meno noto riguarda proprio l'architetto Salvi: morì nel 1751, undici anni prima del completamento dell'opera, senza mai vederla finita. Si narra che passasse ore nascosto in una barbieria proprio di fronte al cantiere, controllando ossessivamente i lavori attraverso la finestra, tanto era il suo attaccamento al progetto a cui aveva dedicato l'intera carriera.<br><br>
+La facciata del palazzo alle spalle della fontana appartiene al Palazzo Poli, e nasconde un dettaglio curioso. Al centro della composizione scultorea si trova un piccolo particolare chiamato "Asso di Coppe", una vasca a forma di coppa rovesciata. Secondo la leggenda fu aggiunta per volere di un barbiere del quartiere che si lamentava della vista rovinata dal cantiere. Salvi gli avrebbe dedicato ironicamente questo dettaglio come dispetto scherzoso.<br><br>
+La fontana fu anche protagonista di un evento insolito nel 2007. Il celebre stilista Valentino organizzò qui una sfilata di moda esclusiva per festeggiare i quarantacinque anni della sua maison, facendo sfilare le modelle direttamente sulle acque poco profonde della vasca. Fu un evento eccezionale, autorizzato solo dopo lunghe trattative con il Comune di Roma.<br><br>
+Curiosità sul restauro più recente: nel 2013 la manutenzione della fontana fu finanziata interamente dalla maison di moda Fendi, con un investimento di oltre due milioni di euro. Fu un accordo di sponsorizzazione culturale che ha aperto la strada a simili collaborazioni tra grandi marchi e monumenti storici italiani, un modello poi replicato per altri restauri celebri in tutta la città.<br><br>
+Quando sei pronto, dirigiti verso Piazza di Spagna, circa dieci minuti a piedi.`,
+        deepen: []
+      },
+      en: {
+        name: "Trevi Fountain",
+        desc: "The coin toss, the obsessed architect, and Fendi footing the restoration bill",
+        audio: "audio/en/tappa11.mp3",
+        photos: [
+      { time: 0, url: "img/t11_trevi1.jpg", caption: "Trevi Fountain", credit: "Wikimedia Commons" },
+      { time: 65, url: "img/t11_trevi2.jpg", caption: "Trevi Fountain, detail", credit: "Wikimedia Commons" }
+    ],
+        fullText: `You've arrived at the Trevi Fountain, the most famous fountain in the world, surprisingly tucked into a small square given the sheer scale of the sculpture itself. It was completed in 1762, designed by Nicola Salvi, after thirty years of construction.<br><br>
+The fountain marks the endpoint of the Aqua Virgo, an ancient Roman aqueduct nearly two thousand years old, still functioning today and restored many times over the centuries, carrying water from springs about twenty kilometers from Rome. At the center, the statue of Ocean on a chariot pulled by sea horses dominates the composition, surrounded by allegories of health and abundance.<br><br>
+The coin-tossing tradition, now known worldwide, was made famous mostly by twentieth-century cinema, especially the 1954 film "Three Coins in the Fountain". According to modern legend, throwing a coin with your right hand over your left shoulder guarantees a future return to Rome. Coins collected each day, estimated at around three thousand euros, are donated by the city government to Caritas to support assistance programs for people in need.<br><br>
+A lesser-known anecdote concerns the architect Salvi himself: he died in 1751, eleven years before the work was completed, never seeing it finished. It's said he spent hours hiding in a barber shop right across from the construction site, obsessively watching the work through the window, so deep was his attachment to a project he'd dedicated his entire career to.<br><br>
+The palace facade behind the fountain belongs to Palazzo Poli, and hides a curious detail. At the center of the sculptural composition sits a small feature called the "Ace of Cups", a basin shaped like an upside-down cup. Legend says it was added because a local barber complained about his view being ruined by the construction site. Salvi supposedly dedicated this detail to him as a playful jab.<br><br>
+The fountain was also the setting for an unusual event in 2007. The celebrated fashion designer Valentino staged an exclusive fashion show here, celebrating the forty-fifth anniversary of his fashion house, having models walk directly across the shallow waters of the basin. It was an exceptional event, authorized only after lengthy negotiations with the city of Rome.<br><br>
+A curiosity about the most recent restoration: in 2013 the fountain's maintenance was funded entirely by the fashion house Fendi, with an investment of over two million euros. It was a cultural sponsorship deal that opened the door to similar collaborations between major brands and Italian historic monuments, a model later replicated for other famous restorations across the city.<br><br>
+When you're ready, head toward Piazza di Spagna, about a ten-minute walk.`,
+        deepen: []
+      }
+    }
+  },
+  {
+    id: 12, ready: true,
+    lat: 41.9058984, lon: 12.4823397,
+    i18n: {
+      it: {
+        name: "Piazza di Spagna",
+        desc: "La scalinata francese, Keats, e lo shopping di lusso romano",
+        audio: "audio/it/tappa12.mp3",
+        photos: [
+      { time: 0, url: "img/t12_spagna1.jpg", caption: "Piazza di Spagna", credit: "Wikimedia Commons" },
+      { time: 74, url: "img/t12_spagna2.jpg", caption: "Piazza di Spagna, dettaglio", credit: "Wikimedia Commons" }
+    ],
+        fullText: `Sei arrivato in Piazza di Spagna, una delle piazze più eleganti di Roma, dominata dalla scenografica scalinata di Trinità dei Monti che sale verso l'omonima chiesa in cima alla collina del Pincio.<br><br>
+La scalinata, con i suoi centotrentacinque gradini, fu completata nel 1725 grazie a un finanziamento francese, non spagnolo come suggerirebbe il nome della piazza sottostante. Il nome deriva invece dall'ambasciata di Spagna presso la Santa Sede, storicamente situata proprio qui accanto. Un curioso paradosso diplomatico: francesi e spagnoli si contesero per decenni il controllo simbolico di quest'area della città.<br><br>
+Alla base della scalinata si trova la Fontana della Barcaccia, opera di Pietro Bernini, padre del più celebre Gian Lorenzo, a forma di barca semiaffondata. La leggenda narra che fu ispirata da una vera imbarcazione trascinata fin qui dall'esondazione del Tevere del 1598, arenatasi proprio in questo punto quando le acque si ritirarono, lasciando ai Bernini l'idea per il progetto decenni dopo.<br><br>
+Al numero ventisei della piazza si trova la Casa-Museo di John Keats, il poeta romantico inglese che visse i suoi ultimi mesi di vita proprio in questo appartamento, morendo di tubercolosi nel 1821 a soli venticinque anni. La casa, oggi museo dedicato alla memoria dei poeti romantici inglesi, conserva ancora l'atmosfera ottocentesca che attirava a Roma intere generazioni di artisti e scrittori nord-europei in cerca di ispirazione classica.<br><br>
+Via dei Condotti, che si apre proprio di fronte alla piazza, è oggi la strada dello shopping di lusso per eccellenza a Roma, sede degli atelier delle maggiori case di moda italiane e internazionali. Il nome della via ricorda invece i condotti idraulici sotterranei dell'antica Acqua Vergine romana. È lo stesso acquedotto che alimenta ancora oggi la Fontana di Trevi poco distante. Un filo d'acqua invisibile che collega le due tappe di oggi sotto le strade della città.<br><br>
+La piazza fu anche teatro di un evento storico particolare nel 1849. Durante la breve Repubblica Romana difesa da Giuseppe Garibaldi, la scalinata divenne punto di raduno per manifestazioni patriottiche contro le truppe francesi inviate a restaurare il potere papale. Un episodio meno noto rispetto alla fama turistica contemporanea della piazza, ma significativo per la storia del Risorgimento italiano.<br><br>
+Ogni primavera, tra aprile e maggio, la scalinata si riempie tradizionalmente di vasi di azalee rosa e rosse disposti dal Comune. È uno spettacolo fiorito diventato appuntamento fisso per fotografi e visitatori. Negli ultimi anni, però, sedersi sui gradini stessi è stato vietato per proteggere il marmo dall'usura, con multe salate per chi trasgredisce questa regola relativamente recente.<br><br>
+Quando sei pronto, prendi la metro A da Spagna fino a Ottaviano, oppure cammina se preferisci: sono circa trenta minuti a piedi verso Castel Sant'Angelo.`,
+        deepen: []
+      },
+      en: {
+        name: "Piazza di Spagna",
+        desc: "The French staircase, Keats, and Roman luxury shopping",
+        audio: "audio/en/tappa12.mp3",
+        photos: [
+      { time: 0, url: "img/t12_spagna1.jpg", caption: "Piazza di Spagna", credit: "Wikimedia Commons" },
+      { time: 69, url: "img/t12_spagna2.jpg", caption: "Piazza di Spagna, detail", credit: "Wikimedia Commons" }
+    ],
+        fullText: `You've arrived at Piazza di Spagna, one of the most elegant squares in Rome, dominated by the scenic Spanish Steps that climb toward the Trinità dei Monti church at the top of the Pincian Hill.<br><br>
+The staircase, with its one hundred thirty-five steps, was completed in 1725 thanks to French funding, not Spanish as the square's name below might suggest. That name actually comes from the Spanish embassy to the Holy See, historically located right next door. A curious diplomatic paradox: the French and the Spanish contested control over this area of the city, symbolically, for decades.<br><br>
+At the base of the staircase stands the Fontana della Barcaccia, a work by Pietro Bernini, father of the more famous Gian Lorenzo, shaped like a half-sunken boat. Legend says it was inspired by a real boat swept here during the Tiber flood of 1598, run aground right at this spot when the waters receded, leaving the Berninis with the idea for the design decades later.<br><br>
+At number twenty-six of the square stands the Keats-Shelley House, where the English Romantic poet John Keats spent the final months of his life in this very apartment, dying of tuberculosis in 1821 at just twenty-five years old. The house, today a museum dedicated to the memory of the English Romantic poets, still preserves the nineteenth-century atmosphere that drew entire generations of northern European artists and writers to Rome in search of classical inspiration.<br><br>
+Via dei Condotti, opening right in front of the square, is today Rome's premier luxury shopping street, home to the boutiques of major Italian and international fashion houses. The street's name instead recalls the underground water conduits of the ancient Aqua Virgo. It's the very same Roman aqueduct that still feeds the Trevi Fountain not far away, an invisible thread of water connecting today's two stops beneath the city streets.<br><br>
+The square was also the stage for a particular historical event in 1849. During the short-lived Roman Republic defended by Giuseppe Garibaldi, the staircase became a gathering point for patriotic demonstrations against French troops sent to restore papal power. It's a lesser-known episode compared to the square's contemporary tourist fame, but significant for the history of Italian unification.<br><br>
+Every spring, between April and May, the staircase traditionally fills with pots of pink and red azaleas set out by the city government, a flowering spectacle that has become a fixed appointment for photographers and visitors. In recent years, however, sitting directly on the steps has been banned to protect the marble from wear, with steep fines for anyone breaking this relatively recent rule.<br><br>
+When you're ready, take metro line A from Spagna to Ottaviano, or walk if you prefer: it's about a thirty-minute walk toward Castel Sant'Angelo.`,
+        deepen: []
+      }
+    }
+  },
+  {
+    id: 13, ready: true,
+    lat: 41.9030736, lon: 12.466301,
+    i18n: {
+      it: {
+        name: "Castel Sant'Angelo",
+        desc: "Da mausoleo a fortezza papale, con un passaggio segreto verso il Vaticano",
+        audio: "audio/it/tappa13.mp3",
+        photos: [
+      { time: 0, url: "img/t13_castello1.jpg", caption: "Castel Sant'Angelo", credit: "Wikimedia Commons" },
+      { time: 73, url: "img/t13_castello2.jpg", caption: "Castel Sant'Angelo, dettaglio", credit: "Wikimedia Commons" }
+    ],
+        fullText: `Sei arrivato a Castel Sant'Angelo, uno degli edifici con la storia più stratificata di tutta Roma. Nato come mausoleo funebre, diventò poi fortezza militare, prigione e infine residenza papale, in un susseguirsi di funzioni che copre quasi duemila anni ininterrotti.<br><br>
+Fu costruito a partire dal 123 dopo Cristo per volere dell'imperatore Adriano, che lo volle come proprio mausoleo personale e della propria famiglia. La forma cilindrica massiccia che vedi oggi era originariamente rivestita di marmo bianco e decorata con statue, un aspetto molto più simile a un tempio classico che alla fortezza scura che vediamo ora.<br><br>
+Il nome attuale nasce da una leggenda medievale. Nel 590 dopo Cristo, durante una terribile epidemia di peste, papa Gregorio Magno avrebbe avuto una visione dell'arcangelo Michele che rinfoderava la spada proprio sopra questo edificio. Un segno della fine imminente del contagio. La statua dell'angelo che ancora oggi corona la sommità del castello ricorda quella visione, anche se la scultura attuale, in bronzo, risale solo al Settecento.<br><br>
+Un passaggio segreto sopraelevato, il Passetto di Borgo, collega ancora oggi Castel Sant'Angelo direttamente ai Palazzi Vaticani: fu costruito nel Medioevo proprio per garantire una via di fuga rapida ai papi in caso di pericolo. Fu usato realmente nel 1527, durante il famigerato Sacco di Roma, quando papa Clemente Settimo lo percorse di corsa per sfuggire ai lanzichenecchi che stavano saccheggiando la città, salvandosi la vita per pochi minuti.<br><br>
+Il castello fu anche prigione per secoli, e tra le sue mura furono rinchiusi personaggi come il filosofo Giordano Bruno, che hai già incontrato a Campo de' Fiori, prima della sua esecuzione finale. Le celle sotterranee, oggi visitabili, conservano ancora graffiti e iscrizioni lasciate dai prigionieri, testimonianze dirette e toccanti di secoli di detenzione in condizioni spesso disumane.<br><br>
+Oggi il castello ospita il Museo Nazionale di Castel Sant'Angelo, con collezioni che vanno dalle armi antiche agli appartamenti papali rinascimentali, decorati con affreschi di artisti come Perin del Vaga, allievo di Raffaello. Dalla terrazza panoramica in cima, la stessa dove secondo la leggenda apparve l'arcangelo, si gode una delle viste più spettacolari su Roma, con San Pietro da un lato e l'intero centro storico dall'altro.<br><br>
+L'edificio compare anche nell'opera lirica "Tosca" di Giacomo Puccini. L'ultimo atto si svolge proprio su questa terrazza, dove il personaggio della protagonista si getta nel vuoto disperata. Rende Castel Sant'Angelo uno dei luoghi più iconici anche nell'immaginario musicale e teatrale internazionale, non solo in quello storico.<br><br>
+Quando sei pronto, attraversa Ponte Sant'Angelo, decorato con statue di angeli disegnate da Bernini, per dirigerti verso Trastevere. Prendi il tram 8 da Largo Argentina, oppure cammina se preferisci lungo il fiume, circa venticinque minuti.`,
+        deepen: []
+      },
+      en: {
+        name: "Castel Sant'Angelo",
+        desc: "From mausoleum to papal fortress, with a secret passage to the Vatican",
+        audio: "audio/en/tappa13.mp3",
+        photos: [
+      { time: 0, url: "img/t13_castello1.jpg", caption: "Castel Sant'Angelo", credit: "Wikimedia Commons" },
+      { time: 70, url: "img/t13_castello2.jpg", caption: "Castel Sant'Angelo, detail", credit: "Wikimedia Commons" }
+    ],
+        fullText: `You've arrived at Castel Sant'Angelo, one of the most layered buildings in all of Rome's history. Born as a funerary mausoleum, it later became a military fortress, then a prison, and finally a papal residence, a succession of functions spanning nearly two thousand uninterrupted years.<br><br>
+It was built starting in 123 AD by order of Emperor Hadrian, who wanted it as his own mausoleum and that of his family. The massive cylindrical shape you see today was originally clad in white marble and decorated with statues, an appearance much closer to a classical temple than the dark fortress we see now.<br><br>
+Its current name comes from a medieval legend. In 590 AD, during a terrible plague epidemic, Pope Gregory the Great is said to have had a vision of the Archangel Michael sheathing his sword right above this building. A sign that the plague was about to end. The angel statue that still crowns the top of the castle recalls that vision, although the current bronze sculpture only dates back to the eighteenth century.<br><br>
+A secret elevated passageway, the Passetto di Borgo, still connects Castel Sant'Angelo directly to the Vatican Palaces today. It was built in the Middle Ages precisely to provide popes a quick escape route in case of danger. It was actually used in 1527, during the infamous Sack of Rome, when Pope Clement the Seventh ran through it to escape the invading Landsknecht mercenaries sacking the city, saving his life by mere minutes.<br><br>
+The castle was also a prison for centuries, and among those held within its walls was the philosopher Giordano Bruno, whom you already met at Campo de' Fiori, before his final execution. The underground cells, open to visitors today, still preserve graffiti and inscriptions left by prisoners, direct and moving testimonies of centuries of detention, often in inhumane conditions.<br><br>
+Today the castle houses the National Museum of Castel Sant'Angelo, with collections ranging from ancient weapons to Renaissance papal apartments, decorated with frescoes by artists like Perin del Vaga, a student of Raphael. From the panoramic terrace at the top, the same one where legend says the archangel appeared, you get one of the most spectacular views over Rome, with Saint Peter's on one side and the entire historic center on the other.<br><br>
+The building also appears in Giacomo Puccini's opera "Tosca". The final act takes place right on this terrace, where the protagonist throws herself off in despair. It makes Castel Sant'Angelo one of the most iconic locations in international musical and theatrical imagination, not only in history books.<br><br>
+When you're ready, cross Ponte Sant'Angelo, decorated with angel statues designed by Bernini, to head toward Trastevere. Take tram number 8 from Largo Argentina, or walk if you prefer along the river, about twenty-five minutes.`,
+        deepen: []
+      }
+    }
+  },
+  {
+    id: 14, ready: true,
+    lat: 41.8891713, lon: 12.4694256,
+    i18n: {
+      it: {
+        name: "Trastevere",
+        desc: "Il quartiere popolare che chiude il nostro giorno a Roma",
+        audio: "audio/it/tappa14.mp3",
+        photos: [
+      { time: 0, url: "img/t14_trastevere1.jpg", caption: "Trastevere", credit: "Wikimedia Commons" },
+      { time: 74, url: "img/t14_trastevere2.jpg", caption: "Trastevere, dettaglio", credit: "Wikimedia Commons" }
+    ],
+        fullText: `Sei arrivato a Trastevere, il quartiere "al di là del Tevere" che chiude il nostro giro attraverso Roma. Vicoli acciottolati, facciate color ocra scrostate dal tempo, e un'atmosfera che ha resistito, almeno in parte, all'inevitabile gentrificazione turistica degli ultimi decenni.<br><br>
+Il quartiere fu abitato fin dall'epoca romana da pescatori, marinai e immigrati dall'Oriente, una popolazione considerata a lungo estranea al vero centro cittadino sull'altra sponda del fiume. Questa origine popolare e multietnica ha plasmato un'identità fortemente autonoma, ancora oggi percepibile nell'orgoglio quasi campanilistico con cui i trasteverini si distinguono dal resto di Roma.<br><br>
+La Basilica di Santa Maria in Trastevere, nel cuore del quartiere, è tra le chiese più antiche della città. Una tradizione ne fa risalire la fondazione al terzo secolo dopo Cristo, quando il cristianesimo era ancora ufficialmente perseguitato dall'impero romano. I mosaici dorati della facciata e dell'abside, risalenti al Dodicesimo e Tredicesimo secolo, restano tra i più preziosi di tutta Roma medievale.<br><br>
+Piazza di Santa Maria in Trastevere, con la sua fontana ottagonale al centro, è considerata una delle piazze più autentiche e vissute della città. È punto d'incontro quotidiano per residenti storici, universitari e turisti, in un mix che raramente si trova altrove nel centro storico romano.<br><br>
+Il quartiere diede il nome anche a un dialetto e a una cultura popolare specifica, il "romanesco de Trastevere", con proprie tradizioni e proverbi. Esisteva persino un antico rito di rivalità goliardica con il quartiere del Testaccio, dall'altra parte del fiume. Si è mantenuto vivo fino a tempi recenti sotto forma di sfottò bonari tra abitanti dei due rioni.<br><br>
+Se hai ancora energie e voglia di cena, questo è il posto perfetto: trattorie tradizionali, pizzerie storiche e bar affollati fino a tarda notte rendono Trastevere una delle mete serali più amate di Roma, sia dai romani stessi che dai visitatori.<br><br>
+L'Isola Tiberina, che puoi raggiungere con una breve deviazione prima di entrare nel quartiere, merita una menzione a parte. Unica isola fluviale di Roma, ospitava già in epoca romana un tempio dedicato a Esculapio, dio della medicina. Ancora oggi vi sorge un ospedale, in una continuità di funzione sanitaria che attraversa oltre duemila anni ininterrotti nello stesso identico luogo.<br><br>
+Prima di concludere la giornata, prenditi un momento per sederti su uno dei gradini di Piazza di Santa Maria in Trastevere, magari con un gelato o un bicchiere di vino. Goditi lo spettacolo della vita quotidiana romana che scorre attorno a te. Dopo un giorno intero tra rovine antiche, fontane barocche e leggende papali, è il modo migliore per lasciare che tutto quello che hai visto si depositi con calma nella memoria.<br><br>
+Grazie per aver camminato con noi attraverso duemilasettecento anni di storia romana in una sola giornata. Dal Colosseo fino a qui, hai attraversato il cuore pulsante di una delle città più straordinarie del mondo.`,
+        deepen: []
+      },
+      en: {
+        name: "Trastevere",
+        desc: "The working-class neighborhood that closes our day in Rome",
+        audio: "audio/en/tappa14.mp3",
+        photos: [
+      { time: 0, url: "img/t14_trastevere1.jpg", caption: "Trastevere", credit: "Wikimedia Commons" },
+      { time: 70, url: "img/t14_trastevere2.jpg", caption: "Trastevere, detail", credit: "Wikimedia Commons" }
+    ],
+        fullText: `You've arrived at Trastevere, the neighborhood "beyond the Tiber" that closes our tour through Rome. Cobblestone alleys, ochre facades worn by time, and an atmosphere that has resisted, at least in part, the inevitable tourist gentrification of recent decades.<br><br>
+The neighborhood was inhabited since Roman times by fishermen, sailors, and immigrants from the East, a population long considered foreign to the "real" city center across the river. This working-class and multiethnic origin shaped a strongly independent identity, still noticeable today in the almost tribal pride with which residents of Trastevere set themselves apart from the rest of Rome.<br><br>
+The Basilica of Santa Maria in Trastevere, at the heart of the neighborhood, is among the oldest churches in the city. Tradition traces its founding back to the third century AD, when Christianity was still officially persecuted by the Roman Empire. The golden mosaics on the facade and apse, dating from the twelfth and thirteenth centuries, remain among the most precious in all of medieval Rome.<br><br>
+Piazza di Santa Maria in Trastevere, with its octagonal fountain at the center, is considered one of the most authentic and lived-in squares in the city. It's a daily meeting point for longtime residents, university students, and tourists, in a mix rarely found elsewhere in Rome's historic center.<br><br>
+The neighborhood also gave its name to a specific dialect and popular culture, "Romanesco de Trastevere", with its own traditions and sayings. There was even an ancient tradition of good-natured rivalry with the Testaccio neighborhood across the river. It survived into relatively recent times in the form of playful teasing between residents of the two districts.<br><br>
+The Tiber Island, reachable with a short detour before entering the neighborhood, deserves a mention of its own. Rome's only river island, it hosted a temple dedicated to Aesculapius, god of medicine, already in Roman times. A hospital still stands there today, a continuity of medical function spanning over two thousand uninterrupted years in the exact same spot.<br><br>
+Before wrapping up the day, take a moment to sit on one of the steps in Piazza di Santa Maria in Trastevere, maybe with a gelato or a glass of wine, and enjoy the everyday Roman life flowing around you. After an entire day among ancient ruins, Baroque fountains, and papal legends, it's the best way to let everything you've seen settle calmly into memory.<br><br>
+If you still have energy and appetite for dinner, this is the perfect spot. Traditional trattorias, historic pizzerias, and bars packed until late at night make Trastevere one of Rome's most beloved evening destinations, both for Romans themselves and for visitors.<br><br>
+Thank you for walking with us through twenty-seven hundred years of Roman history in a single day. From the Colosseum all the way to here, you've crossed the beating heart of one of the most extraordinary cities in the world.`,
+        deepen: []
+      }
+    }
+  }
+];
+const ROUTE_COORDS = [[41.889945, 12.492187], [41.889661, 12.49205], [41.889472, 12.491963], [41.889599, 12.491572], [41.889739, 12.491349], [41.889867, 12.491208], [41.88981, 12.491116], [41.889878, 12.490698], [41.88993, 12.490377], [41.890141, 12.490481], [41.890206, 12.490251], [41.890303, 12.48991], [41.890441, 12.489426], [41.890497, 12.48923], [41.890572, 12.48894], [41.890628, 12.488718], [41.890654, 12.488645], [41.890726, 12.488683], [41.890741, 12.488636], [41.890754, 12.488595], [41.890761, 12.488572], [41.890882, 12.488577], [41.890991, 12.488404], [41.891112, 12.488334], [41.891151, 12.488248], [41.891224, 12.48817], [41.891397, 12.487948], [41.891473, 12.487802], [41.891585, 12.487512], [41.891641, 12.487361], [41.891654, 12.48733], [41.891717, 12.487121], [41.891836, 12.486756], [41.891988, 12.486532], [41.892071, 12.486367], [41.892109, 12.4864], [41.892071, 12.486367], [41.891988, 12.486532], [41.891836, 12.486756], [41.891717, 12.487121], [41.891654, 12.48733], [41.891641, 12.487361], [41.891585, 12.487512], [41.891441, 12.487601], [41.891362, 12.487653], [41.89127, 12.48787], [41.891244, 12.487927], [41.891223, 12.487919], [41.891164, 12.487904], [41.891111, 12.487893], [41.891042, 12.487976], [41.891007, 12.487994], [41.890805, 12.487899], [41.890746, 12.487866], [41.890701, 12.487842], [41.890567, 12.488247], [41.89046, 12.488193], [41.890437, 12.488258], [41.890325, 12.488195], [41.890128, 12.488093], [41.890033, 12.488045], [41.889812, 12.487932], [41.889693, 12.487875], [41.88963, 12.487793], [41.889239, 12.487544], [41.88918, 12.487477], [41.889042, 12.487571], [41.888895, 12.487384], [41.888759, 12.487313], [41.888895, 12.487384], [41.889042, 12.487571], [41.88918, 12.487477], [41.889239, 12.487544], [41.88963, 12.487793], [41.889693, 12.487875], [41.889812, 12.487932], [41.890033, 12.488045], [41.890128, 12.488093], [41.890325, 12.488195], [41.890437, 12.488258], [41.89046, 12.488193], [41.890567, 12.488247], [41.890701, 12.487842], [41.890746, 12.487866], [41.890805, 12.487899], [41.891007, 12.487994], [41.891042, 12.487976], [41.891111, 12.487893], [41.891164, 12.487904], [41.891223, 12.487919], [41.891244, 12.487927], [41.89127, 12.48787], [41.891362, 12.487653], [41.891441, 12.487601], [41.891585, 12.487512], [41.891641, 12.487361], [41.891654, 12.48733], [41.891717, 12.487121], [41.891836, 12.486756], [41.891782, 12.486617], [41.891766, 12.486406], [41.891763, 12.486307], [41.891778, 12.486206], [41.891809, 12.486139], [41.891844, 12.48604], [41.891974, 12.485664], [41.892014, 12.485558], [41.892302, 12.484714], [41.892417, 12.484325], [41.89256, 12.48445], [41.892629, 12.484494], [41.892738, 12.484457], [41.892941, 12.484626], [41.892946, 12.484616], [41.892984, 12.484517], [41.893006, 12.484532], [41.892985, 12.4846], [41.892988, 12.484635], [41.893033, 12.484516], [41.893099, 12.484344], [41.893114, 12.484315], [41.893145, 12.48424], [41.89315, 12.484227], [41.893153, 12.484217], [41.893183, 12.484137], [41.893219, 12.484093], [41.893212, 12.484012], [41.893225, 12.483951], [41.893331, 12.483709], [41.893353, 12.483661], [41.893391, 12.483576], [41.893417, 12.483511], [41.893408, 12.483471], [41.893369, 12.483439], [41.893306, 12.483236], [41.893261, 12.483061], [41.893221, 12.483007], [41.893206, 12.482927], [41.893225, 12.482857], [41.89327, 12.482804], [41.893328, 12.482789], [41.893359, 12.482801], [41.893328, 12.482789], [41.89327, 12.482804], [41.893225, 12.482857], [41.893206, 12.482927], [41.893221, 12.483007], [41.893261, 12.483061], [41.893119, 12.483057], [41.892913, 12.48305], [41.892896, 12.483067], [41.892862, 12.4831], [41.892846, 12.483115], [41.892775, 12.483199], [41.892747, 12.483235], [41.892497, 12.483582], [41.892433, 12.483612], [41.892361, 12.483589], [41.892047, 12.483176], [41.891985, 12.483095], [41.891716, 12.482699], [41.891658, 12.482687], [41.891601, 12.482736], [41.891508, 12.482619], [41.891429, 12.482676], [41.891384, 12.482705], [41.891362, 12.482707], [41.891361, 12.482711], [41.891347, 12.482755], [41.891333, 12.482743], [41.891256, 12.482647], [41.891156, 12.482433], [41.891055, 12.482502], [41.890986, 12.482299], [41.89068, 12.482016], [41.890587, 12.482015], [41.890251, 12.482018], [41.890016, 12.482041], [41.88955, 12.482084], [41.889221, 12.482084], [41.889222, 12.481475], [41.889228, 12.481366], [41.889251, 12.481306], [41.889137, 12.481416], [41.889046, 12.481629], [41.888829, 12.481413], [41.88881, 12.481418], [41.888829, 12.481413], [41.889046, 12.481629], [41.889137, 12.481416], [41.889251, 12.481306], [41.889228, 12.481366], [41.889222, 12.481475], [41.889276, 12.48146], [41.889295, 12.481457], [41.88936, 12.481369], [41.889556, 12.481285], [41.889838, 12.48116], [41.88987, 12.481146], [41.889897, 12.481134], [41.889901, 12.481133], [41.890014, 12.481079], [41.890367, 12.480935], [41.890772, 12.480775], [41.890804, 12.480762], [41.890811, 12.48079], [41.890835, 12.480805], [41.890867, 12.480789], [41.890933, 12.480763], [41.890986, 12.480741], [41.890992, 12.480738], [41.891006, 12.480705], [41.891088, 12.480624], [41.891551, 12.480449], [41.891712, 12.480415], [41.891894, 12.48046], [41.892326, 12.480631], [41.892488, 12.480719], [41.892696, 12.480882], [41.892935, 12.481165], [41.893243, 12.481575], [41.893359, 12.4817], [41.893612, 12.481954], [41.893649, 12.48199], [41.893679, 12.482019], [41.893733, 12.481917], [41.89378, 12.481954], [41.893821, 12.481986], [41.893862, 12.481982], [41.893941, 12.481987], [41.893943, 12.481997], [41.894316, 12.482148], [41.894346, 12.482031], [41.89452, 12.481942], [41.894594, 12.481938], [41.894697, 12.481963], [41.894822, 12.481982], [41.89493, 12.481948], [41.895041, 12.481915], [41.895138, 12.481876], [41.895164, 12.481865], [41.895223, 12.481945], [41.89525, 12.481983], [41.895263, 12.482001], [41.895277, 12.481993], [41.895423, 12.481906], [41.895596, 12.482171], [41.895761, 12.482107], [41.895758, 12.48209], [41.895803, 12.482074], [41.895838, 12.482279], [41.895946, 12.482242], [41.895838, 12.482279], [41.895803, 12.482074], [41.895846, 12.482058], [41.895859, 12.482053], [41.89591, 12.482034], [41.89649, 12.481837], [41.896528, 12.48182], [41.896542, 12.48177], [41.896575, 12.481758], [41.896635, 12.481736], [41.896455, 12.480793], [41.896359, 12.480331], [41.896335, 12.480215], [41.896783, 12.480101], [41.896809, 12.479929], [41.896855, 12.479831], [41.896875, 12.479804], [41.897064, 12.479545], [41.897207, 12.479457], [41.897376, 12.479424], [41.897639, 12.4794], [41.897659, 12.479396], [41.897535, 12.478954], [41.897509, 12.4788], [41.897513, 12.478663], [41.897567, 12.478515], [41.897685, 12.47835], [41.897747, 12.478089], [41.897771, 12.477776], [41.897777, 12.477347], [41.898188, 12.477327], [41.898877, 12.47723], [41.899006, 12.477196], [41.899026, 12.477185], [41.899154, 12.477036], [41.899149, 12.47692], [41.899141, 12.47678], [41.899008, 12.476796], [41.899, 12.476796], [41.898813, 12.476809], [41.899, 12.476796], [41.899008, 12.476796], [41.899141, 12.47678], [41.899133, 12.476635], [41.899017, 12.476521], [41.899011, 12.47638], [41.898996, 12.476028], [41.899, 12.475846], [41.899002, 12.475753], [41.899009, 12.475249], [41.899007, 12.475163], [41.899375, 12.475037], [41.89937, 12.47484], [41.899395, 12.474837], [41.899394, 12.474063], [41.899393, 12.474014], [41.899392, 12.473993], [41.899387, 12.473856], [41.899385, 12.473791], [41.899384, 12.473779], [41.899142, 12.473804], [41.899123, 12.473395], [41.899117, 12.473313], [41.899189, 12.473306], [41.899117, 12.473313], [41.898006, 12.473419], [41.897948, 12.473407], [41.897874, 12.473342], [41.897842, 12.473276], [41.897827, 12.473182], [41.89779, 12.473181], [41.897774, 12.473184], [41.897731, 12.473192], [41.897534, 12.473146], [41.897229, 12.473045], [41.897217, 12.473064], [41.897157, 12.47305], [41.897026, 12.473127], [41.897008, 12.473089], [41.896969, 12.473032], [41.896899, 12.472983], [41.896884, 12.472962], [41.896865, 12.472928], [41.896817, 12.47286], [41.896795, 12.472818], [41.896786, 12.47281], [41.896761, 12.472877], [41.896726, 12.472914], [41.896677, 12.472907], [41.896598, 12.472855], [41.896597, 12.472905], [41.896301, 12.472574], [41.896254, 12.472534], [41.895865, 12.47208], [41.895613, 12.471803], [41.895416, 12.472155], [41.895383, 12.472213], [41.895233, 12.472481], [41.895412, 12.472736], [41.895616, 12.472986], [41.895794, 12.473155], [41.895862, 12.473225], [41.895895, 12.473263], [41.895939, 12.473349], [41.895966, 12.473538], [41.895979, 12.473702], [41.895994, 12.473893], [41.89641, 12.473948], [41.896399, 12.47405], [41.896431, 12.474051], [41.896422, 12.474137], [41.896535, 12.474144], [41.896601, 12.474141], [41.896614, 12.474142], [41.896613, 12.474151], [41.896612, 12.474164], [41.896607, 12.474223], [41.896579, 12.474517], [41.896737, 12.474569], [41.896864, 12.474614], [41.896878, 12.474617], [41.896955, 12.474613], [41.896981, 12.474992], [41.896987, 12.475086], [41.897924, 12.475084], [41.898258, 12.475086], [41.898273, 12.475086], [41.89831, 12.475096], [41.898335, 12.475126], [41.898352, 12.475262], [41.89837, 12.47559], [41.898427, 12.47576], [41.898436, 12.475913], [41.898457, 12.475924], [41.89861, 12.475971], [41.898643, 12.475978], [41.898629, 12.476052], [41.898808, 12.476095], [41.898888, 12.476088], [41.898954, 12.476381], [41.899011, 12.47638], [41.899017, 12.476521], [41.899133, 12.476635], [41.899141, 12.47678], [41.899149, 12.47692], [41.899154, 12.477036], [41.899305, 12.477145], [41.899356, 12.477287], [41.899459, 12.477985], [41.899526, 12.478355], [41.899568, 12.478446], [41.89964, 12.478593], [41.899684, 12.478747], [41.899734, 12.478716], [41.89988, 12.478975], [41.899968, 12.47919], [41.899983, 12.479603], [41.899964, 12.479789], [41.899964, 12.479825], [41.899996, 12.48021], [41.900013, 12.48048], [41.900064, 12.480791], [41.900084, 12.480918], [41.900131, 12.480896], [41.900327, 12.481816], [41.900433, 12.482309], [41.900481, 12.48245], [41.900509, 12.482481], [41.900567, 12.482722], [41.900724, 12.483129], [41.900933, 12.483007], [41.900943, 12.483077], [41.900866, 12.483125], [41.900831, 12.483202], [41.900862, 12.483349], [41.900831, 12.483202], [41.900866, 12.483125], [41.900943, 12.483077], [41.900933, 12.483007], [41.900972, 12.482966], [41.900995, 12.482926], [41.901176, 12.482842], [41.901533, 12.482676], [41.901796, 12.482584], [41.902015, 12.482494], [41.902051, 12.48248], [41.902111, 12.482513], [41.902139, 12.482518], [41.902626, 12.482595], [41.902705, 12.482937], [41.902753, 12.483062], [41.902887, 12.483221], [41.903284, 12.483288], [41.903569, 12.483361], [41.903689, 12.483392], [41.903749, 12.483369], [41.904318, 12.483148], [41.904611, 12.483006], [41.904849, 12.482853], [41.905242, 12.482594], [41.905381, 12.482494], [41.905675, 12.482213], [41.905731, 12.482403], [41.905768, 12.482418], [41.905781, 12.482411], [41.905776, 12.482397], [41.905853, 12.482356], [41.905898, 12.482338], [41.905853, 12.482356], [41.905776, 12.482397], [41.905781, 12.482411], [41.905768, 12.482418], [41.905731, 12.482403], [41.905675, 12.482213], [41.905726, 12.482154], [41.905748, 12.482129], [41.905761, 12.482115], [41.90548, 12.48132], [41.905463, 12.481276], [41.905451, 12.481246], [41.905179, 12.480545], [41.90516, 12.480496], [41.905145, 12.480459], [41.904871, 12.479714], [41.904862, 12.47969], [41.904847, 12.479651], [41.90466, 12.479139], [41.904653, 12.479003], [41.904685, 12.47893], [41.90467, 12.478868], [41.904677, 12.478753], [41.904692, 12.478531], [41.904718, 12.478197], [41.904788, 12.477216], [41.904796, 12.47712], [41.904803, 12.477026], [41.904809, 12.476946], [41.904813, 12.476885], [41.904879, 12.475997], [41.904917, 12.475765], [41.904925, 12.475562], [41.904942, 12.475565], [41.904958, 12.475568], [41.904968, 12.475521], [41.905007, 12.475525], [41.905009, 12.475502], [41.905011, 12.475465], [41.905014, 12.475428], [41.905015, 12.475419], [41.90498, 12.475406], [41.905005, 12.475209], [41.905008, 12.475185], [41.905016, 12.475104], [41.905027, 12.475002], [41.905029, 12.474986], [41.90501, 12.474943], [41.905101, 12.473673], [41.905105, 12.473614], [41.905118, 12.473606], [41.905122, 12.473568], [41.905128, 12.473514], [41.905141, 12.473385], [41.905147, 12.473334], [41.905149, 12.473306], [41.905114, 12.473291], [41.905116, 12.473257], [41.905151, 12.472844], [41.905153, 12.47283], [41.905156, 12.47278], [41.905158, 12.472743], [41.905158, 12.472736], [41.905165, 12.472612], [41.9052, 12.472127], [41.9052, 12.472112], [41.905203, 12.472057], [41.905206, 12.471998], [41.905246, 12.471298], [41.905248, 12.471269], [41.905283, 12.471193], [41.905321, 12.471158], [41.905232, 12.471067], [41.905294, 12.470919], [41.905314, 12.470893], [41.905234, 12.470699], [41.905201, 12.470579], [41.905037, 12.469922], [41.904794, 12.469376], [41.904729, 12.469182], [41.904706, 12.469219], [41.904697, 12.469184], [41.904662, 12.46912], [41.904579, 12.469045], [41.904543, 12.468951], [41.904516, 12.468877], [41.904427, 12.468766], [41.904459, 12.468619], [41.904452, 12.468616], [41.904386, 12.468589], [41.904342, 12.468571], [41.904325, 12.468564], [41.904295, 12.468696], [41.90428, 12.468701], [41.903263, 12.468123], [41.902823, 12.46814], [41.902809, 12.468118], [41.902762, 12.467757], [41.902786, 12.467576], [41.902801, 12.467462], [41.902884, 12.467485], [41.90291, 12.467295], [41.903642, 12.467485], [41.90371, 12.467341], [41.903722, 12.467139], [41.903669, 12.466317], [41.903511, 12.466318], [41.903435, 12.46632], [41.903511, 12.466318], [41.903669, 12.466317], [41.903653, 12.466103], [41.903612, 12.465559], [41.903578, 12.46542], [41.90332, 12.465429], [41.903054, 12.46548], [41.90305, 12.465425], [41.903052, 12.465372], [41.902744, 12.465432], [41.902578, 12.465354], [41.902431, 12.465426], [41.902407, 12.465068], [41.902209, 12.464617], [41.902108, 12.464389], [41.902049, 12.46437], [41.901957, 12.464295], [41.901928, 12.464261], [41.901629, 12.463851], [41.901608, 12.463878], [41.901579, 12.463917], [41.901555, 12.463918], [41.901514, 12.463858], [41.90148, 12.463812], [41.901465, 12.463793], [41.901405, 12.463707], [41.901237, 12.463482], [41.900988, 12.463232], [41.900839, 12.463119], [41.900662, 12.463015], [41.900312, 12.462879], [41.899939, 12.462793], [41.899809, 12.462781], [41.899797, 12.462782], [41.899726, 12.462785], [41.899673, 12.462786], [41.899655, 12.462786], [41.8996, 12.462767], [41.899473, 12.462779], [41.899199, 12.462822], [41.898986, 12.462892], [41.898754, 12.463014], [41.898298, 12.463357], [41.898269, 12.463285], [41.898235, 12.463222], [41.898224, 12.463221], [41.898203, 12.463218], [41.898041, 12.463334], [41.896615, 12.464427], [41.896059, 12.464865], [41.895784, 12.465087], [41.89533, 12.465455], [41.895265, 12.465511], [41.895119, 12.465638], [41.894908, 12.465786], [41.894567, 12.466047], [41.894421, 12.466158], [41.894396, 12.466177], [41.8939, 12.466551], [41.893715, 12.466696], [41.892748, 12.467322], [41.89224, 12.467604], [41.892211, 12.467622], [41.891998, 12.467747], [41.891233, 12.468152], [41.891003, 12.468307], [41.890386, 12.46873], [41.890237, 12.468803], [41.890227, 12.468775], [41.89018, 12.4688], [41.890194, 12.468852], [41.890074, 12.468913], [41.890084, 12.46895], [41.889739, 12.469112], [41.889718, 12.469125], [41.889629, 12.468889], [41.889449, 12.468484], [41.88942, 12.468455], [41.88924, 12.468587], [41.889153, 12.468584], [41.889144, 12.468849], [41.889016, 12.468859], [41.888946, 12.468971], [41.888934, 12.469414]];
+</script>
+<script src="../shared/app.js"></script>
+</body>
+</html>
