@@ -116,7 +116,7 @@
 </div>
 
 <script>
-const AUDIENCE = "personal"; // pagina personale, tutti i giri non-Roma
+// Pagina personale: nessun filtro per audience, mostra sempre tutti i giri
 const TOURS = [
   {
     slug: "trastevere",
@@ -272,7 +272,7 @@ function haversineKm(lat1, lon1, lat2, lon2){
 }
 
 function filterTours(query){
-  const base = TOURS.filter(t => t.audience === AUDIENCE);
+  const base = TOURS.slice();
   if(!query) return base.slice();
   const q = query.toLowerCase();
   return base.filter(t =>
@@ -308,7 +308,7 @@ function cardHtml(t, isNearest){
 
 function render(){
   const query = document.getElementById('searchInput').value.trim();
-  const filtered = cityLock ? TOURS.filter(t => t.audience === AUDIENCE && t.city.toLowerCase() === cityLock.toLowerCase()) : filterTours(query);
+  const filtered = cityLock ? TOURS.filter(t => t.city.toLowerCase() === cityLock.toLowerCase()) : filterTours(query);
   const el = document.getElementById('tours');
   const emptyHint = document.getElementById('emptyHint');
 
