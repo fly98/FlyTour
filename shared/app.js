@@ -1,3 +1,21 @@
+// ---- Tracciamento utilizzo (stesso sistema di InternoUno Experience) ----
+const TRACK_WORKER = 'https://wb-worker.f-castiglioni.workers.dev';
+const TOUR_SLUG = (() => {
+  const segs = location.pathname.split('/').filter(Boolean).filter(s => !s.includes('.'));
+  return segs[segs.length - 1] || 'home';
+})();
+function trackEvent(event, section, lang){
+  try{
+    fetch(`${TRACK_WORKER}/wb/flytour/track`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ event, section: section || TOUR_SLUG, lang: lang || '' }),
+      keepalive: true
+    }).catch(()=>{});
+  }catch(e){ /* mai bloccare l'esperienza per un ping di analytics */ }
+}
+trackEvent('tour_view', TOUR_SLUG);
+
 // ---- Mappa ----
 const map = L.map('map', {zoomControl:false, attributionControl:true}).setView(
   [STOPS[0].lat, STOPS[0].lon], 16
@@ -155,6 +173,7 @@ function playStop(id, manual){
   savePlayed();
   render();
   requestWakeLock();
+  trackEvent(manual ? 'stop_play_manual' : 'stop_play_auto', TOUR_SLUG, typeof currentLang !== 'undefined' ? currentLang : '');
 }
 
 playPauseBtn.onclick = () => {
@@ -376,6 +395,7 @@ if(langToggleBtn){
         saveLang();
         renderLangToggle();
         render();
+        trackEvent('lang', TOUR_SLUG, currentLang);
         // se una tappa è aperta nel player, ricarica testo/audio nella nuova lingua
         if(state.currentStopId){
           const stop = STOPS.find(s => s.id === state.currentStopId);
