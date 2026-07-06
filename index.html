@@ -116,11 +116,13 @@
 </div>
 
 <script>
+const AUDIENCE = "guest"; // questa pagina (root) è la vetrina per gli ospiti del B&B
 const TOURS = [
   {
     slug: "trastevere",
     country: "Italia",
     city: "Roma",
+    audience: "guest",
     title: "Trastevere Nascosta",
     desc: "Il lato del rione che i turisti non vedono. 8 tappe tra vicoli, chiostri e piazzette dimenticate.",
     duration: "~2h30",
@@ -134,6 +136,7 @@ const TOURS = [
     slug: "ghetto-testaccio",
     country: "Italia",
     city: "Roma",
+    audience: "guest",
     title: "Dal Ghetto al Mattatoio",
     desc: "La storia della cucina povera romana, dai carciofi alla giudia alla coda alla vaccinara. 8 tappe dal Ghetto ebraico a Testaccio.",
     duration: "~2h30",
@@ -147,6 +150,7 @@ const TOURS = [
     slug: "perugia",
     country: "Italia",
     city: "Perugia",
+    audience: "personal",
     title: "Perugia Etrusca e Medievale",
     desc: "Un anello nel cuore della città: un pozzo di duemilatrecento anni, un arco intatto dai romani, e una città intera sepolta sotto una fortezza rinascimentale. 7 tappe, breve e comodo.",
     duration: "~1h-1h30",
@@ -160,6 +164,7 @@ const TOURS = [
     slug: "evora",
     country: "Portogallo",
     city: "Évora",
+    audience: "personal",
     title: "Évora, la Città Museo",
     desc: "Duemila anni di storia iberica in poche centinaia di metri, tra templi romani e cappelle di ossa. 6 tappe nel cuore dell'Alentejo.",
     duration: "~2h",
@@ -173,6 +178,7 @@ const TOURS = [
     slug: "milfontes",
     country: "Portogallo",
     city: "Vila Nova de Milfontes",
+    audience: "personal",
     title: "Vila Nova de Milfontes",
     desc: "Un anello contemplativo tra pirati, fiume e oceano, sulla Costa Vicentina. 5 tappe intorno alla foce del Mira, perfetto al tramonto.",
     duration: "~1h15",
@@ -186,6 +192,7 @@ const TOURS = [
     slug: "sagres",
     country: "Portogallo",
     city: "Sagres",
+    audience: "personal",
     title: "Sagres e Cabo de São Vicente",
     desc: "Un cammino verso la fine del mondo conosciuto, tra fortezze, scogliere e migrazioni di uccelli. 6 tappe da Sagres al Capo di San Vincenzo.",
     duration: "~3h",
@@ -199,6 +206,7 @@ const TOURS = [
     slug: "alfama",
     country: "Portogallo",
     city: "Lisbona",
+    audience: "personal",
     title: "Alfama e Graça",
     desc: "Un anello attraverso il quartiere più antico di Lisbona: castelli, fado, corvi leggendari e panorami sui sette colli. 9 tappe, mezza giornata.",
     duration: "~3h30-4h",
@@ -212,6 +220,7 @@ const TOURS = [
     slug: "baixa",
     country: "Portogallo",
     city: "Lisbona",
+    audience: "personal",
     title: "Baixa Pombalina",
     desc: "Il quartiere rinato dal terremoto del 1755: piazze simmetriche, un ascensore in stile Eiffel, e una chiesa senza tetto lasciata così di proposito. 7 tappe, anello breve e pianeggiante.",
     duration: "~1h30",
@@ -225,6 +234,7 @@ const TOURS = [
     slug: "belem",
     country: "Portogallo",
     city: "Lisbona",
+    audience: "personal",
     title: "Belém",
     desc: "Il quartiere da cui è partita l'epoca delle grandi scoperte: un monastero pagato col pepe, una torre col rinoceronte, e i dolcetti più famosi del Portogallo. 6 tappe lungo il fiume.",
     duration: "~2h30-3h",
@@ -238,6 +248,7 @@ const TOURS = [
     slug: "tram28",
     country: "Portogallo",
     city: "Lisbona",
+    audience: "personal",
     title: "Tram 28",
     desc: "Il tram più famoso di Lisbona, da capolinea a capolinea: carrozze di legno degli anni Trenta, vicoli larghi due metri, un Parlamento nato monastero e un cimitero che è un museo a cielo aperto.",
     duration: "~45 min",
@@ -261,9 +272,10 @@ function haversineKm(lat1, lon1, lat2, lon2){
 }
 
 function filterTours(query){
-  if(!query) return TOURS.slice();
+  const base = TOURS.filter(t => t.audience === AUDIENCE);
+  if(!query) return base.slice();
   const q = query.toLowerCase();
-  return TOURS.filter(t =>
+  return base.filter(t =>
     t.title.toLowerCase().includes(q) ||
     t.desc.toLowerCase().includes(q) ||
     t.city.toLowerCase().includes(q) ||
@@ -296,7 +308,7 @@ function cardHtml(t, isNearest){
 
 function render(){
   const query = document.getElementById('searchInput').value.trim();
-  const filtered = cityLock ? TOURS.filter(t => t.city.toLowerCase() === cityLock.toLowerCase()) : filterTours(query);
+  const filtered = cityLock ? TOURS.filter(t => t.audience === AUDIENCE && t.city.toLowerCase() === cityLock.toLowerCase()) : filterTours(query);
   const el = document.getElementById('tours');
   const emptyHint = document.getElementById('emptyHint');
 
