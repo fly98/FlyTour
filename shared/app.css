@@ -30,6 +30,23 @@
   .back-link{display:inline-block; font-size:12px; color:var(--limestone-dim); text-decoration:none;
     margin-bottom:10px;}
 
+  .text-lang-select{position:absolute; top:16px; right:16px; background:var(--stone-2); color:var(--limestone);
+    border:1px solid var(--line); border-radius:10px; padding:6px 8px; font-family:'Inter',sans-serif;
+    font-size:12px; font-weight:600; cursor:pointer; z-index:22;}
+  @media (display-mode: standalone){
+    .text-lang-select{top:calc(4px + env(safe-area-inset-top));}
+  }
+
+  .audio-select-row{display:flex; align-items:center; gap:8px; flex-wrap:wrap;
+    margin:14px 20px 10px;}
+  .audio-select-label{font-size:12.5px; font-weight:600; color:var(--limestone-dim);}
+  .audio-select-buttons{display:flex; gap:4px; background:var(--stone-2); border-radius:10px;
+    padding:3px; border:1px solid var(--line);}
+  .audio-select-buttons button{background:none; border:none; color:var(--limestone-dim);
+    font-family:'Inter',sans-serif; font-size:12.5px; font-weight:600; padding:6px 14px;
+    border-radius:8px; cursor:pointer; transition:.15s;}
+  .audio-select-buttons button.active{background:var(--patina); color:#1a231d;}
+
   .ticket-link{display:flex; align-items:center; justify-content:space-between; gap:10px;
     margin:14px 20px 4px; padding:14px 16px; background:var(--ochre); color:#241a12;
     border-radius:14px; text-decoration:none; font-weight:600;}
@@ -93,6 +110,7 @@
   #langToggle button{background:none; border:none; color:var(--limestone-dim); font-family:'Inter',sans-serif;
     font-size:12px; font-weight:600; padding:6px 10px; border-radius:8px; cursor:pointer; transition:.15s;}
   #langToggle button.active{background:var(--patina); color:#1a231d;}
+  .lang-note{display:none; margin:0 20px 12px; font-size:11px; line-height:1.4; color:var(--limestone-dim);}
   .gps-dot.live{background:var(--patina); box-shadow:0 0 0 3px rgba(124,154,130,0.25);}
 
   .stops{padding:0 20px; display:flex; flex-direction:column; gap:10px;}
