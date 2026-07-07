@@ -506,10 +506,25 @@ if(isBilingual && !isMultiLang){
   });
   renderAudioButtons();
 
+  // ---- Titolo, eyebrow e sottotitolo della pagina: tradotti se la pagina fornisce PAGE_I18N ----
+  function applyPageI18n(){
+    if(typeof PAGE_I18N === 'undefined') return;
+    const p = PAGE_I18N[currentLang] || PAGE_I18N['en'] || PAGE_I18N['it'];
+    if(!p) return;
+    const elEyebrow = document.getElementById('txtEyebrow');
+    const elH1 = document.getElementById('txtH1');
+    const elSubtitle = document.getElementById('txtSubtitle');
+    if(elEyebrow && p.eyebrow) elEyebrow.textContent = p.eyebrow;
+    if(elH1 && p.h1) elH1.textContent = p.h1;
+    if(elSubtitle && p.subtitle) elSubtitle.textContent = p.subtitle;
+  }
+  applyPageI18n();
+
   textLangSelect.addEventListener('change', () => {
     currentLang = textLangSelect.value;
     saveLang();
     render();
+    applyPageI18n();
     trackEvent('lang', TOUR_SLUG, currentLang);
     if(textModalOverlay.classList.contains('show') && state.currentStopId){
       openTextModal(state.currentStopId);
