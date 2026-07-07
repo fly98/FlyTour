@@ -25,6 +25,11 @@ const state = {
   watchId: null
 };
 let currentLang = localStorage.getItem(STORAGE_KEY + '_lang') || 'it';
+let audioLang = 'it';
+function getAudioSrc(stop){
+  if(stop.i18n && stop.i18n[audioLang]) return stop.i18n[audioLang].audio;
+  return T(stop, 'audio');
+}
 function saveLang(){ localStorage.setItem(STORAGE_KEY + '_lang', currentLang); }
 function T(stop, field){
   return (stop.i18n && stop.i18n[currentLang]) ? stop.i18n[currentLang][field] : stop[field];
@@ -106,7 +111,7 @@ function playStop(id, manual){
   state.currentStopId = id;
   currentPhotoUrl = null;
   document.getElementById('playerName').textContent = T(stop,'name');
-  audioEl.src = T(stop,'audio');
+  audioEl.src = getAudioSrc(stop);
   audioEl.play().catch(()=>{ /* iOS può richiedere un tap: il bottone play resta disponibile */ });
   playerEl.classList.add('show');
   state.played.add(id);
@@ -317,42 +322,122 @@ if(backLinkEl){
 }
 
 const isBilingual = !!(STOPS[0] && STOPS[0].i18n);
-if(langToggleBtn){
-  if(isBilingual){
-    langToggleBtn.style.display = 'flex';
-    function renderLangToggle(){
-      langToggleBtn.querySelectorAll('[data-lang]').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.lang === currentLang);
-      });
-    }
+const availableTextLangs = isBilingual ? Object.keys(STOPS[0].i18n) : [];
+const isMultiLang = availableTextLangs.length > 2;
+
+if(isBilingual && !isMultiLang){
+  langToggleBtn.style.display = 'flex';
+  function renderLangToggle(){
     langToggleBtn.querySelectorAll('[data-lang]').forEach(btn => {
-      btn.onclick = () => {
-        if(btn.dataset.lang === currentLang) return;
-        currentLang = btn.dataset.lang;
-        saveLang();
-        renderLangToggle();
-        render();
-        trackEvent('lang', TOUR_SLUG, currentLang);
-        // se una tappa è aperta nel player, ricarica testo/audio nella nuova lingua
-        if(state.currentStopId){
-          const stop = STOPS.find(s => s.id === state.currentStopId);
-          if(stop){
-            document.getElementById('playerName').textContent = T(stop,'name');
-            const wasPlaying = !audioEl.paused;
-            audioEl.src = T(stop,'audio');
-            if(wasPlaying) audioEl.play().catch(()=>{});
-          }
-        }
-        // se il modal testo è aperto, ricarica nella nuova lingua
-        if(textModalOverlay.classList.contains('show') && state.currentStopId){
-          openTextModal(state.currentStopId);
-        }
-      };
+      btn.classList.toggle('active', btn.dataset.lang === currentLang);
     });
-    renderLangToggle();
-  } else {
-    langToggleBtn.style.display = 'none';
   }
+  langToggleBtn.querySelectorAll('[data-lang]').forEach(btn => {
+    btn.onclick = () => {
+      if(btn.dataset.lang === currentLang) return;
+      currentLang = btn.dataset.lang;
+      saveLang();
+      renderLangToggle();
+      render();
+      trackEvent('lang', TOUR_SLUG, currentLang);
+      if(state.currentStopId){
+        const stop = STOPS.find(s => s.id === state.currentStopId);
+        if(stop){
+          document.getElementById('playerName').textContent = T(stop,'name');
+          const wasPlaying = !audioEl.paused;
+          audioEl.src = T(stop,'audio');
+          if(wasPlaying) audioEl.play().catch(()=>{});
+        }
+      }
+      if(textModalOverlay.classList.contains('show') && state.currentStopId){
+        openTextModal(state.currentStopId);
+      }
+    };
+  });
+  renderLangToggle();
+} else if(isMultiLang){
+  langToggleBtn.style.display = 'none';
+
+  const LANG_LABELS = { it:"Italiano", en:"English", es:"Español", fr:"Français", de:"Deutsch", pt:"Português", zh:"中文" };
+
+  function detectDefaultTextLang(){
+    const saved = localStorage.getItem(STORAGE_KEY + '_lang');
+    if(saved && availableTextLangs.includes(saved)) return saved;
+    const browserLang = (navigator.language || 'en').slice(0,2).toLowerCase();
+    if(availableTextLangs.includes(browserLang)) return browserLang;
+    return availableTextLangs.includes('en') ? 'en' : availableTextLangs[0];
+  }
+  currentLang = detectDefaultTextLang();
+  saveLang();
+
+  const textLangSelect = document.createElement('select');
+  textLangSelect.className = 'text-lang-select';
+  availableTextLangs.forEach(code => {
+    const opt = document.createElement('option');
+    opt.value = code;
+    opt.textContent = LANG_LABELS[code] || code;
+    textLangSelect.appendChild(opt);
+  });
+  textLangSelect.value = currentLang;
+  const headerEl = document.querySelector('header');
+  if(headerEl) headerEl.appendChild(textLangSelect);
+
+  const audioRow = document.createElement('div');
+  audioRow.className = 'audio-select-row';
+  audioRow.innerHTML = `
+    <span class="audio-select-label">🔊 Audio</span>
+    <div class="audio-select-buttons">
+      <button data-audio-lang="it">Italiano</button>
+      <button data-audio-lang="en">English</button>
+    </div>
+  `;
+  const stopsElForInsert = document.getElementById('stops');
+  if(stopsElForInsert && stopsElForInsert.parentNode){
+    stopsElForInsert.parentNode.insertBefore(audioRow, stopsElForInsert);
+  }
+
+  function detectDefaultAudioLang(){
+    const saved = localStorage.getItem(STORAGE_KEY + '_audiolang');
+    if(saved === 'it' || saved === 'en') return saved;
+    return (currentLang === 'it') ? 'it' : 'en';
+  }
+  audioLang = detectDefaultAudioLang();
+  function saveAudioLang(){ localStorage.setItem(STORAGE_KEY + '_audiolang', audioLang); }
+  function renderAudioButtons(){
+    audioRow.querySelectorAll('[data-audio-lang]').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.audioLang === audioLang);
+    });
+  }
+  audioRow.querySelectorAll('[data-audio-lang]').forEach(btn => {
+    btn.onclick = () => {
+      if(btn.dataset.audioLang === audioLang) return;
+      audioLang = btn.dataset.audioLang;
+      saveAudioLang();
+      renderAudioButtons();
+      trackEvent('audio_lang', TOUR_SLUG, audioLang);
+      if(state.currentStopId){
+        const stop = STOPS.find(s => s.id === state.currentStopId);
+        if(stop){
+          const wasPlaying = !audioEl.paused;
+          audioEl.src = getAudioSrc(stop);
+          if(wasPlaying) audioEl.play().catch(()=>{});
+        }
+      }
+    };
+  });
+  renderAudioButtons();
+
+  textLangSelect.addEventListener('change', () => {
+    currentLang = textLangSelect.value;
+    saveLang();
+    render();
+    trackEvent('lang', TOUR_SLUG, currentLang);
+    if(textModalOverlay.classList.contains('show') && state.currentStopId){
+      openTextModal(state.currentStopId);
+    }
+  });
+} else {
+  langToggleBtn.style.display = 'none';
 }
 
 // ---- Wake Lock (schermo sempre acceso mentre l'app è in uso) ----
