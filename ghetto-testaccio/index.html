@@ -23,6 +23,11 @@
     <p class="subtitle">La storia della cucina povera romana, dai carciofi alla giudia alla coda alla vaccinara. Cammina, e ti racconto io.</p>
   </header>
 
+  <div id="langToggle">
+    <button data-lang="it">Italiano</button>
+    <button data-lang="en">English</button>
+  </div>
+
   <div class="trail" id="trail"></div>
 
   <div class="map-wrap"><div id="map"></div></div>
@@ -123,163 +128,339 @@
 const STOPS = [
   {
     id: 1, ready: true,
-    name: "Portico d'Ottavia",
-    desc: "Il Ghetto ebraico e i carciofi alla giudia",
     lat: 41.8925126, lon: 12.4785372,
-    audio: "audio/tappa1.mp3",
-    photos: [
+    i18n: {
+      it: {
+        name: "Portico d'Ottavia",
+        desc: "Il Ghetto ebraico e i carciofi alla giudia",
+        audio: "audio/tappa1.mp3",
+        photos: [
       { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/S_Angelo_-_via_del_Portico_d%27Ottavia_1000373.JPG?width=900",
         caption: "Via del Portico d'Ottavia, cuore del Ghetto", credit: "Wikimedia Commons" }
     ],
-    fullText: `Sei arrivato al Portico d'Ottavia. Guarda le colonne davanti a te: sono ciò che resta di un monumentale portico fatto costruire dall'imperatore Augusto intorno al 27 avanti Cristo, dedicato alla sorella Ottavia. Sei nel cuore di quello che oggi è il <a href="https://it.wikipedia.org/wiki/Ghetto_di_Roma" target="_blank">Ghetto ebraico</a> di Roma, una delle comunità ebraiche più antiche d'Europa.<br><br>
+        fullText: `Sei arrivato al Portico d'Ottavia. Guarda le colonne davanti a te: sono ciò che resta di un monumentale portico fatto costruire dall'imperatore Augusto intorno al 27 avanti Cristo, dedicato alla sorella Ottavia. Sei nel cuore di quello che oggi è il <a href="https://it.wikipedia.org/wiki/Ghetto_di_Roma" target="_blank">Ghetto ebraico</a> di Roma, una delle comunità ebraiche più antiche d'Europa.<br><br>
 Nel 1555 papa Paolo IV costrinse gli ebrei romani a vivere confinati qui. Eppure, dentro quei vincoli, nacque una cucina originalissima: i <a href="https://it.wikipedia.org/wiki/Carciofo_alla_giudia" target="_blank">carciofi alla giudia</a>, fritti due volte in olio d'oliva — al posto del burro, vietato dalle regole kosher — fino a sembrare un fiore dorato.<br><br>
 Il piatto compare già nei ricettari del Cinquecento. Una trattoria storica di questa via li serve praticamente allo stesso modo da un secolo.<br><br>
 Quando sei pronto, dirigiti verso Piazza Mattei.`,
-    deepen: [
+        deepen: [
       { type: "video", title: "Portico d'Ottavia — visita guidata", url: "https://www.youtube.com/watch?v=V_97dUM8waA" },
       { type: "link", title: "Ghetto di Roma — Wikipedia", url: "https://it.wikipedia.org/wiki/Ghetto_di_Roma" },
       { type: "link", title: "Carciofi alla giudia — Wikipedia", url: "https://en.wikipedia.org/wiki/Carciofi_alla_giudia" },
       { type: "link", title: "Giggetto, 100 anni di carciofi alla giudia — RomaToday", url: "https://www.romatoday.it/cibo/giggetto-portico-ottavia-roma-storia.html" }
     ]
+      },
+      en: {
+        name: "Portico d'Ottavia",
+        desc: "The Jewish Ghetto and artichokes alla giudia",
+        audio: "audio/en/tappa1.mp3",
+        photos: [
+      { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/S_Angelo_-_via_del_Portico_d%27Ottavia_1000373.JPG?width=900",
+        caption: "Via del Portico d'Ottavia, cuore del Ghetto", credit: "Wikimedia Commons" }
+    ],
+        fullText: `You've arrived at the Portico d'Ottavia. Look at the columns in front of you: they are what remains of a monumental portico built by Emperor Augustus around 27 BC, dedicated to his sister Octavia. You're in the heart of what today is Rome's Jewish Ghetto, one of the oldest Jewish communities in Europe.<br><br>
+In 1555 Pope Paul the Fourth forced Rome's Jews to live confined here. Yet, within those constraints, a highly original cuisine was born: carciofi alla giudia, artichokes fried twice in olive oil — instead of butter, forbidden under kosher rules — until they look like a golden flower.<br><br>
+The dish already appears in sixteenth-century recipe books. A historic trattoria on this very street has served them practically the same way for a century.<br><br>
+When you're ready, head toward Piazza Mattei.`,
+        deepen: [
+      { type: "video", title: "Portico d'Ottavia — visita guidata", url: "https://www.youtube.com/watch?v=V_97dUM8waA" },
+      { type: "link", title: "Ghetto di Roma — Wikipedia", url: "https://it.wikipedia.org/wiki/Ghetto_di_Roma" },
+      { type: "link", title: "Carciofi alla giudia — Wikipedia", url: "https://en.wikipedia.org/wiki/Carciofi_alla_giudia" },
+      { type: "link", title: "Giggetto, 100 anni di carciofi alla giudia — RomaToday", url: "https://www.romatoday.it/cibo/giggetto-portico-ottavia-roma-storia.html" }
+    ]
+      }
+    }
   },
   {
     id: 2, ready: true,
-    name: "Fontana delle Tartarughe",
-    desc: "Piazza Mattei e il capolavoro rinascimentale",
     lat: 41.8938343, lon: 12.4775765,
-    audio: "audio/tappa2.mp3",
-    photos: [
+    i18n: {
+      it: {
+        name: "Fontana delle Tartarughe",
+        desc: "Piazza Mattei e il capolavoro rinascimentale",
+        audio: "audio/tappa2.mp3",
+        photos: [
       { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/S_Angelo_-_Fontana_delle_tartarughe_O3280017.JPG?width=900",
         caption: "La Fontana delle Tartarughe, Piazza Mattei", credit: "Wikimedia Commons" }
     ],
-    fullText: `Sei in Piazza Mattei, davanti alla Fontana delle Tartarughe. Quattro giovani in bronzo sollevano quattro piccole tartarughe verso il bordo della vasca. Costruita tra il 1581 e il 1588 da <a href="https://it.wikipedia.org/wiki/Giacomo_della_Porta" target="_blank">Giacomo della Porta</a> e Taddeo Landini — ma le tartarughe non erano nel progetto originale: furono aggiunte solo più tardi, forse nel Seicento, e sono loro ad aver dato il nome alla fontana.<br><br>
+        fullText: `Sei in Piazza Mattei, davanti alla Fontana delle Tartarughe. Quattro giovani in bronzo sollevano quattro piccole tartarughe verso il bordo della vasca. Costruita tra il 1581 e il 1588 da <a href="https://it.wikipedia.org/wiki/Giacomo_della_Porta" target="_blank">Giacomo della Porta</a> e Taddeo Landini — ma le tartarughe non erano nel progetto originale: furono aggiunte solo più tardi, forse nel Seicento, e sono loro ad aver dato il nome alla fontana.<br><br>
 La piazza prende il nome dalla famiglia Mattei, una delle più potenti di Roma nel Cinquecento, con diversi palazzi proprio al confine con il Ghetto.<br><br>
 Quando sei pronto, dirigiti verso Ponte Fabricio e l'Isola Tiberina.`,
-    deepen: [
+        deepen: [
       { type: "video", title: "Fontana delle Tartarughe — curiosità e leggenda", url: "https://www.youtube.com/watch?v=UZAJTmSu1Kg" },
       { type: "link", title: "Fontana delle Tartarughe — Wikipedia", url: "https://it.wikipedia.org/wiki/Fontana_delle_Tartarughe" },
       { type: "link", title: "Turtle Fountain — Turismo Roma", url: "https://www.turismoroma.it/en/places/turtle-fountain" }
     ]
+      },
+      en: {
+        name: "Fontana delle Tartarughe",
+        desc: "The Renaissance masterpiece of Piazza Mattei",
+        audio: "audio/en/tappa2.mp3",
+        photos: [
+      { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/S_Angelo_-_Fontana_delle_tartarughe_O3280017.JPG?width=900",
+        caption: "La Fontana delle Tartarughe, Piazza Mattei", credit: "Wikimedia Commons" }
+    ],
+        fullText: `You're in Piazza Mattei, in front of the Fontana delle Tartarughe, the Turtle Fountain. Four bronze youths lift four small turtles toward the edge of the basin. Built between 1581 and 1588 by Giacomo della Porta and Taddeo Landini — but the turtles weren't in the original design. They were added later, perhaps in the seventeenth century, and it's them that gave the fountain its name.<br><br>
+The square takes its name from the Mattei family, one of the most powerful in Rome in the sixteenth century, with several palaces right on the border of the Ghetto.<br><br>
+When you're ready, head toward Ponte Fabricio and Tiber Island.`,
+        deepen: [
+      { type: "video", title: "Fontana delle Tartarughe — curiosità e leggenda", url: "https://www.youtube.com/watch?v=UZAJTmSu1Kg" },
+      { type: "link", title: "Fontana delle Tartarughe — Wikipedia", url: "https://it.wikipedia.org/wiki/Fontana_delle_Tartarughe" },
+      { type: "link", title: "Turtle Fountain — Turismo Roma", url: "https://www.turismoroma.it/en/places/turtle-fountain" }
+    ]
+      }
+    }
   },
   {
     id: 3, ready: true,
-    name: "Ponte Fabricio e Isola Tiberina",
-    desc: "Il ponte più antico di Roma, tra leggenda e medicina",
     lat: 41.8910826, lon: 12.4782097,
-    audio: "audio/tappa3.mp3",
-    photos: [
+    i18n: {
+      it: {
+        name: "Ponte Fabricio e Isola Tiberina",
+        desc: "Il ponte più antico di Roma, tra leggenda e medicina",
+        audio: "audio/tappa3.mp3",
+        photos: [
       { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Ponte_Quattro_Capi_(Rome).jpg?width=900",
         caption: "Ponte Fabricio, detto Ponte dei Quattro Capi", credit: "Wikimedia Commons" },
       { time: 40, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Roma_Isola_Tiberina_uno.jpg?width=900",
         caption: "L'Isola Tiberina", credit: "Wikimedia Commons" }
     ],
-    fullText: `Sei a Ponte Fabricio, il ponte più antico di Roma ancora conservato nella forma originale, costruito nel 62 avanti Cristo. I romani lo chiamano anche "<a href="https://it.wikipedia.org/wiki/Ponte_Fabricio" target="_blank">Ponte dei Quattro Capi</a>", da una leggenda su quattro architetti litigiosi decapitati per ordine di Sisto V.<br><br>
+        fullText: `Sei a Ponte Fabricio, il ponte più antico di Roma ancora conservato nella forma originale, costruito nel 62 avanti Cristo. I romani lo chiamano anche "<a href="https://it.wikipedia.org/wiki/Ponte_Fabricio" target="_blank">Ponte dei Quattro Capi</a>", da una leggenda su quattro architetti litigiosi decapitati per ordine di Sisto V.<br><br>
 Davanti a te l'Isola Tiberina: la leggenda vuole che nel 291 avanti Cristo un serpente sacro a Esculapio, dio della medicina, abbia scelto quest'isola come sua dimora durante un'epidemia. Da allora, per oltre duemila anni ininterrotti, è un luogo di cura — oggi ancora un ospedale vero e proprio.<br><br>
 Su quest'isola c'è anche un'osteria storica dove si dice si mangi una delle migliori carbonare di Roma — tienilo a mente se hai fame.<br><br>
 Attraversa l'isola e prosegui verso Ponte Sublicio.`,
-    deepen: [
+        deepen: [
       { type: "video", title: "I Ponti di Roma: Fabricio, Cestio, Emilio — video", url: "https://www.youtube.com/watch?v=UfkXeRWM-qM" },
       { type: "link", title: "Ponte Fabricio — Wikipedia", url: "https://it.wikipedia.org/wiki/Ponte_Fabricio" },
       { type: "link", title: "Isola Tiberina — Roma Segreta", url: "https://www.romasegreta.it/ripa/isola-tiberina.html" },
       { type: "link", title: "Tiber Island — Wikipedia", url: "https://en.wikipedia.org/wiki/Tiber_Island" }
     ]
+      },
+      en: {
+        name: "Ponte Fabricio and Tiber Island",
+        desc: "Rome's oldest bridge, between legend and medicine",
+        audio: "audio/en/tappa3.mp3",
+        photos: [
+      { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Ponte_Quattro_Capi_(Rome).jpg?width=900",
+        caption: "Ponte Fabricio, detto Ponte dei Quattro Capi", credit: "Wikimedia Commons" },
+      { time: 40, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Roma_Isola_Tiberina_uno.jpg?width=900",
+        caption: "L'Isola Tiberina", credit: "Wikimedia Commons" }
+    ],
+        fullText: `You're at Ponte Fabricio, the oldest bridge in Rome still preserved in its original form, built in 62 BC. Romans also call it "Ponte dei Quattro Capi", the bridge of the four heads, from a legend about four quarreling architects beheaded by order of Pope Sixtus the Fifth.<br><br>
+Ahead of you is Tiber Island: legend says that in 291 BC a sacred serpent belonging to Aesculapius, god of medicine, chose this island as its home during an epidemic. Since then, for over two thousand uninterrupted years, it has been a place of healing — today still an actual hospital.<br><br>
+On this island there's also a historic tavern said to serve one of the best carbonara dishes in Rome — keep that in mind if you're hungry.<br><br>
+Cross the island and continue toward Ponte Sublicio.`,
+        deepen: [
+      { type: "video", title: "I Ponti di Roma: Fabricio, Cestio, Emilio — video", url: "https://www.youtube.com/watch?v=UfkXeRWM-qM" },
+      { type: "link", title: "Ponte Fabricio — Wikipedia", url: "https://it.wikipedia.org/wiki/Ponte_Fabricio" },
+      { type: "link", title: "Isola Tiberina — Roma Segreta", url: "https://www.romasegreta.it/ripa/isola-tiberina.html" },
+      { type: "link", title: "Tiber Island — Wikipedia", url: "https://en.wikipedia.org/wiki/Tiber_Island" }
+    ]
+      }
+    }
   },
   {
     id: 4, ready: true,
-    name: "Ponte Sublicio",
-    desc: "Il primo ponte di Roma e Orazio Coclite",
     lat: 41.883259, lon: 12.4752132,
-    audio: "audio/tappa4.mp3",
-    photos: [
+    i18n: {
+      it: {
+        name: "Ponte Sublicio",
+        desc: "Il primo ponte di Roma e Orazio Coclite",
+        audio: "audio/tappa4.mp3",
+        photos: [
       { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Roma_-_Ponte_Sublicio.jpg?width=900",
         caption: "Ponte Sublicio sul Tevere", credit: "Wikimedia Commons" }
     ],
-    fullText: `Sei a Ponte Sublicio. Qui, secondo la tradizione, sorgeva il primo ponte mai costruito sul Tevere, interamente in legno — il leggendario <a href="https://it.wikipedia.org/wiki/Pons_Sublicius" target="_blank">Pons Sublicius</a>, attribuito al re Anco Marzio nel settimo secolo avanti Cristo.<br><br>
+        fullText: `Sei a Ponte Sublicio. Qui, secondo la tradizione, sorgeva il primo ponte mai costruito sul Tevere, interamente in legno — il leggendario <a href="https://it.wikipedia.org/wiki/Pons_Sublicius" target="_blank">Pons Sublicius</a>, attribuito al re Anco Marzio nel settimo secolo avanti Cristo.<br><br>
 È il ponte della leggenda di Orazio Coclite: nel quinto secolo avanti Cristo avrebbe tenuto da solo testa all'esercito etrusco di Lars Porsenna, dando ai romani il tempo di distruggere il ponte alle sue spalle e salvando la città.<br><br>
 Stiamo per lasciare il centro storico più antico e dirigerci verso Testaccio: quartiere nato non nell'antichità ma nell'Ottocento, come quartiere operaio e industriale.<br><br>
 Prosegui verso Monte Testaccio.`,
-    deepen: [
+        deepen: [
       { type: "video", title: "Orazio Coclite e Ponte Sublicio — video", url: "https://www.youtube.com/watch?v=7vXTkWGJwhs" },
       { type: "link", title: "Ponte Sublicio — Wikipedia", url: "https://it.wikipedia.org/wiki/Ponte_Sublicio" },
       { type: "link", title: "Ponte Sublicio — Turismo Roma", url: "https://www.turismoroma.it/en/places/ponte-sublicio" }
     ]
+      },
+      en: {
+        name: "Ponte Sublicio",
+        desc: "Rome's first bridge and Horatius Cocles",
+        audio: "audio/en/tappa4.mp3",
+        photos: [
+      { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Roma_-_Ponte_Sublicio.jpg?width=900",
+        caption: "Ponte Sublicio sul Tevere", credit: "Wikimedia Commons" }
+    ],
+        fullText: `You're at Ponte Sublicio. Here, according to tradition, stood the very first bridge ever built over the Tiber, entirely made of wood — the legendary Pons Sublicius, attributed to King Ancus Marcius in the seventh century BC.<br><br>
+This is the bridge of the legend of Horatius Cocles: in the fifth century BC he allegedly held off the entire Etruscan army of Lars Porsenna single-handedly, giving the Romans time to destroy the bridge behind him and save the city.<br><br>
+We're about to leave the oldest historic center and head toward Testaccio: a district born not in antiquity but in the nineteenth century, as a working-class industrial neighborhood.<br><br>
+Continue toward Monte Testaccio.`,
+        deepen: [
+      { type: "video", title: "Orazio Coclite e Ponte Sublicio — video", url: "https://www.youtube.com/watch?v=7vXTkWGJwhs" },
+      { type: "link", title: "Ponte Sublicio — Wikipedia", url: "https://it.wikipedia.org/wiki/Ponte_Sublicio" },
+      { type: "link", title: "Ponte Sublicio — Turismo Roma", url: "https://www.turismoroma.it/en/places/ponte-sublicio" }
+    ]
+      }
+    }
   },
   {
     id: 5, ready: true,
-    name: "Monte Testaccio",
-    desc: "La collina fatta di anfore romane",
     lat: 41.875952, lon: 12.475694,
-    audio: "audio/tappa5.mp3",
-    photos: [
+    i18n: {
+      it: {
+        name: "Monte Testaccio",
+        desc: "La collina fatta di anfore romane",
+        audio: "audio/tappa5.mp3",
+        photos: [
       { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Monte_Testaccio_Particolare.jpg?width=900",
         caption: "Monte Testaccio, o Monte dei Cocci", credit: "Wikimedia Commons" }
     ],
-    fullText: `Sei arrivato a <a href="https://it.wikipedia.org/wiki/Monte_Testaccio" target="_blank">Monte Testaccio</a>, o Monte dei Cocci. Questa collina è interamente artificiale, fatta di frammenti di anfore romane rotte — si stima oltre 53 milioni.<br><br>
+        fullText: `Sei arrivato a <a href="https://it.wikipedia.org/wiki/Monte_Testaccio" target="_blank">Monte Testaccio</a>, o Monte dei Cocci. Questa collina è interamente artificiale, fatta di frammenti di anfore romane rotte — si stima oltre 53 milioni.<br><br>
 Qui vicino sorgeva un porto fluviale importantissimo. Le anfore da olio, una volta svuotate, venivano rotte e accatastate: il risultato, dopo secoli, è una collina alta circa 50 metri.<br><br>
 Stai guardando letteralmente una discarica dell'impero romano diventata monumento — e il primo indizio del filo conduttore di oggi: Roma non butta via niente.<br><br>
 Quando sei pronto, dirigiti verso l'ex Mattatoio.`,
-    deepen: [
+        deepen: [
       { type: "video", title: "Monte Testaccio, la montagna di anfore romane — video", url: "https://www.youtube.com/watch?v=5Cty-ck6zjA" },
       { type: "link", title: "Testaccio — Wikipedia", url: "https://it.wikipedia.org/wiki/Testaccio" },
       { type: "link", title: "Che vuol dire quinto quarto — Velavevodetto", url: "https://www.ristorantevelavevodetto.it/che-vuol-dire-quinto-quarto-origine-tagli-e-piatti-tipici/" }
     ]
+      },
+      en: {
+        name: "Monte Testaccio",
+        desc: "The hill made of Roman amphorae",
+        audio: "audio/en/tappa5.mp3",
+        photos: [
+      { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Monte_Testaccio_Particolare.jpg?width=900",
+        caption: "Monte Testaccio, o Monte dei Cocci", credit: "Wikimedia Commons" }
+    ],
+        fullText: `You've arrived at Monte Testaccio, also known as the Hill of Shards. This hill is entirely artificial, made of fragments of broken Roman amphorae — an estimated fifty-three million of them.<br><br>
+An important river port once stood nearby. Olive oil amphorae, once emptied, were broken and piled up: the result, after centuries, is a hill about fifty meters tall.<br><br>
+You're literally looking at an ancient Roman landfill turned into a monument — and the first clue to today's underlying thread: Rome never throws anything away.<br><br>
+When you're ready, head toward the former Mattatoio, the old slaughterhouse.`,
+        deepen: [
+      { type: "video", title: "Monte Testaccio, la montagna di anfore romane — video", url: "https://www.youtube.com/watch?v=5Cty-ck6zjA" },
+      { type: "link", title: "Testaccio — Wikipedia", url: "https://it.wikipedia.org/wiki/Testaccio" },
+      { type: "link", title: "Che vuol dire quinto quarto — Velavevodetto", url: "https://www.ristorantevelavevodetto.it/che-vuol-dire-quinto-quarto-origine-tagli-e-piatti-tipici/" }
+    ]
+      }
+    }
   },
   {
     id: 6, ready: true,
-    name: "Ex Mattatoio",
-    desc: "Il quinto quarto e la nascita della cucina romana povera",
     lat: 41.8764877, lon: 12.4732685,
-    audio: "audio/tappa6.mp3",
-    photos: [
+    i18n: {
+      it: {
+        name: "Ex Mattatoio",
+        desc: "Il quinto quarto e la nascita della cucina romana povera",
+        audio: "audio/tappa6.mp3",
+        photos: [
       { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Mattatoio_facciata.jpg?width=900",
         caption: "La facciata dell'ex Mattatoio di Testaccio", credit: "Wikimedia Commons" }
     ],
-    fullText: `Sei all'ex Mattatoio di Testaccio, costruito tra il 1888 e il 1891 su progetto di Gioacchino Ersoch — all'epoca il più grande d'Europa.<br><br>
+        fullText: `Sei all'ex Mattatoio di Testaccio, costruito tra il 1888 e il 1891 su progetto di Gioacchino Ersoch — all'epoca il più grande d'Europa.<br><br>
 Gli operai, chiamati "vaccinari", venivano pagati anche in "quinto quarto": le parti dell'animale considerate di scarso valore — coda, interiora, testa, zampe. Le loro mogli, e le cuoche delle osterie sorte qui accanto, trasformarono quegli scarti in coda alla vaccinara, trippa, coratella, pajata.<br><br>
 Oggi l'edificio è spazio culturale, con mostre spesso gratuite.<br><br>
 Quando sei pronto, dirigiti verso Checchino, a pochi passi.`,
-    deepen: [
+        deepen: [
       { type: "video", title: "Un giro all'ex Mattatoio di Roma — video", url: "https://www.youtube.com/watch?v=7ON-YKPeM8Q" },
       { type: "link", title: "Mattatoio — Turismo Roma", url: "https://www.turismoroma.it/it/luoghi/mattatoio" },
       { type: "link", title: "Storia del quinto quarto — Velavevodetto", url: "https://www.ristorantevelavevodetto.it/coda-alla-vaccinara-storia-del-quinto-quarto-piu-iconico/" }
     ]
+      },
+      en: {
+        name: "Former Mattatoio",
+        desc: "The fifth quarter and the birth of poor Roman cuisine",
+        audio: "audio/en/tappa6.mp3",
+        photos: [
+      { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Mattatoio_facciata.jpg?width=900",
+        caption: "La facciata dell'ex Mattatoio di Testaccio", credit: "Wikimedia Commons" }
+    ],
+        fullText: `You're at the former Mattatoio of Testaccio, built between 1888 and 1891 to a design by Gioacchino Ersoch — at the time, the largest in Europe.<br><br>
+The workers, called "vaccinari", were partly paid in "quinto quarto", the fifth quarter: the parts of the animal considered of little value — tail, offal, head, feet. Their wives, and the cooks at the taverns that sprang up nearby, transformed those scraps into coda alla vaccinara, tripe, coratella, pajata.<br><br>
+Today the building is a cultural space, with exhibitions that are often free.<br><br>
+When you're ready, head toward Checchino, just a few steps away.`,
+        deepen: [
+      { type: "video", title: "Un giro all'ex Mattatoio di Roma — video", url: "https://www.youtube.com/watch?v=7ON-YKPeM8Q" },
+      { type: "link", title: "Mattatoio — Turismo Roma", url: "https://www.turismoroma.it/it/luoghi/mattatoio" },
+      { type: "link", title: "Storia del quinto quarto — Velavevodetto", url: "https://www.ristorantevelavevodetto.it/coda-alla-vaccinara-storia-del-quinto-quarto-piu-iconico/" }
+    ]
+      }
+    }
   },
   {
     id: 7, ready: true,
-    name: "Checchino dal 1887",
-    desc: "Dove nacque la coda alla vaccinara",
     lat: 41.8764026, lon: 12.4740667,
-    audio: "audio/tappa7.mp3",
-    photos: [],
-    fullText: `Sei davanti a Checchino dal 1887 — aperto nello stesso punto, dalla stessa famiglia, da sei generazioni.<br><br>
+    i18n: {
+      it: {
+        name: "Checchino dal 1887",
+        desc: "Dove nacque la coda alla vaccinara",
+        audio: "audio/tappa7.mp3",
+        photos: [],
+        fullText: `Sei davanti a Checchino dal 1887 — aperto nello stesso punto, dalla stessa famiglia, da sei generazioni.<br><br>
 Nel 1870 Lorenzo e Clorinda aprono qui un'osteria semplice. Con l'inaugurazione del mattatoio nel 1891, arriva il quinto quarto. È la figlia Ferminia a mettere a punto la ricetta più famosa della cucina romana popolare: la <a href="https://en.wikipedia.org/wiki/Coda_alla_vaccinara" target="_blank">coda alla vaccinara</a> — coda di bue, sedano, e la sorpresa di uvetta, pinoli e cacao amaro.<br><br>
 Il nome viene dai vaccinari, i macellai-scuoiatori del mattatoio. Da qui la ricetta si diffuse in tutta Roma.<br><br>
 Quando sei pronto, l'ultima tappa è a due passi: il mercato di Testaccio.`,
-    deepen: [
+        deepen: [
       { type: "video", title: "Checchino dal 1887 — video", url: "https://www.youtube.com/watch?v=Tq6inq1Ik7k" },
       { type: "link", title: "Coda alla Vaccinara — Turismo Roma", url: "https://www.turismoroma.it/it/pagina/coda-alla-vaccinara" },
       { type: "link", title: "La storia di Checchino — CiboToday", url: "https://www.cibotoday.it/dove-mangiare/ristoranti/coda-alla-vaccinara-checchino-testaccio.html" }
     ]
+      },
+      en: {
+        name: "Checchino dal 1887",
+        desc: "Where coda alla vaccinara was born",
+        audio: "audio/en/tappa7.mp3",
+        photos: [],
+        fullText: `You're in front of Checchino dal 1887 — open on this exact spot, run by the same family, for six generations.<br><br>
+In 1870 Lorenzo and Clorinda opened a simple tavern here. With the slaughterhouse's opening in 1891, the "quinto quarto" arrived. It was their daughter Ferminia who perfected the most famous recipe in popular Roman cuisine: coda alla vaccinara — oxtail, celery, and the surprising touch of raisins, pine nuts, and bitter cocoa.<br><br>
+The name comes from the "vaccinari", the butcher-skinners of the slaughterhouse. From here the recipe spread across all of Rome.<br><br>
+When you're ready, the last stop is just a couple of steps away: Testaccio Market.`,
+        deepen: [
+      { type: "video", title: "Checchino dal 1887 — video", url: "https://www.youtube.com/watch?v=Tq6inq1Ik7k" },
+      { type: "link", title: "Coda alla Vaccinara — Turismo Roma", url: "https://www.turismoroma.it/it/pagina/coda-alla-vaccinara" },
+      { type: "link", title: "La storia di Checchino — CiboToday", url: "https://www.cibotoday.it/dove-mangiare/ristoranti/coda-alla-vaccinara-checchino-testaccio.html" }
+    ]
+      }
+    }
   },
   {
     id: 8, ready: true,
-    name: "Mercato di Testaccio",
-    desc: "Chiusura del giro, tra i banchi del quartiere",
     lat: 41.8776845, lon: 12.4738455,
-    audio: "audio/tappa8.mp3",
-    photos: [
+    i18n: {
+      it: {
+        name: "Mercato di Testaccio",
+        desc: "Chiusura del giro, tra i banchi del quartiere",
+        audio: "audio/tappa8.mp3",
+        photos: [
       { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/P_Testaccio_rinnovata_P1070076.jpg?width=900",
         caption: "Piazza Testaccio", credit: "Wikimedia Commons" }
     ],
-    fullText: `Sei arrivato al Mercato di Testaccio: non un mercato per turisti, ma il posto dove i residenti fanno la spesa ogni mattina.<br><br>
+        fullText: `Sei arrivato al Mercato di Testaccio: non un mercato per turisti, ma il posto dove i residenti fanno la spesa ogni mattina.<br><br>
 Ripensa al percorso: dalle colonne del Portico d'Ottavia e i carciofi alla giudia, al ponte più antico di Roma su un'isola dedicata alla medicina, al mito di Orazio Coclite, fino a una collina fatta di anfore rotte e agli scarti di un mattatoio diventati uno dei piatti più amati d'Italia.<br><br>
 Il filo conduttore: Roma non butta via niente. Che siano cocci impilati per secoli o code di bue vendute come scarto, questa città trasforma sempre la scarsità in invenzione.<br><br>
 Se hai ancora fame, il mercato stesso è un'ottima tappa per un assaggio veloce. Grazie per aver camminato con noi oggi.`,
-    deepen: [
+        deepen: [
       { type: "video", title: "Viaggio nel Mercato di Testaccio — video", url: "https://www.youtube.com/watch?v=TrSxa8ZPbs8" },
       { type: "link", title: "Piazza Testaccio — Turismo Roma", url: "https://www.turismoroma.it/it/luoghi/piazza-testaccio" },
       { type: "link", title: "Rome's Testaccio Market — Devour Tours", url: "https://devourtours.com/blog/testaccio-market/" }
     ]
+      },
+      en: {
+        name: "Testaccio Market",
+        desc: "End of the tour, among the neighborhood stalls",
+        audio: "audio/en/tappa8.mp3",
+        photos: [
+      { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/P_Testaccio_rinnovata_P1070076.jpg?width=900",
+        caption: "Piazza Testaccio", credit: "Wikimedia Commons" }
+    ],
+        fullText: `You've arrived at Testaccio Market: not a market for tourists, but the place where residents do their shopping every morning.<br><br>
+Think back on the route: from the columns of the Portico d'Ottavia and the artichokes alla giudia, to Rome's oldest bridge leading to an island dedicated to medicine, to the legend of Horatius Cocles. All the way to a hill made of broken pottery and the scraps of a slaughterhouse turned into one of Italy's most beloved dishes.<br><br>
+The common thread: Rome throws nothing away. Whether it's shards stacked for centuries or oxtails sold as scraps, this city always turns scarcity into invention.<br><br>
+If you're still hungry, the market itself is a great spot for a quick bite. Thank you for walking with us today.`,
+        deepen: [
+      { type: "video", title: "Viaggio nel Mercato di Testaccio — video", url: "https://www.youtube.com/watch?v=TrSxa8ZPbs8" },
+      { type: "link", title: "Piazza Testaccio — Turismo Roma", url: "https://www.turismoroma.it/it/luoghi/piazza-testaccio" },
+      { type: "link", title: "Rome's Testaccio Market — Devour Tours", url: "https://devourtours.com/blog/testaccio-market/" }
+    ]
+      }
+    }
   }
 ];
 
