@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="FlyTour">
+<meta name="theme-color" content="#2a2622">
+<link rel="manifest" href="../manifest.json">
+<link rel="apple-touch-icon" href="../icons/icon-180.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../icons/icon-32.png">
+<title>Musei Vaticani e Cappella Sistina — Audioguida</title>
+<link rel="stylesheet" href="../shared/app.css">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a href="../index.html" class="back-link">← Tutti i percorsi</a>
+    <div class="eyebrow">Percorso a tappe · Senza GPS · Bilingue IT/EN</div>
+    <h1>Musei Vaticani e Cappella Sistina</h1>
+    <p class="subtitle">Le opere imperdibili in un paio d'ore: dalla Pinacoteca al Laocoonte, dalle Stanze di Raffaello fino alla Cappella Sistina. Tocca la tappa che stai guardando: qui non serve il GPS.</p>
+  </header>
+
+  <div id="langToggle">
+    <button data-lang="it">Italiano</button>
+    <button data-lang="en">English</button>
+  </div>
+
+  <div class="trail" id="trail"></div>
+
+  <div class="museum-map-wrap" id="museumMapWrap">
+  <div class="museum-map-title">Il percorso di oggi</div>
+  <div class="museum-map-zone">
+    <div class="museum-map-zone-label">Pinacoteca</div>
+    <div class="museum-map-nodes">
+      <div class="museum-map-node">1</div>
+      <div class="museum-map-node">2</div>
+      <div class="museum-map-node">3</div>
+    </div>
+  </div>
+  <div class="museum-map-zone">
+    <div class="museum-map-zone-label">Pio-Clementino</div>
+    <div class="museum-map-nodes">
+      <div class="museum-map-node">4</div>
+      <div class="museum-map-node">5</div>
+      <div class="museum-map-node">6</div>
+    </div>
+  </div>
+  <div class="museum-map-zone">
+    <div class="museum-map-zone-label">Gallerie</div>
+    <div class="museum-map-nodes">
+      <div class="museum-map-node">7</div>
+      <div class="museum-map-node">8</div>
+      <div class="museum-map-node">9</div>
+    </div>
+  </div>
+  <div class="museum-map-zone">
+    <div class="museum-map-zone-label">Stanze di Raffaello</div>
+    <div class="museum-map-nodes">
+      <div class="museum-map-node">10</div>
+      <div class="museum-map-node">11</div>
+      <div class="museum-map-node">12</div>
+      <div class="museum-map-node">13</div>
+    </div>
+  </div>
+  <div class="museum-map-zone">
+    <div class="museum-map-zone-label">Cappella Sistina</div>
+    <div class="museum-map-nodes">
+      <div class="museum-map-node">14</div>
+      <div class="museum-map-node">15</div>
+      <div class="museum-map-node">16</div>
+      <div class="museum-map-node">17</div>
+      <div class="museum-map-node">18</div>
+    </div>
+  </div>
+  <a class="museum-map-link" href="https://m.museivaticani.va/content/dam/museivaticani/pdf/visita_musei/servizi_visitatori/mappa_musei_vaticani.pdf" target="_blank">Mappa ufficiale dei Musei Vaticani (PDF, con bagni e uscite) ↗</a>
+</div>
+
+  <div class="toggle-row" style="display:none;">
+    <div class="toggle-label"><b>Riproduzione automatica</b><br>Parte da sola quando arrivi a una tappa</div>
+    <label class="switch">
+      <input type="checkbox" id="autoplayToggle" checked>
+      <span class="slider"></span>
+    </label>
+  </div>
+
+  <div class="gps-status" id="gpsStatusRow" style="display:none;">
+    <div class="gps-dot" id="gpsDot"></div>
+    <span id="gpsText">Posizione non attiva — tocca "Attiva GPS" qui sotto</span>
+  </div>
+
+
+
+  <div class="reset-row"><button class="reset-link" id="resetBtn">Ricomincia il giro</button></div>
+
+  <div class="stops" id="stops"></div>
+
+  <footer>Genera audio con Google Cloud TTS · fatto per camminarci sopra</footer>
+</div>
+
+<div class="arrival-overlay" id="arrivalOverlay">
+  <div class="arrival-card">
+    <div class="arrival-eyebrow">Sei arrivato</div>
+    <div class="arrival-title" id="arrivalTitle">—</div>
+    <div class="arrival-actions">
+      <button class="btn btn-ghost" id="laterBtn">Più tardi</button>
+      <button class="btn btn-primary" id="playNowBtn">▶ Riproduci</button>
+    </div>
+  </div>
+</div>
+
+<div class="text-modal-overlay" id="textModalOverlay">
+  <div class="text-modal">
+    <div class="text-modal-header">
+      <div class="text-modal-title" id="textModalTitle">—</div>
+      <button class="text-modal-close" id="textModalClose">✕</button>
+    </div>
+    <div class="text-modal-body" id="textModalBody"></div>
+    <div class="yt-links" id="ytLinks" style="display:none;">
+      <div class="yt-eyebrow">Approfondisci</div>
+      <div id="ytLinksList"></div>
+    </div>
+  </div>
+</div>
+
+<div class="arrival-overlay" id="endOverlay">
+  <div class="arrival-card">
+    <div class="arrival-eyebrow">Tappa completata</div>
+    <div class="arrival-title" id="endTitle">—</div>
+    <div class="yt-links" id="endYtLinks" style="display:none;">
+      <div class="yt-eyebrow">Approfondisci</div>
+      <div id="endYtLinksList"></div>
+    </div>
+    <div class="arrival-actions" style="margin-top:16px;">
+      <button class="btn btn-primary" id="endCloseBtn">Continua la visita</button>
+    </div>
+  </div>
+</div>
+
+<div class="player" id="player">
+  <div class="photo-panel" id="photoPanel">
+    <img id="photoImg" src="" alt="">
+    <button class="player-close" id="playerCloseBtn">✕</button>
+    <div class="photo-caption" id="photoCaption"></div>
+  </div>
+  <div class="player-top">
+    <div class="player-name" id="playerName">—</div>
+  </div>
+  <div class="seek-row">
+    <span class="time-label" id="timeElapsed">0:00</span>
+    <input type="range" class="seek" id="seekBar" min="0" max="100" value="0" step="0.1">
+    <span class="time-label right" id="timeRemaining">-0:00</span>
+  </div>
+  <div class="transport">
+    <button class="skip-btn" id="backBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 19l-7-7 7-7M4 12h13a4 4 0 000-8"/></svg>
+      <span>15s</span>
+    </button>
+    <button class="play-btn" id="playPauseBtn" style="width:52px;height:52px;">
+      <svg viewBox="0 0 24 24" fill="#241a12" style="width:20px;height:20px;"><path id="playIcon" d="M8 5v14l11-7z"/></svg>
+    </button>
+    <button class="skip-btn" id="fwdBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 5l7 7-7 7M20 12H7a4 4 0 010-8"/></svg>
+      <span>15s</span>
+    </button>
+  </div>
+  <audio id="audioEl" style="display:none;"></audio>
+</div>
+
+<script>
+// ---- Dati tappe (pilota: 2 tappe) ----
+const STOPS = [
+  {
+    id: 1, ready: true,
+    lat: 41.9065, lon: 12.4536,
+    i18n: {
+      it: {
+        name: "La Trasfigurazione",
+        desc: "L'ultima opera di Raffaello, incompiuta",
+        audio: "audio/it/tappa1.mp3",
+        photos: [{ time: 0, url: "img/t1_trasfigurazione.jpg", caption: "La Trasfigurazione", credit: "Wikimedia Commons" }],
+        fullText: `Sei davanti alla Trasfigurazione di Raffaello, nella Pinacoteca. È l'ultima opera che il pittore abbia mai dipinto, rimasta incompiuta alla sua morte nel 1520, a soli trentasette anni.<br><br>
+Il quadro racconta due episodi del Vangelo di Matteo insieme. In alto, Cristo si trasfigura sul monte Tabor, sospeso tra le nuvole accanto a Mosè ed Elia, avvolto da una luce quasi accecante. In basso, nella parte più buia e agitata, gli apostoli rimasti a valle cercano invano di guarire un ragazzo posseduto, davanti a una folla disperata.<br><br>
+Questo contrasto tra alto e basso, tra luce divina e caos terreno, è ciò che rende l'opera così rivoluzionaria. Raffaello qui abbandona l'equilibrio sereno che aveva reso celebri i suoi quadri precedenti, per abbracciare un'intensità emotiva quasi violenta: gli apostoli in basso hanno volti stravolti, gesti scomposti, sguardi pieni di angoscia. Gli storici dell'arte considerano questo dipinto la cerniera tra il Rinascimento maturo e il Barocco che sarebbe esploso un secolo dopo.<br><br>
+Il committente, il cardinale Giulio de' Medici, aveva ordinato l'opera per una cattedrale in Francia. Ma quando Raffaello morì improvvisamente, il quadro fece una tale impressione che il cardinale, diventato nel frattempo papa Clemente Settimo, decise di tenerlo per sé. Fu portato in processione al funerale del pittore, appoggiato accanto alla sua bara nel Pantheon, dove Raffaello è ancora sepolto oggi.<br><br>
+Guarda con attenzione la parte inferiore incompiuta: alcune pennellate, soprattutto tra i volti degli apostoli, furono completate dal suo allievo prediletto Giulio Romano dopo la morte del maestro. Un dettaglio che rende ancora più toccante il fatto che l'ultima opera di uno dei più grandi pittori della storia sia arrivata a noi come un testamento lasciato a metà, completato da mani non sue.<br><br>
+Nella stessa sala, ai lati della Trasfigurazione, sono esposte altre due opere di Raffaello. L'Incoronazione della Vergine, uno dei suoi primissimi lavori giovanili, e la Pala di Monteluce, completata dai suoi allievi. Vederle insieme, fianco a fianco con l'ultima opera del maestro, permette di percorrere in pochi passi l'intera evoluzione stilistica di uno dei più grandi pittori della storia.<br><br>
+Quando sei pronto, cerca nella stessa Pinacoteca la Deposizione di Caravaggio.`,
+        deepen: [{ type: "link", title: "La Trasfigurazione — Wikipedia", url: "https://it.wikipedia.org/wiki/Trasfigurazione_(Raffaello)" }]
+      },
+      en: {
+        name: "The Transfiguration",
+        desc: "Raphael's last, unfinished work",
+        audio: "audio/en/tappa1.mp3",
+        photos: [{ time: 0, url: "img/t1_trasfigurazione.jpg", caption: "The Transfiguration", credit: "Wikimedia Commons" }],
+        fullText: `You're in front of Raphael's Transfiguration, in the Pinacoteca. It's the last work the painter ever completed, left unfinished at his death in 1520, at just thirty-seven years old.<br><br>
+The painting tells two episodes from the Gospel of Matthew together. Above, Christ transfigures on Mount Tabor, suspended among clouds next to Moses and Elijah, wrapped in an almost blinding light. Below, in the darker and more agitated part, the apostles left behind try in vain to heal a possessed boy, in front of a desperate crowd.<br><br>
+This contrast between above and below, between divine light and earthly chaos, is what makes the work so revolutionary. Raphael abandons here the serene balance that had made his earlier paintings famous. He embraces an almost violent emotional intensity. The apostles below have distraught faces, disordered gestures, eyes full of anguish. Art historians consider this painting the hinge between the mature Renaissance and the Baroque that would explode a century later.<br><br>
+The patron, Cardinal Giulio de' Medici, had ordered the work for a cathedral in France. But when Raphael suddenly died, the painting made such an impression that the cardinal, who had meanwhile become Pope Clement the Seventh, decided to keep it for himself. It was carried in procession at the painter's funeral, placed next to his coffin in the Pantheon, where Raphael is still buried today.<br><br>
+Look closely at the unfinished lower section. Some brushstrokes, especially among the apostles' faces, were completed by his favorite student Giulio Romano after the master's death. A detail that makes it even more touching that the final work of one of history's greatest painters reached us as a testament left half done, completed by hands other than his own.<br><br>
+When you're ready, look for Caravaggio's Deposition, in the same Pinacoteca.`,
+        deepen: [{ type: "link", title: "The Transfiguration — Wikipedia", url: "https://en.wikipedia.org/wiki/The_Transfiguration_(Raphael)" }]
+      }
+    }
+  },
+  {
+    id: 2, ready: true,
+    lat: 41.9065, lon: 12.4536,
+    i18n: {
+      it: {
+        name: "La Deposizione",
+        desc: "Il capolavoro di Caravaggio nella Pinacoteca",
+        audio: "audio/it/tappa2.mp3",
+        photos: [{ time: 0, url: "img/t2_deposizione.jpg", caption: "La Deposizione", credit: "Wikimedia Commons" }],
+        fullText: `Sei davanti alla Deposizione di Cristo di Caravaggio, uno dei suoi capolavori assoluti. Dipinta intorno al 1602 per una chiesa romana, oggi si trova qui, in una delle sale più visitate della Pinacoteca.<br><br>
+Il corpo di Cristo, appena calato dalla croce, viene sostenuto a fatica da Nicodemo, un anziano dal volto segnato e dai piedi sporchi, poggiati proprio sul bordo della pietra tombale, quasi a sfiorare lo spazio dello spettatore. Non c'è nulla di idealizzato in questa scena: Caravaggio dipinge un cadavere pesante, reale, con la pelle già livida, in totale rottura con secoli di rappresentazioni sacre più eteree e composte.<br><br>
+Dietro di lui, tre donne esprimono il dolore in modi completamente diversi. Maria di Cleofa alza le braccia al cielo in un gesto quasi teatrale, la Maddalena si asciuga gli occhi. La Vergine Maria, più anziana e composta, osserva il figlio morto con un'intensità silenziosa che colpisce più di ogni gesto plateale.<br><br>
+La tecnica che rese Caravaggio immediatamente riconoscibile, il chiaroscuro estremo, qui raggiunge una delle sue espressioni più potenti. Le figure sembrano emergere da un buio totale, illuminate da una luce che pare provenire da una fonte reale, quasi teatrale, e non dal cielo. Fu un modo di dipingere che scandalizzò e insieme conquistò i suoi contemporanei, aprendo la strada a tutta la pittura barocca europea.<br><br>
+Caravaggio visse una vita turbolenta quanto la sua arte: girava Roma armato di spada, fu coinvolto in risse e persino in un omicidio che lo costrinse a fuggire dalla città. Morì nel 1610, a soli trentotto anni, forse di malaria, forse assassinato, mentre aspettava una grazia papale che gli avrebbe permesso di tornare a Roma da uomo libero. Quella grazia arrivò, secondo alcune fonti, proprio nei giorni della sua morte.<br><br>
+Il dipinto rimase per secoli nella chiesa romana di San Pietro in Montorio, funzionando da pala d'altare. Fu sequestrato dalle truppe napoleoniche nel 1797 e portato a Parigi, insieme a centinaia di altre opere d'arte italiane. Tornò a Roma solo nel 1817, grazie alle trattative diplomatiche guidate da Antonio Canova, che riportarono in Italia molti dei tesori sottratti durante l'occupazione francese.<br><br>
+Quando sei pronto, cerca il San Girolamo di Leonardo da Vinci, poco distante.`,
+        deepen: [{ type: "link", title: "La Deposizione — Wikipedia", url: "https://it.wikipedia.org/wiki/Deposizione_(Caravaggio)" }]
+      },
+      en: {
+        name: "The Deposition",
+        desc: "Caravaggio's masterpiece in the Pinacoteca",
+        audio: "audio/en/tappa2.mp3",
+        photos: [{ time: 0, url: "img/t2_deposizione.jpg", caption: "The Deposition", credit: "Wikimedia Commons" }],
+        fullText: `You're in front of Caravaggio's Deposition of Christ, one of his absolute masterpieces. Painted around 1602 for a Roman church, it's now here, in one of the most visited rooms of the Pinacoteca.<br><br>
+Christ's body, just lowered from the cross, is held with visible effort by Nicodemus, an old man with a lined face and dirty feet, resting right at the edge of the tombstone, almost touching the viewer's own space. There's nothing idealized in this scene. Caravaggio paints a heavy, real corpse, with skin already turning livid. It was a total break from centuries of more ethereal, composed sacred images.<br><br>
+Behind him, three women express grief in completely different ways. Mary of Cleophas raises her arms to the sky in an almost theatrical gesture, Mary Magdalene wipes her eyes. The Virgin Mary, older and more composed, watches her dead son with a silent intensity that strikes harder than any dramatic gesture.<br><br>
+The technique that made Caravaggio instantly recognizable, extreme chiaroscuro, reaches here one of its most powerful expressions. The figures seem to emerge from total darkness, lit by a light that seems to come from a real, almost theatrical source, not from the sky.<br><br>
+Caravaggio lived a life as turbulent as his art. He walked around Rome armed with a sword, got involved in brawls, and even in a killing that forced him to flee the city. He died in 1610, only thirty-eight years old, perhaps of malaria, perhaps murdered, while waiting for a papal pardon that would have let him return to Rome as a free man. According to some sources, that pardon arrived right around the days of his death.<br><br>
+When you're ready, look for Leonardo da Vinci's Saint Jerome, not far away.`,
+        deepen: [{ type: "link", title: "The Deposition — Wikipedia", url: "https://en.wikipedia.org/wiki/The_Entombment_of_Christ_(Caravaggio)" }]
+      }
+    }
+  },
+  {
+    id: 3, ready: true,
+    lat: 41.9065, lon: 12.4536,
+    i18n: {
+      it: {
+        name: "San Girolamo",
+        desc: "L'unico Leonardo a Roma, ritrovato in due pezzi",
+        audio: "audio/it/tappa3.mp3",
+        photos: [{ time: 0, url: "img/t3_girolamo.jpg", caption: "San Girolamo", credit: "Wikimedia Commons" }],
+        fullText: `Sei davanti al San Girolamo nel deserto di Leonardo da Vinci, l'unico dipinto di Leonardo conservato a Roma, e uno dei pochissimi rimasti a lui attribuiti con certezza in tutto il mondo.<br><br>
+L'opera, incompiuta, mostra il santo inginocchiato nel deserto, un sasso in mano pronto a colpirsi il petto in segno di penitenza. Un leone giace ai suoi piedi, secondo la leggenda medievale che vuole Girolamo aver curato la zampa ferita dell'animale. Da allora gli restò fedele per sempre.<br><br>
+Leonardo lascia gran parte della tela solo abbozzata in monocromo, un marrone terroso che permette di studiare direttamente il suo processo creativo. Si vedono ancora i segni del pennello, le correzioni. Lo scheletro anatomico del corpo di Girolamo è studiato con la stessa precisione scientifica che Leonardo applicava ai suoi disegni di dissezione umana.<br><br>
+La storia del ritrovamento di questo quadro è quasi incredibile. Per secoli se ne persero le tracce. Nell'Ottocento la pittrice Angelica Kauffmann lo ritrovò smembrato in due pezzi diversi. La parte superiore, con la testa del santo, veniva usata come sgabello da un calzolaio romano. La parte inferiore, con il corpo, era stata riadattata come coperchio di una cassapanca in un'altra bottega della città.<br><br>
+Fu il cardinale Joseph Fesch, zio di Napoleone Bonaparte e grande collezionista d'arte, a ritrovare e riunire i due frammenti, riconoscendo la mano di Leonardo nonostante lo stato precario dell'opera. Dopo la sua morte, il dipinto passò di mano in mano, finché papa Pio Nono lo acquistò nel 1856, riportandolo finalmente in Vaticano, dove è rimasto da allora, custodito come uno dei tesori più preziosi e fragili di tutta la collezione.<br><br>
+Nonostante l'incompiutezza, o forse proprio grazie ad essa, questo dipinto resta uno dei più studiati al mondo per capire il metodo di lavoro di Leonardo. Gli strati sottili di colore, la costruzione anatomica prima ancora di quella pittorica, l'attenzione quasi ossessiva ai dettagli muscolari del corpo del santo. Riflettono gli stessi anni in cui Leonardo conduceva le sue celebri dissezioni di cadaveri umani a scopo scientifico, un'attività allora rarissima e non priva di rischi anche per un artista della sua fama.<br><br>
+Quando sei pronto, dirigiti verso il Museo Pio-Clementino, per vedere il Torso del Belvedere.`,
+        deepen: [{ type: "link", title: "San Girolamo — Wikipedia", url: "https://it.wikipedia.org/wiki/San_Girolamo_(Leonardo_da_Vinci)" }]
+      },
+      en: {
+        name: "Saint Jerome",
+        desc: "The only Leonardo in Rome, found in two pieces",
+        audio: "audio/en/tappa3.mp3",
+        photos: [{ time: 0, url: "img/t3_girolamo.jpg", caption: "Saint Jerome", credit: "Wikimedia Commons" }],
+        fullText: `You're in front of Leonardo da Vinci's Saint Jerome in the Wilderness, the only painting by Leonardo kept in Rome, and one of very few works attributed to him with certainty anywhere in the world.<br><br>
+The unfinished work shows the saint kneeling in the desert, a stone in his hand ready to strike his chest in penance, while a lion lies at his feet. According to medieval legend, Jerome had healed the animal's wounded paw, and it remained loyal to him ever since.<br><br>
+Leonardo leaves much of the canvas only sketched in monochrome, an earthy brown that lets you study his creative process directly. You can still see the brushstrokes, the corrections. The anatomical skeleton of Jerome's body is studied with the same scientific precision Leonardo applied to his human dissection drawings.<br><br>
+The story of how this painting was found is almost unbelievable. It was lost for centuries, until the painter Angelica Kauffmann rediscovered it in the nineteenth century, split into two separate pieces. The upper part, with the saint's head, was being used as a stool by a Roman shoemaker. The lower part, with the body, had been repurposed as the lid of a chest in another city workshop.<br><br>
+It was Cardinal Joseph Fesch, Napoleon Bonaparte's uncle and a great art collector, who found and reunited the two fragments, recognizing Leonardo's hand despite the work's precarious state. After his death, the painting passed from hand to hand, until Pope Pius the Ninth acquired it in 1856. It finally returned to the Vatican, where it has remained ever since, kept as one of the most precious and fragile treasures of the whole collection.<br><br>
+When you're ready, head toward the Pio-Clementino Museum, to see the Belvedere Torso.`,
+        deepen: [{ type: "link", title: "Saint Jerome — Wikipedia", url: "https://en.wikipedia.org/wiki/Saint_Jerome_in_the_Wilderness_(Leonardo)" }]
+      }
+    }
+  },
+  {
+    id: 4, ready: true,
+    lat: 41.9065, lon: 12.4536,
+    i18n: {
+      it: {
+        name: "Il Torso del Belvedere",
+        desc: "La statua senza testa che ossessionò Michelangelo",
+        audio: "audio/it/tappa4.mp3",
+        photos: [{ time: 0, url: "img/t4_torso.jpg", caption: "Il Torso del Belvedere", credit: "Wikimedia Commons" }],
+        fullText: `Sei davanti al Torso del Belvedere, una scultura mutila che per cinquecento anni ha ossessionato alcuni dei più grandi artisti della storia, a cominciare da Michelangelo Buonarroti in persona.<br><br>
+Firmata dallo scultore greco Apollonio di Atene, databile al primo secolo avanti Cristo, questa figura seduta priva di testa, braccia e gambe rappresenta probabilmente Ercole, riconoscibile dalla pelle di leone su cui è seduto. Fu già considerata un'opera straordinaria fin dal Quattrocento, quando si trovava nella collezione del cardinale Prospero Colonna, prima di entrare nelle raccolte papali sotto Giulio Secondo, agli inizi del Cinquecento.<br><br>
+Secondo un aneddoto tramandato dai contemporanei, lo stesso papa Giulio Secondo avrebbe chiesto a Michelangelo di completare la statua, aggiungendo la testa e gli arti mancanti, come si usava fare all'epoca con le sculture antiche danneggiate. Michelangelo rifiutò, giudicando il torso già perfetto così com'era, mutilo. Quando decenni più tardi fu deciso comunque un restauro, l'incarico andò al suo stesso allievo Montorsoli, che a sua volta si rifiutò di toccare l'opera, per rispetto verso il giudizio del maestro.<br><br>
+Osserva bene la muscolatura torsionata del busto: quella spirale di tensione fisica influenzò profondamente lo stile di Michelangelo, specialmente nelle figure ignude della volta della Cappella Sistina che vedrai più avanti nel nostro percorso. Non sono copie dirette del Torso, ma ne rivelano chiaramente l'eredità nella loro potenza muscolare e nella torsione innaturale dei corpi.<br><br>
+Nel Settecento, lo storico dell'arte Johann Winckelmann, considerato il padre della moderna storia dell'arte, scrisse pagine intere di elogio a questa scultura senza testa. La definì capace di riunire da sola tutte le bellezze delle altre statue del Belvedere messe insieme.<br><br>
+Il nome stesso "Torso del Belvedere" nasce proprio dalla sua lunga permanenza in questo cortile. Nel tempo ha finito per dare il proprio nome anche a un intero stile decorativo, ripreso in innumerevoli copie e reinterpretazioni in tutta Europa. Dalle accademie di scultura ottocentesche fino alle sale da disegno dove ancora oggi gli studenti d'arte imparano l'anatomia copiando calchi di questa stessa scultura senza testa.<br><br>
+Quando sei pronto, cerca il gruppo del Laocoonte, poco distante.`,
+        deepen: [{ type: "link", title: "Il Torso del Belvedere — Wikipedia", url: "https://it.wikipedia.org/wiki/Torso_del_Belvedere" }]
+      },
+      en: {
+        name: "The Belvedere Torso",
+        desc: "The headless statue that obsessed Michelangelo",
+        audio: "audio/en/tappa4.mp3",
+        photos: [{ time: 0, url: "img/t4_torso.jpg", caption: "The Belvedere Torso", credit: "Wikimedia Commons" }],
+        fullText: `You're in front of the Belvedere Torso, a mutilated sculpture that for five hundred years has obsessed some of the greatest artists in history, starting with Michelangelo Buonarroti himself.<br><br>
+Signed by the Greek sculptor Apollonius of Athens, dated to the first century BC, this seated, headless, limbless figure probably represents Hercules, recognizable from the lion skin he's sitting on. It was already considered an extraordinary work as early as the fifteenth century, when it belonged to the collection of Cardinal Prospero Colonna, before entering the papal collections under Julius the Second, in the early sixteenth century.<br><br>
+According to an anecdote passed down by contemporaries, Pope Julius the Second himself asked Michelangelo to complete the statue, adding the missing head and limbs, as was customary at the time with damaged ancient sculptures. Michelangelo refused, judging the torso already perfect just as it was, mutilated. When a restoration was decided decades later anyway, the task went to his own student Montorsoli, who in turn refused to touch the work, out of respect for his master's judgment.<br><br>
+Look closely at the twisted musculature of the torso. That spiral of physical tension deeply influenced Michelangelo's style, especially in the nude figures on the Sistine Chapel ceiling you'll see later on our route. They're not direct copies of the Torso, but they clearly reveal its legacy in their muscular power and unnatural twisting of the bodies.<br><br>
+In the eighteenth century, art historian Johann Winckelmann, considered the father of modern art history, wrote entire pages praising this headless sculpture. He called it capable of gathering, all by itself, all the beauties of the other Belvedere statues combined.<br><br>
+When you're ready, look for the Laocoön group, not far away.`,
+        deepen: [{ type: "link", title: "The Belvedere Torso — Wikipedia", url: "https://en.wikipedia.org/wiki/Belvedere_Torso" }]
+      }
+    }
+  },
+  {
+    id: 5, ready: true,
+    lat: 41.9065, lon: 12.4536,
+    i18n: {
+      it: {
+        name: "Il Laocoonte",
+        desc: "Il ritrovamento archeologico del 1506",
+        audio: "audio/it/tappa5.mp3",
+        photos: [{ time: 0, url: "img/t5_laocoonte.jpg", caption: "Il Laocoonte", credit: "Wikimedia Commons" }],
+        fullText: `Sei davanti al Laocoonte, uno dei ritrovamenti archeologici più sensazionali della storia, riemerso dalla terra romana nel gennaio del 1506 in condizioni quasi perfette, dopo secoli di oblio medievale.<br><br>
+Il gruppo scultoreo è firmato da tre scultori dell'isola di Rodi: Agesandro, Atenodoro e Polidoro. Raffigura il sacerdote troiano Laocoonte e i suoi due figli avvolti dalle spire di due serpenti marini. Furono inviati dagli dei per punirlo per aver messo in guardia i troiani dal celebre cavallo di legno dei greci.<br><br>
+La scoperta avvenne per caso, durante lavori agricoli in una vigna vicino al Colosseo. Fu chiamato immediatamente sul posto l'architetto Giuliano da Sangallo, che portò con sé il giovane Michelangelo, appena trentunenne. I due riconobbero all'istante l'importanza eccezionale del ritrovamento: papa Giulio Secondo acquistò la scultura pochi mesi dopo, e la fece portare qui, nel Cortile del Belvedere, dove si trova ancora oggi.<br><br>
+Al momento del ritrovamento mancava il braccio destro di Laocoonte. Per quasi quattrocento anni fu integrato con un braccio steso, in posizione eroica e teatrale, aggiunto nel Cinquecento dallo scultore Montorsoli. Solo nel 1906, quattro secoli dopo, l'archeologo Ludwig Pollak trovò per caso, in un deposito di marmi a Roma, un braccio ripiegato che sembrava appartenere proprio a questa statua. Non fu subito riconosciuto. Solo negli anni Cinquanta del Novecento gli esperti confermarono che quel frammento era davvero il braccio originale. La statua fu finalmente ricomposta nella sua posa autentica, ben diversa e più contorta di quella immaginata per secoli.<br><br>
+Questa scultura influenzò in modo diretto l'intera arte occidentale successiva. L'espressione di dolore fisico e psicologico scolpita nel volto di Laocoonte fu definita dagli antichi con il termine greco "pathos". Divenne un modello di riferimento per generazioni di artisti, da Michelangelo fino ai pittori barocchi.<br><br>
+Il ritrovamento del Laocoonte nel 1506 ebbe anche un effetto pratico immediato sulla città di Roma. Fu tra le scoperte che convinsero papa Giulio Secondo a intensificare gli scavi archeologici in tutta la capitale. Diede avvio a quella stagione di riscoperta sistematica dell'antichità classica che avrebbe caratterizzato l'intero Rinascimento romano, trasformando la città in un cantiere continuo tra nuove costruzioni e ritrovamenti sensazionali.<br><br>
+Quando sei pronto, cerca l'Apollo del Belvedere nella stessa area.`,
+        deepen: [{ type: "link", title: "Il Laocoonte — Wikipedia", url: "https://it.wikipedia.org/wiki/Laocoonte_(scultura)" }]
+      },
+      en: {
+        name: "The Laocoön",
+        desc: "The 1506 archaeological discovery",
+        audio: "audio/en/tappa5.mp3",
+        photos: [{ time: 0, url: "img/t5_laocoonte.jpg", caption: "The Laocoön", credit: "Wikimedia Commons" }],
+        fullText: `You're in front of the Laocoön, one of the most sensational archaeological discoveries in history, unearthed from Roman soil in January 1506 in nearly perfect condition, after centuries of medieval oblivion.<br><br>
+The sculptural group, signed by three sculptors from the island of Rhodes, Agesander, Athenodoros, and Polydorus, depicts the Trojan priest Laocoön and his two sons wrapped in the coils of two sea serpents. They were sent by the gods to punish him for warning the Trojans about the famous wooden horse of the Greeks.<br><br>
+The discovery happened by chance, during farm work in a vineyard near the Colosseum. Architect Giuliano da Sangallo was immediately called to the site, bringing with him the young Michelangelo, just thirty-one years old. The two instantly recognized the exceptional importance of the find. Pope Julius the Second purchased the sculpture a few months later, and had it brought here, to the Belvedere Courtyard, where it still stands today.<br><br>
+At the time of discovery, Laocoön's right arm was missing. For almost four hundred years it was completed with an outstretched arm, in a heroic, theatrical pose, added in the sixteenth century by sculptor Montorsoli. Only in 1906, four centuries later, did archaeologist Ludwig Pollak find, by chance, in a Roman marble storehouse, a bent arm that seemed to belong to this very statue. It wasn't immediately recognized. Only in the 1950s did experts confirm that fragment was truly the original arm, and the statue was finally reassembled in its authentic pose, quite different and more contorted than what had been imagined for centuries.<br><br>
+This sculpture directly influenced all of subsequent Western art. The expression of physical and psychological pain carved into Laocoön's face, defined by the ancients with the Greek term "pathos", became a reference model for generations of artists, from Michelangelo to Baroque painters.<br><br>
+When you're ready, look for the Apollo Belvedere in the same area.`,
+        deepen: [{ type: "link", title: "The Laocoön — Wikipedia", url: "https://en.wikipedia.org/wiki/Laoco%C3%B6n_and_His_Sons" }]
+      }
+    }
+  },
+  {
+    id: 6, ready: true,
+    lat: 41.9065, lon: 12.4536,
+    i18n: {
+      it: {
+        name: "L'Apollo del Belvedere",
+        desc: "Il simbolo della bellezza ideale classica",
+        audio: "audio/it/tappa6.mp3",
+        photos: [{ time: 0, url: "img/t6_apollo.jpg", caption: "L'Apollo del Belvedere", credit: "Wikimedia Commons" }],
+        fullText: `Sei davanti all'Apollo del Belvedere, considerato per secoli il simbolo assoluto della bellezza ideale nell'arte occidentale, prima che i gusti del Novecento ne ridimensionassero in parte la fama.<br><br>
+Questa copia romana in marmo fu realizzata probabilmente nel secondo secolo dopo Cristo, da un originale greco in bronzo perduto. Raffigura il dio Apollo nell'istante immediatamente successivo al lancio di una freccia, il corpo ancora in torsione. Il mantello vola dietro le spalle in un movimento sospeso e perfetto.<br><br>
+La statua fu scoperta alla fine del Quattrocento, secondo alcune fonti nei pressi di Grottaferrata, dove il cardinale Giuliano della Rovere, futuro papa Giulio Secondo, ricopriva la carica di abate. Divenne sua proprietà personale prima ancora della sua elezione al soglio pontificio, per poi essere collocata proprio qui, nel Cortile del Belvedere che da questa statua prende il nome.<br><br>
+Fu lo storico dell'arte tedesco Johann Winckelmann, nel Settecento, a consacrare definitivamente l'Apollo come il vertice assoluto dell'arte classica. Lo fece in un trattato che influenzò per generazioni il gusto estetico di tutta Europa, dando origine al movimento neoclassico.<br><br>
+Come molte altre opere di questa collezione, anche l'Apollo fu portato a Parigi da Napoleone Bonaparte dopo la conquista dell'Italia. Fu esposto per anni al Louvre come trofeo di guerra. Tornò in Vaticano solo nel 1816, grazie alle trattative diplomatiche condotte dallo scultore Antonio Canova dopo la sconfitta di Napoleone a Waterloo.<br><br>
+Un ultimo dettaglio curioso riguarda proprio il restauro più recente. Nel 2024, dopo studi approfonditi sulla stabilità della scultura, gli esperti vaticani hanno deciso di sostituire la mano sinistra, ricostruita nel Cinquecento dall'allievo di Michelangelo Montorsoli. L'hanno sostituita con un nuovo calco basato su frammenti romani autentici, ritrovati decenni fa negli scavi archeologici di Baia, vicino a Napoli. Un piccolo tassello di autenticità in più, restituito a una delle statue più celebri e studiate della storia dell'arte.<br><br>
+Quando sei pronto, dirigiti verso la Galleria dei Candelabri.`,
+        deepen: [{ type: "link", title: "L'Apollo del Belvedere — Wikipedia", url: "https://it.wikipedia.org/wiki/Apollo_del_Belvedere" }]
+      },
+      en: {
+        name: "The Apollo Belvedere",
+        desc: "The symbol of ideal classical beauty",
+        audio: "audio/en/tappa6.mp3",
+        photos: [{ time: 0, url: "img/t6_apollo.jpg", caption: "The Apollo Belvedere", credit: "Wikimedia Commons" }],
+        fullText: `You're in front of the Apollo Belvedere, considered for centuries the absolute symbol of ideal beauty in Western art, before twentieth-century tastes partly reduced its fame.<br><br>
+This Roman marble copy was probably made in the second century AD, from a lost Greek bronze original. It depicts the god Apollo in the instant right after releasing an arrow, his body still in torsion. His cloak flies behind his shoulders in a suspended, perfect movement.<br><br>
+The statue was discovered in the late fifteenth century, according to some sources near Grottaferrata, where Cardinal Giuliano della Rovere, the future Pope Julius the Second, held the position of abbot. It became his personal property even before his election to the papacy, later placed right here, in the Belvedere Courtyard that takes its name from this very statue.<br><br>
+It was German art historian Johann Winckelmann, in the eighteenth century, who definitively established the Apollo as the absolute peak of classical art. He did so in a treatise that influenced European aesthetic taste for generations, giving rise to the Neoclassical movement.<br><br>
+Like many other works in this collection, the Apollo was also taken to Paris by Napoleon Bonaparte after the conquest of Italy. It was displayed for years at the Louvre as a war trophy. It returned to the Vatican only in 1816, thanks to diplomatic negotiations led by sculptor Antonio Canova after Napoleon's defeat at Waterloo.<br><br>
+One last curious detail concerns the most recent restoration. In 2024, after in-depth studies on the sculpture's stability, Vatican experts decided to replace the left hand, reconstructed in the sixteenth century by Michelangelo's student Montorsoli. They replaced it with a new cast based on authentic Roman fragments, found decades ago in archaeological excavations at Baiae, near Naples. A small extra piece of authenticity, restored to one of the most celebrated and studied statues in art history.<br><br>
+When you're ready, head toward the Gallery of the Candelabra.`,
+        deepen: [{ type: "link", title: "The Apollo Belvedere — Wikipedia", url: "https://en.wikipedia.org/wiki/Apollo_Belvedere" }]
+      }
+    }
+  },
+  {
+    id: 7, ready: true,
+    lat: 41.9065, lon: 12.4536,
+    i18n: {
+      it: {
+        name: "Galleria dei Candelabri",
+        desc: "Sculture romane e il mostro Scilla",
+        audio: "audio/it/tappa7.mp3",
+        photos: [{ time: 0, url: "img/t7_candelabri.jpg", caption: "Galleria dei Candelabri", credit: "Wikimedia Commons" }],
+        fullText: `Sei nella Galleria dei Candelabri, così chiamata per le grandi coppie di candelabri marmorei di epoca romana che scandiscono il percorso lungo tutta la galleria, ciascuna diversa dall'altra nella decorazione.<br><br>
+Questo lungo corridoio, in origine una loggia aperta sui giardini vaticani, fu chiuso e trasformato in galleria museale solo alla fine dell'Ottocento, sotto papa Leone Tredicesimo. Prima di allora, la vista sui giardini era diretta. Oggi invece cammini all'interno di sei ampie sale collegate, ciascuna con un soffitto affrescato diverso. Sono popolate da sculture romane di ogni genere, copie di originali greci perduti, sarcofagi, e busti di imperatori e filosofi.<br><br>
+Guarda con attenzione i pavimenti a mosaico che attraversi in alcune delle sale. Diversi provengono da scavi archeologici condotti nell'Ottocento in siti romani antichi, poi trasportati qui e ricomposti pazientemente tassello per tassello. Un lavoro di restauro che richiedeva mesi o addirittura anni per ogni singolo pavimento.<br><br>
+Tra le opere più curiose custodite in questa galleria si trova il gruppo scultoreo di Scilla, il mostro marino della mitologia greca descritto da Omero nell'Odissea. È qui rappresentato con la parte superiore di donna e quella inferiore trasformata in una massa di teste di cane e code di pesce che si contorcono. Una delle rappresentazioni più elaborate e inquietanti di tutta la mitologia classica conservate in Vaticano.<br><br>
+Quando sei pronto, prosegui verso la Galleria degli Arazzi.`,
+        deepen: [{ type: "link", title: "Galleria dei Candelabri — Wikipedia", url: "https://it.wikipedia.org/wiki/Galleria_dei_Candelabri" }]
+      },
+      en: {
+        name: "Gallery of the Candelabra",
+        desc: "Roman sculptures and the monster Scylla",
+        audio: "audio/en/tappa7.mp3",
+        photos: [{ time: 0, url: "img/t7_candelabri.jpg", caption: "Gallery of the Candelabra", credit: "Wikimedia Commons" }],
+        fullText: `You're in the Gallery of the Candelabra, named after the large pairs of marble Roman-era candelabra that mark the route along the whole gallery, each one different in its decoration.<br><br>
+This long corridor was originally an open loggia facing the Vatican gardens. It was closed and turned into a museum gallery only in the late nineteenth century, under Pope Leo the Thirteenth. Before that, the view onto the gardens was direct. Today you walk instead through six connected rooms, each with a different frescoed ceiling. They're filled with Roman sculptures of every kind, copies of lost Greek originals, sarcophagi, and busts of emperors and philosophers.<br><br>
+Look closely at the mosaic floors you cross in some of the rooms. Several come from archaeological digs conducted in the nineteenth century at ancient Roman sites, later brought here and patiently reassembled piece by piece. A restoration job that could take months, or even years, for a single floor.<br><br>
+Among the most curious works kept in this gallery is the sculptural group of Scylla, the sea monster from Greek mythology described by Homer in the Odyssey. She's depicted here with the upper body of a woman and the lower half transformed into a writhing mass of dog heads and fish tails. One of the most elaborate and unsettling representations of classical mythology kept anywhere in the Vatican.<br><br>
+When you're ready, continue toward the Gallery of Tapestries.`,
+        deepen: [{ type: "link", title: "Gallery of the Candelabra — Wikipedia", url: "https://en.wikipedia.org/wiki/Gallery_of_Candelabra" }]
+      }
+    }
+  },
+  {
+    id: 8, ready: true,
+    lat: 41.9065, lon: 12.4536,
+    i18n: {
+      it: {
+        name: "Galleria degli Arazzi",
+        desc: "Gli arazzi disegnati dagli allievi di Raffaello",
+        audio: "audio/it/tappa8.mp3",
+        photos: [{ time: 0, url: "img/t8_arazzi.jpg", caption: "Galleria degli Arazzi", credit: "Wikimedia Commons" }],
+        fullText: `Sei nella Galleria degli Arazzi, dove le pareti sono interamente ricoperte da enormi tessuti tessuti a mano, alcuni dei quali disegnati direttamente da allievi di Raffaello, poco dopo la morte del maestro.<br><br>
+Gli arazzi più celebri qui esposti raccontano episodi della vita di Cristo, tessuti nelle Fiandre, a Bruxelles, su disegni preparati dalla bottega di Raffaello intorno al 1524. La lavorazione di un singolo arazzo di queste dimensioni, con fili di lana, seta e persino oro e argento, poteva richiedere anni di lavoro per un'intera squadra di tessitori specializzati. Questi manufatti sono tra gli oggetti più costosi mai prodotti nel Rinascimento, spesso più preziosi degli stessi dipinti a cui si ispiravano.<br><br>
+Osserva bene la Resurrezione di Cristo, uno degli arazzi più celebri della collezione. Con una tecnica sorprendente per l'epoca, gli occhi di Cristo sembrano seguire lo spettatore mentre si sposta lungo la galleria. Un effetto ottico ottenuto grazie a un calcolo prospettico studiato apposta dagli artisti fiamminghi che li realizzarono.<br><br>
+Un episodio drammatico legò per sempre questi arazzi alla storia di Roma. Durante il terribile Sacco di Roma del 1527, le truppe imperiali saccheggiarono anche gli arazzi allora esposti nella Cappella Sistina, tagliandoli a pezzi per rivenderne l'oro e l'argento tessuti nei fili. Alcuni frammenti sopravvissuti furono rintracciati e recuperati solo secoli più tardi, in collezioni private sparse per l'Europa. Una testimonianza silenziosa di quanto valore materiale, oltre che artistico, questi tessuti rappresentassero per i loro contemporanei.<br><br>
+Quando sei pronto, prosegui verso la Galleria delle Carte Geografiche.`,
+        deepen: [{ type: "link", title: "Galleria degli Arazzi — Wikipedia", url: "https://it.wikipedia.org/wiki/Galleria_degli_Arazzi" }]
+      },
+      en: {
+        name: "Gallery of Tapestries",
+        desc: "Tapestries designed by Raphael's students",
+        audio: "audio/en/tappa8.mp3",
+        photos: [{ time: 0, url: "img/t8_arazzi.jpg", caption: "Gallery of Tapestries", credit: "Wikimedia Commons" }],
+        fullText: `You're in the Gallery of Tapestries, where the walls are entirely covered with enormous handwoven textiles, some of them designed directly by Raphael's students, shortly after the master's death.<br><br>
+The most famous tapestries on display here tell episodes from the life of Christ, woven in Flanders, in Brussels, based on designs prepared by Raphael's workshop around 1524. Weaving a single tapestry of these dimensions, with wool, silk, and even gold and silver thread, could take years of work for an entire team of specialized weavers. This made them among the most expensive objects ever produced in the Renaissance, often more precious than the paintings that inspired them.<br><br>
+Look closely at the Resurrection of Christ, one of the most celebrated tapestries in the collection. Using a technique remarkable for its time, Christ's eyes seem to follow the viewer while moving along the gallery. It's an optical effect achieved through a perspective calculation devised specifically by the Flemish artists who made it.<br><br>
+A dramatic episode forever tied these tapestries to the history of Rome. During the terrible Sack of Rome in 1527, imperial troops also looted the tapestries then displayed in the Sistine Chapel, cutting them into pieces to resell the gold and silver woven into the threads. Some surviving fragments were tracked down and recovered only centuries later, in private collections scattered across Europe. A silent testimony to how much material value, beyond artistic value, these textiles represented to their contemporaries.<br><br>
+When you're ready, continue toward the Gallery of Maps.`,
+        deepen: [{ type: "link", title: "Gallery of Tapestries — Wikipedia", url: "https://en.wikipedia.org/wiki/Gallery_of_Tapestries,_Vatican_Museums" }]
+      }
+    }
+  },
+  {
+    id: 9, ready: true,
+    lat: 41.9065, lon: 12.4536,
+    i18n: {
+      it: {
+        name: "Galleria delle Carte Geografiche",
+        desc: "Quaranta mappe affrescate dell'Italia",
+        audio: "audio/it/tappa9.mp3",
+        photos: [{ time: 0, url: "img/t9_cartegeo.jpg", caption: "Galleria delle Carte Geografiche", credit: "Wikimedia Commons" }],
+        fullText: `Sei nella Galleria delle Carte Geografiche, un corridoio lungo centoventi metri le cui pareti sono interamente ricoperte da quaranta mappe affrescate dell'Italia, uno dei cicli cartografici più straordinari mai realizzati.<br><br>
+Fu commissionata nel 1580 da papa Gregorio Tredicesimo, lo stesso pontefice che riformò il calendario che ancora oggi usiamo in tutto il mondo. L'incarico fu affidato al frate domenicano e matematico Ignazio Danti, che impiegò circa tre anni, dal 1580 al 1583, per completare l'intero ciclo di affreschi insieme al fratello pittore Antonio Danti.<br><br>
+Ogni pannello rappresenta una diversa regione italiana, con dettagli topografici sorprendentemente accurati per l'epoca. Si stima che le mappe siano corrette per circa l'ottanta per cento rispetto alla geografia reale. Un risultato notevole, considerando che i rilevamenti dell'epoca si basavano ancora su osservazioni dirette e strumenti rudimentali, senza alcuna tecnologia satellitare o fotografica.<br><br>
+La galleria è organizzata secondo un criterio geografico preciso. Da un lato sono raffigurate le regioni bagnate dal Mar Tirreno e dal Mar Ligure, dall'altro quelle affacciate sull'Adriatico, con la catena degli Appennini a fare idealmente da spartiacque. Il soffitto della galleria è decorato con altrettanti affreschi, che raffigurano episodi storici e miracolosi legati a ciascuna regione rappresentata sotto.<br><br>
+Cammina lentamente lungo questo corridoio. La luce che filtra dalle finestre laterali, in certe ore del giorno, crea un effetto quasi dorato sulle mappe dipinte. Molti visitatori la considerano tra le esperienze visive più suggestive dell'intero percorso museale, spesso sottovalutata rispetto alle sale più famose che la precedono e la seguono.<br><br>
+Quando sei pronto, dirigiti verso le Stanze di Raffaello, cominciando dalla Sala di Costantino.`,
+        deepen: [{ type: "link", title: "Galleria delle Carte Geografiche — Wikipedia", url: "https://it.wikipedia.org/wiki/Galleria_delle_carte_geografiche" }]
+      },
+      en: {
+        name: "Gallery of Maps",
+        desc: "Forty frescoed maps of Italy",
+        audio: "audio/en/tappa9.mp3",
+        photos: [{ time: 0, url: "img/t9_cartegeo.jpg", caption: "Gallery of Maps", credit: "Wikimedia Commons" }],
+        fullText: `You're in the Gallery of Maps, a corridor one hundred twenty meters long, its walls entirely covered with forty frescoed maps of Italy, one of the most extraordinary cartographic cycles ever created.<br><br>
+It was commissioned in 1580 by Pope Gregory the Thirteenth, the same pope who reformed the calendar still used around the world today. The task was given to Dominican friar and mathematician Ignazio Danti, who spent about three years, from 1580 to 1583, completing the entire fresco cycle together with his brother, painter Antonio Danti.<br><br>
+Each panel represents a different Italian region, with topographical details surprisingly accurate for the time. Experts estimate the maps are about eighty percent correct compared to real geography. A remarkable result, considering surveys of the time still relied on direct observation and rudimentary instruments, with no satellite or photographic technology at all.<br><br>
+The gallery is organized according to a precise geographic criterion. On one side are regions bathed by the Tyrrhenian and Ligurian Seas, on the other those facing the Adriatic, with the Apennine mountain range acting as an ideal watershed. The ceiling of the gallery is decorated with matching frescoes, depicting historical and miraculous episodes tied to each region shown below.<br><br>
+Walk slowly along this corridor. The light filtering through the side windows, at certain hours of the day, creates an almost golden effect on the painted maps. Many visitors consider it among the most striking visual experiences of the entire museum route, often underrated compared to the more famous rooms before and after it.<br><br>
+When you're ready, head toward the Raphael Rooms, starting with the Hall of Constantine.`,
+        deepen: [{ type: "link", title: "Gallery of Maps — Wikipedia", url: "https://en.wikipedia.org/wiki/Gallery_of_Maps" }]
+      }
+    }
+  },
+  {
+    id: 10, ready: true,
+    lat: 41.9065, lon: 12.4536,
+    i18n: {
+      it: {
+        name: "Sala di Costantino",
+        desc: "La Battaglia di Ponte Milvio",
+        audio: "audio/it/tappa10.mp3",
+        photos: [{ time: 0, url: "img/t10_costantino.jpg", caption: "Sala di Costantino", credit: "Wikimedia Commons" }],
+        fullText: `Sei nella Sala di Costantino, la più grande delle quattro Stanze di Raffaello, e anche l'ultima ad essere completata, dopo la morte improvvisa del maestro nel 1520.<br><br>
+Raffaello ricevette l'incarico di decorare questa sala nel 1517 da papa Leone Decimo, ma fece appena in tempo a disegnare i primi progetti prima di morire a soli trentasette anni. Il lavoro fu completato dai suoi allievi più fidati, in particolare Giulio Romano e Giovan Francesco Penni, che portarono a termine gli affreschi tra il 1520 e il 1524, seguendo fedelmente le indicazioni lasciate dal maestro.<br><br>
+I quattro grandi affreschi che ricoprono le pareti raccontano altrettanti episodi della vita dell'imperatore Costantino, il primo sovrano romano a convertirsi al cristianesimo. Guarda la Battaglia di Ponte Milvio, considerata l'opera più riuscita dell'intera sala. Rappresenta lo scontro decisivo del 312 dopo Cristo tra Costantino e il suo rivale Massenzio. Quest'ultimo è qui raffigurato mentre sta annegando nel Tevere, riconoscibile dalla corona ancora in testa.<br><br>
+Accanto, la Visione della Croce mostra il momento leggendario in cui Costantino avrebbe visto apparire in cielo una croce luminosa, accompagnata dalle parole latine "In hoc signo vinces", in questo segno vincerai. Fu quella visione, secondo la tradizione cristiana, a convincere l'imperatore ad abbracciare la nuova fede, cambiando per sempre il corso della storia europea.<br><br>
+Un dettaglio curioso emerso dai restauri più recenti. Sotto gli affreschi finali si sono scoperte tracce di un primo tentativo di decorazione a olio, tecnica insolita per un affresco murale. Gli allievi di Raffaello la abbandonarono presto, per tornare al tradizionale affresco, più rapido e affidabile per superfici di queste dimensioni.<br><br>
+Quando sei pronto, prosegui verso la Stanza di Eliodoro.`,
+        deepen: [{ type: "link", title: "Sala di Costantino — Wikipedia", url: "https://it.wikipedia.org/wiki/Sala_di_Costantino" }]
+      },
+      en: {
+        name: "Hall of Constantine",
+        desc: "The Battle of the Milvian Bridge",
+        audio: "audio/en/tappa10.mp3",
+        photos: [{ time: 0, url: "img/t10_costantino.jpg", caption: "Hall of Constantine", credit: "Wikimedia Commons" }],
+        fullText: `You're in the Hall of Constantine, the largest of the four Raphael Rooms, and also the last to be completed, after the master's sudden death in 1520.<br><br>
+Raphael received the commission to decorate this hall in 1517 from Pope Leo the Tenth, but he barely had time to sketch the first designs before dying at just thirty-seven. The work was completed by his most trusted students, especially Giulio Romano and Giovanni Francesco Penni, who finished the frescoes between 1520 and 1524, faithfully following the master's instructions.<br><br>
+The four large frescoes covering the walls tell episodes from the life of Emperor Constantine, the first Roman ruler to convert to Christianity. Look at the Battle of the Milvian Bridge, considered the most successful work in the whole hall. It depicts the decisive clash of 312 AD between Constantine and his rival Maxentius, shown here drowning in the Tiber, recognizable by the crown still on his head.<br><br>
+Next to it, the Vision of the Cross shows the legendary moment when Constantine supposedly saw a glowing cross appear in the sky, accompanied by the Latin words "In hoc signo vinces", in this sign you will conquer. According to Christian tradition, it was that vision that convinced the emperor to embrace the new faith, changing the course of European history forever.<br><br>
+A curious detail emerged from the most recent restorations. Beneath the final frescoes, traces were found of an early attempt at oil decoration, an unusual technique for a wall fresco. Raphael's students soon abandoned it, returning to traditional fresco painting, faster and more reliable for surfaces of this size.<br><br>
+When you're ready, continue toward the Room of Heliodorus.`,
+        deepen: [{ type: "link", title: "Hall of Constantine — Wikipedia", url: "https://en.wikipedia.org/wiki/Hall_of_Constantine" }]
+      }
+    }
+  },
+  {
+    id: 11, ready: true,
+    lat: 41.9065, lon: 12.4536,
+    i18n: {
+      it: {
+        name: "Stanza di Eliodoro",
+        desc: "La Cacciata di Eliodoro e la Messa di Bolsena",
+        audio: "audio/it/tappa11.mp3",
+        photos: [{ time: 0, url: "img/t11_eliodoro.jpg", caption: "Stanza di Eliodoro", credit: "Wikimedia Commons" }],
+        fullText: `Sei nella Stanza di Eliodoro, la seconda delle quattro Stanze di Raffaello, decorata tra il 1511 e il 1514 per volere di papa Giulio Secondo, in un momento politicamente drammatico per lo Stato della Chiesa.<br><br>
+Il tema scelto per questa sala è l'intervento divino a protezione della Chiesa nei momenti di massimo pericolo. Guarda la Cacciata di Eliodoro dal Tempio, da cui la sala prende il nome. Racconta un episodio dell'Antico Testamento in cui un cavaliere celeste, inviato da Dio, scaccia con violenza Eliodoro. Era un funzionario che aveva tentato di saccheggiare il tesoro del Tempio di Gerusalemme. Sulla sinistra dell'affresco, Raffaello dipinse lo stesso papa Giulio Secondo, portato in trono tra la folla, come testimone diretto dell'episodio biblico, in un accostamento tra presente e passato tipico della propaganda papale dell'epoca.<br><br>
+Osserva anche la Messa di Bolsena, che racconta un miracolo eucaristico realmente accaduto nel 1263. Un sacerdote boemo, dubbioso sulla reale presenza di Cristo nell'ostia consacrata, vide l'ostia stessa sanguinare durante la celebrazione della messa. Fu un evento che portò all'istituzione della festa del Corpus Domini, ancora celebrata oggi in tutto il mondo cattolico.<br><br>
+Il terzo affresco, la Liberazione di San Pietro, mostra l'apostolo che fugge miracolosamente dal carcere grazie a un angelo, mentre le guardie romane restano addormentate. Raffaello sperimenta qui con effetti di luce notturna particolarmente audaci per l'epoca. Contrappone la luce soprannaturale dell'angelo al bagliore delle torce delle guardie. Un gioco di luci che influenzò profondamente la pittura barocca dei secoli successivi.<br><br>
+Quando sei pronto, dirigiti verso la Stanza della Segnatura, per vedere la Scuola di Atene.`,
+        deepen: [{ type: "link", title: "Stanza di Eliodoro — Wikipedia", url: "https://it.wikipedia.org/wiki/Stanza_di_Eliodoro" }]
+      },
+      en: {
+        name: "Room of Heliodorus",
+        desc: "The Expulsion of Heliodorus and the Mass at Bolsena",
+        audio: "audio/en/tappa11.mp3",
+        photos: [{ time: 0, url: "img/t11_eliodoro.jpg", caption: "Room of Heliodorus", credit: "Wikimedia Commons" }],
+        fullText: `You're in the Room of Heliodorus, the second of the four Raphael Rooms, decorated between 1511 and 1514 by order of Pope Julius the Second, at a politically dramatic moment for the Papal States.<br><br>
+The theme chosen for this room is divine intervention protecting the Church in moments of greatest danger. Look at the Expulsion of Heliodorus from the Temple, which gives the room its name. It tells an episode from the Old Testament in which a heavenly horseman, sent by God, violently drives out Heliodorus, an official who had tried to loot the treasury of the Temple of Jerusalem. On the left of the fresco, Raphael painted Pope Julius the Second himself, carried in a chair among the crowd, as a direct witness to the biblical episode.<br><br>
+Look also at the Mass at Bolsena, which recounts a Eucharistic miracle that actually happened in 1263. A Bohemian priest, doubtful about Christ's real presence in the consecrated host, saw the host itself bleed during the celebration of Mass. The event led to the founding of the Feast of Corpus Christi, still celebrated today throughout the Catholic world.<br><br>
+The third fresco, the Liberation of Saint Peter, shows the apostle miraculously escaping from prison thanks to an angel, while the Roman guards remain asleep. Raphael experiments here with particularly bold nighttime lighting effects for the period. He contrasts the angel's supernatural light with the glow of the guards' torches, a play of light that deeply influenced Baroque painting in the centuries that followed.<br><br>
+When you're ready, head toward the Room of the Segnatura, to see the School of Athens.`,
+        deepen: [{ type: "link", title: "Room of Heliodorus — Wikipedia", url: "https://en.wikipedia.org/wiki/Raphael_Rooms" }]
+      }
+    }
+  },
+  {
+    id: 12, ready: true,
+    lat: 41.9065, lon: 12.4536,
+    i18n: {
+      it: {
+        name: "La Scuola di Atene",
+        desc: "Il capolavoro assoluto di Raffaello",
+        audio: "audio/it/tappa12.mp3",
+        photos: [{ time: 0, url: "img/t12_scuolaatene.jpg", caption: "La Scuola di Atene", credit: "Wikimedia Commons" }],
+        fullText: `Sei davanti alla Scuola di Atene, l'affresco più celebre di Raffaello, considerato da molti storici dell'arte il capolavoro assoluto dell'intero Rinascimento italiano.<br><br>
+Dipinto tra il 1509 e il 1511 per la Stanza della Segnatura, l'affresco raffigura un'immaginaria riunione di tutti i più grandi filosofi e scienziati dell'antichità greca. Sono riuniti sotto un'architettura monumentale ispirata al progetto originario della nuova Basilica di San Pietro, allora in costruzione sotto la direzione dell'architetto Donato Bramante.<br><br>
+Al centro della composizione, Platone e Aristotele camminano fianco a fianco, dialogando. Platone indica il cielo, simbolo del mondo delle idee. Aristotele tiene invece la mano rivolta verso il basso, verso la terra, a rappresentare il suo pensiero più concreto ed empirico. Attorno a loro, decine di altri filosofi discutono in piccoli gruppi: Pitagora, Euclide, Diogene sdraiato sui gradini, ciascuno riconoscibile da un attributo simbolico specifico.<br><br>
+Il gioco più affascinante di questo affresco riguarda i volti: Raffaello, secondo una pratica diffusa tra gli artisti rinascimentali, prestò i volti dei più grandi artisti contemporanei ai filosofi antichi. Platone ha il volto di Leonardo da Vinci. L'architetto Euclide, chino a disegnare geometrie sul pavimento, ha i tratti di Bramante stesso. La figura solitaria di Eraclito, seduta pensierosa su un blocco di marmo in primo piano, fu aggiunta da Raffaello solo all'ultimo momento. Ha il volto di Michelangelo Buonarroti, che proprio in quei mesi stava affrescando la volta della Cappella Sistina poco distante.<br><br>
+Secondo un aneddoto tramandato da Vasari, Raffaello si sarebbe introdotto di nascosto nella Cappella Sistina ancora chiusa al pubblico, per osservare il lavoro del rivale Michelangelo. Ne rimase talmente colpito da voler subito includere un omaggio a lui nella propria opera, nonostante la nota rivalità professionale tra i due artisti.<br><br>
+Quando sei pronto, cerca la Disputa del Sacramento, sulla parete opposta della stessa sala.`,
+        deepen: [{ type: "video", title: "La Scuola di Atene — video", url: "https://www.youtube.com/watch?v=Zq3U83lxmxs" }, { type: "link", title: "La Scuola di Atene — Wikipedia", url: "https://it.wikipedia.org/wiki/Scuola_di_Atene" }]
+      },
+      en: {
+        name: "The School of Athens",
+        desc: "Raphael's absolute masterpiece",
+        audio: "audio/en/tappa12.mp3",
+        photos: [{ time: 0, url: "img/t12_scuolaatene.jpg", caption: "The School of Athens", credit: "Wikimedia Commons" }],
+        fullText: `You're in front of the School of Athens, Raphael's most famous fresco, considered by many art historians the absolute masterpiece of the entire Italian Renaissance.<br><br>
+Painted between 1509 and 1511 for the Room of the Segnatura, the fresco depicts an imaginary gathering of all the greatest philosophers and scientists of ancient Greece. They're united beneath a monumental architecture inspired by the original design for the new Saint Peter's Basilica, then under construction under the direction of architect Donato Bramante.<br><br>
+At the center of the composition, Plato and Aristotle walk side by side, in conversation. Plato points to the sky, symbol of the world of ideas. Aristotle instead holds his hand turned downward, toward the earth, representing his more concrete, empirical thinking. Around them, dozens of other philosophers discuss in small groups. Pythagoras, Euclid, Diogenes sprawled on the steps, each recognizable by a specific symbolic attribute.<br><br>
+The most fascinating game in this fresco involves the faces. Following a common Renaissance practice, Raphael lent the faces of the greatest contemporary artists to the ancient philosophers. Plato has the face of Leonardo da Vinci. The architect Euclid, bent over drawing geometric shapes on the floor, has Bramante's own features. The solitary figure of Heraclitus, seated thoughtfully on a marble block in the foreground, was added by Raphael only at the last moment. He gave it the face of Michelangelo Buonarroti, who in those very months was frescoing the Sistine Chapel ceiling not far away.<br><br>
+According to an anecdote passed down by Vasari, Raphael sneaked into the Sistine Chapel while it was still closed to the public, to observe the work of his rival Michelangelo. He was so struck by it that he wanted to immediately include a tribute to him in his own work, despite the well-known professional rivalry between the two artists.<br><br>
+When you're ready, look for the Disputation of the Holy Sacrament, on the opposite wall of the same room.`,
+        deepen: [{ type: "video", title: "The School of Athens — video", url: "https://www.youtube.com/watch?v=Zq3U83lxmxs" }, { type: "link", title: "The School of Athens — Wikipedia", url: "https://en.wikipedia.org/wiki/The_School_of_Athens" }]
+      }
+    }
+  },
+  {
+    id: 13, ready: true,
+    lat: 41.9065, lon: 12.4536,
+    i18n: {
+      it: {
+        name: "La Disputa del Sacramento",
+        desc: "Il primo grande affresco di Raffaello in Vaticano",
+        audio: "audio/it/tappa13.mp3",
+        photos: [{ time: 0, url: "img/t13_disputa.jpg", caption: "La Disputa del Sacramento", credit: "Wikimedia Commons" }],
+        fullText: `Sei davanti alla Disputa del Sacramento, il primo grande affresco che Raffaello dipinse per le Stanze Vaticane, completato nel 1509, sulla parete opposta rispetto alla Scuola di Atene, nella stessa Stanza della Segnatura.<br><br>
+Nonostante il nome, l'affresco non rappresenta una vera disputa teologica, ma piuttosto un'affermazione solenne del dogma dell'Eucaristia. Nella parte superiore, il cielo si apre su una visione della Trinità, con Cristo al centro tra la Vergine Maria e San Giovanni Battista, circondati da apostoli, profeti e santi disposti in un grande semicerchio dorato.<br><br>
+Nella parte inferiore, sulla terra, teologi, papi, cardinali e semplici fedeli si radunano attorno a un altare su cui è esposta l'ostia consacrata, discutendo e meditando sul mistero della presenza reale di Cristo nel pane eucaristico. Tra le figure riconoscibili si trovano Dante Alighieri, papa Gregorio Magno, e lo stesso Raffaello avrebbe inserito tra la folla anche un autoritratto, secondo diverse letture critiche dell'opera.<br><br>
+Questo affresco segna un momento di svolta cruciale nella carriera di Raffaello. Aveva appena venticinque anni quando lo dipinse, ancora relativamente sconosciuto a Roma. Dimostrò qui una capacità compositiva così sorprendente che papa Giulio Secondo decise all'istante di affidargli l'intero ciclo decorativo delle Stanze. Licenziò così gli altri pittori già al lavoro, tra cui il Perugino, che era stato addirittura maestro dello stesso Raffaello.<br><br>
+Osserva la composizione architettonica generale. La struttura semicircolare che unisce cielo e terra, divinità e umanità, riflette perfettamente lo spirito filosofico del Rinascimento. Cercava costantemente un'armonia visibile tra il mondo razionale degli uomini e quello trascendente della fede, lo stesso equilibrio che ritroverai, in forma ancora più grandiosa, nella Cappella Sistina che stiamo per raggiungere.<br><br>
+Quando sei pronto, dirigiti verso la Cappella Sistina, l'ultima e più importante tappa del nostro percorso.`,
+        deepen: [{ type: "link", title: "La Disputa del Sacramento — Wikipedia", url: "https://it.wikipedia.org/wiki/Disputa_del_Sacramento" }]
+      },
+      en: {
+        name: "The Disputation of the Holy Sacrament",
+        desc: "Raphael's first great fresco in the Vatican",
+        audio: "audio/en/tappa13.mp3",
+        photos: [{ time: 0, url: "img/t13_disputa.jpg", caption: "The Disputation of the Holy Sacrament", credit: "Wikimedia Commons" }],
+        fullText: `You're in front of the Disputation of the Holy Sacrament, the first major fresco Raphael painted for the Vatican Rooms, completed in 1509, on the wall opposite the School of Athens, in the same Room of the Segnatura.<br><br>
+Despite the name, the fresco doesn't depict an actual theological dispute, but rather a solemn affirmation of the dogma of the Eucharist. In the upper part, the sky opens onto a vision of the Trinity, with Christ at the center between the Virgin Mary and Saint John the Baptist, surrounded by apostles, prophets, and saints arranged in a great golden semicircle.<br><br>
+Below, on earth, theologians, popes, cardinals, and ordinary believers gather around an altar displaying the consecrated host, discussing and meditating on the mystery of Christ's real presence in the Eucharistic bread. Among the recognizable figures are Dante Alighieri and Pope Gregory the Great. According to several critical readings of the work, Raphael also included a self-portrait among the crowd.<br><br>
+This fresco marks a crucial turning point in Raphael's career. He was barely twenty-five years old when he painted it, still relatively unknown in Rome. He demonstrated here such a surprising compositional ability that Pope Julius the Second instantly decided to entrust him with the entire decorative cycle of the Rooms. He dismissed the other painters already at work, including Perugino, who had actually been Raphael's own teacher.<br><br>
+Look at the overall architectural composition. The semicircular structure uniting heaven and earth, divinity and humanity, perfectly reflects the philosophical spirit of the Renaissance. It constantly sought a visible harmony between the rational world of humans and the transcendent world of faith, the same balance you'll find, in even grander form, in the Sistine Chapel we're about to reach.<br><br>
+When you're ready, head toward the Sistine Chapel, the last and most important stop of our route.`,
+        deepen: [{ type: "link", title: "The Disputation of the Holy Sacrament — Wikipedia", url: "https://en.wikipedia.org/wiki/Disputation_of_the_Holy_Sacrament" }]
+      }
+    }
+  },
+  {
+    id: 14, ready: true,
+    lat: 41.9065, lon: 12.4536,
+    i18n: {
+      it: {
+        name: "Storia della Cappella Sistina",
+        desc: "Da Sisto Quarto a Michelangelo",
+        audio: "audio/it/tappa14.mp3",
+        photos: [{ time: 0, url: "img/t14_sistina_storia.jpg", caption: "Storia della Cappella Sistina", credit: "Wikimedia Commons" }],
+        fullText: `Sei entrato nella Cappella Sistina, il luogo più sacro e più celebre di tutti i Musei Vaticani, dove tra pochi giorni si riunirà anche il collegio dei cardinali per eleggere ogni nuovo papa.<br><br>
+Fu costruita per volere di papa Sisto Quarto, da cui prende il nome, tra il 1477 e il 1480, sul luogo di una cappella medievale preesistente. Le sue proporzioni non sono casuali. Quaranta metri di lunghezza, tredici di larghezza, ventuno di altezza. Sono esattamente le stesse misure che, secondo l'Antico Testamento, avrebbe avuto il Tempio di Salomone a Gerusalemme, un richiamo simbolico voluto deliberatamente dagli architetti dell'epoca.<br><br>
+La prima decorazione, quella delle pareti laterali, fu completata già nel 1482 da un gruppo di pittori fiorentini e umbri tra i più importanti del loro tempo: Perugino, Botticelli, Ghirlandaio e Rosselli. Il soffitto, all'epoca, era semplicemente dipinto come un cielo stellato, opera del pittore Pier Matteo d'Amelia, molto più semplice di quello che vedrai tra poco.<br><br>
+Fu solo nel 1508 che papa Giulio Secondo convocò Michelangelo Buonarroti, allora scultore già affermato ma pittore quasi inesperto, per affrescare la volta. Michelangelo accettò con riluttanza, dichiarandosi lui stesso non sufficientemente esperto in pittura, preferendo di gran lunga lavorare il marmo. Eppure completò l'intera volta in poco più di quattro anni, lavorando quasi sempre da solo, in condizioni fisiche durissime, disteso su impalcature che lui stesso progettò appositamente per il lavoro.<br><br>
+Oltre vent'anni più tardi, nel 1536, un altro papa, Paolo Terzo, richiamò ancora Michelangelo, ormai sessantunenne. Doveva affrescare la parete dietro l'altare con il Giudizio Universale, l'ultima grande opera pittorica della sua vita, completata nel 1541.<br><br>
+Quando sei pronto, osserva prima le pareti laterali della cappella.`,
+        deepen: [{ type: "link", title: "Storia della Cappella Sistina — Wikipedia", url: "https://it.wikipedia.org/wiki/Cappella_Sistina" }]
+      },
+      en: {
+        name: "History of the Sistine Chapel",
+        desc: "From Sixtus IV to Michelangelo",
+        audio: "audio/en/tappa14.mp3",
+        photos: [{ time: 0, url: "img/t14_sistina_storia.jpg", caption: "History of the Sistine Chapel", credit: "Wikimedia Commons" }],
+        fullText: `You've entered the Sistine Chapel, the most sacred and most famous place in all the Vatican Museums, where in a matter of days the College of Cardinals will also gather to elect every new pope.<br><br>
+It was built by order of Pope Sixtus the Fourth, who gave it his name, between 1477 and 1480, on the site of a preexisting medieval chapel. Its proportions aren't accidental. Forty meters long, thirteen wide, twenty-one high, exactly the same measurements the Old Testament gives for Solomon's Temple in Jerusalem, a symbolic reference deliberately chosen by the architects of the time.<br><br>
+The first decoration, on the side walls, was already completed in 1482 by a group of Florentine and Umbrian painters among the most important of their time: Perugino, Botticelli, Ghirlandaio, and Rosselli. The ceiling, at the time, was simply painted as a starry sky, the work of painter Pier Matteo d'Amelia, much simpler than what you'll see shortly.<br><br>
+It was only in 1508 that Pope Julius the Second summoned Michelangelo Buonarroti, then an already established sculptor but a nearly inexperienced painter, to fresco the ceiling. Michelangelo accepted reluctantly, declaring himself not skilled enough in painting, preferring by far to work with marble. Yet he completed the entire ceiling in just over four years, working almost entirely alone, in grueling physical conditions, lying on scaffolding he designed specifically for the job.<br><br>
+Over twenty years later, in 1536, another pope, Paul the Third, called Michelangelo back, now sixty-one years old, to fresco the wall behind the altar with the Last Judgment, the final great painted work of his life, completed in 1541.<br><br>
+When you're ready, look first at the side walls of the chapel.`,
+        deepen: [{ type: "link", title: "History of the Sistine Chapel — Wikipedia", url: "https://en.wikipedia.org/wiki/Sistine_Chapel" }]
+      }
+    }
+  },
+  {
+    id: 15, ready: true,
+    lat: 41.9065, lon: 12.4536,
+    i18n: {
+      it: {
+        name: "Le pareti laterali",
+        desc: "Perugino, Botticelli e Ghirlandaio",
+        audio: "audio/it/tappa15.mp3",
+        photos: [{ time: 0, url: "img/t15_pareti.jpg", caption: "Le pareti laterali", credit: "Wikimedia Commons" }],
+        fullText: `Guarda le pareti laterali della Cappella Sistina, spesso trascurate dai visitatori troppo concentrati sulla volta sovrastante, ma in realtà un capolavoro collettivo del primo Rinascimento italiano.<br><br>
+Le due lunghe pareti si fronteggiano a specchio. Da un lato le Storie di Mosè, dall'altro le Storie di Cristo, disposte in un parallelismo studiato apposta. Ogni episodio della vita di Mosè trova un corrispondente episodio nella vita di Gesù, a sottolineare come l'Antico Testamento anticipasse simbolicamente il Nuovo.<br><br>
+Cerca la Consegna delle Chiavi, dipinta dal Perugino, il maestro da cui lo stesso Raffaello apprese i primi rudimenti della pittura. Mostra Cristo che consegna le chiavi del paradiso a San Pietro, il momento fondativo dell'autorità papale su cui si basa ancora oggi l'intera struttura della Chiesa cattolica.<br><br>
+Poco distante, la Punizione di Core, Dathan e Abiram, dipinta da Sandro Botticelli, racconta un episodio biblico di ribellione contro l'autorità divinamente sancita, punita con la morte istantanea dei ribelli. Un messaggio politico neanche troppo velato contro chiunque, all'epoca, osasse sfidare l'autorità del papa.<br><br>
+Un ultimo dettaglio curioso riguarda la parete d'ingresso, alle tue spalle: gli affreschi originali qui furono gravemente danneggiati nel 1522, quando un crollo strutturale della porta d'ingresso li rovinò irreparabilmente. Furono ridipinti solo decenni più tardi da altri artisti, seguendo il più possibile lo stile originale. Restano però tra le parti meno autentiche dell'intera decorazione della cappella. Un dettaglio che sfugge quasi sempre ai visitatori, distratti dalla volta michelangiolesca sopra le loro teste.<br><br>
+Quando sei pronto, alza lo sguardo verso la volta, per le Storie della Genesi.`,
+        deepen: [{ type: "link", title: "Le pareti laterali — Wikipedia", url: "https://it.wikipedia.org/wiki/Cappella_Sistina" }]
+      },
+      en: {
+        name: "The Side Walls",
+        desc: "Perugino, Botticelli and Ghirlandaio",
+        audio: "audio/en/tappa15.mp3",
+        photos: [{ time: 0, url: "img/t15_pareti.jpg", caption: "The Side Walls", credit: "Wikimedia Commons" }],
+        fullText: `Look at the side walls of the Sistine Chapel, often overlooked by visitors too focused on the ceiling above, but actually a collective masterpiece of the early Italian Renaissance.<br><br>
+The two long walls face each other like mirrors. On one side, the Stories of Moses. On the other, the Stories of Christ, arranged in a deliberate parallelism, where every episode in the life of Moses finds a corresponding episode in the life of Jesus, underlining how the Old Testament symbolically anticipated the New.<br><br>
+Look for the Delivery of the Keys, painted by Perugino, the master from whom Raphael himself learned the first rudiments of painting. It shows Christ handing the keys of paradise to Saint Peter, the founding moment of papal authority on which the entire structure of the Catholic Church still rests today.<br><br>
+Not far away, the Punishment of Korah, Dathan, and Abiram, painted by Sandro Botticelli, tells a biblical episode of rebellion against divinely sanctioned authority, punished with the instant death of the rebels. A political message, not even very veiled, aimed at anyone who might, at the time, dare to challenge the pope's authority.<br><br>
+One last curious detail concerns the entrance wall, behind you. The original frescoes here were badly damaged in 1522, when a structural collapse of the entrance door ruined them irreparably. They were repainted only decades later by other artists, following the original style as closely as possible. They remain among the least authentic parts of the entire chapel decoration, a detail that almost always escapes visitors distracted by Michelangelo's ceiling above their heads.<br><br>
+When you're ready, look up at the ceiling, for the Stories of Genesis.`,
+        deepen: [{ type: "link", title: "The Side Walls — Wikipedia", url: "https://en.wikipedia.org/wiki/Sistine_Chapel" }]
+      }
+    }
+  },
+  {
+    id: 16, ready: true,
+    lat: 41.9065, lon: 12.4536,
+    i18n: {
+      it: {
+        name: "La volta — Storie della Genesi",
+        desc: "Il capolavoro di Michelangelo",
+        audio: "audio/it/tappa16.mp3",
+        photos: [{ time: 0, url: "img/t16_volta.jpg", caption: "La volta — Storie della Genesi", credit: "Wikimedia Commons" }],
+        fullText: `Alza lo sguardo verso la volta della Cappella Sistina, il capolavoro assoluto di Michelangelo Buonarroti, completato in poco più di quattro anni tra il 1508 e il 1512.<br><br>
+Al centro esatto della volta corrono nove riquadri principali che raccontano le Storie della Genesi, dalla Creazione del mondo fino all'Ubriachezza di Noè. L'ultimo episodio è posizionato non a caso proprio sopra l'ingresso della cappella, quasi a suggerire il progressivo allontanamento dell'umanità dalla perfezione originaria.<br><br>
+Michelangelo dipinse questi episodi in ordine cronologico inverso rispetto alla loro narrazione biblica, cominciando dalla fine della storia, vicino all'altare, per poi procedere all'indietro verso l'ingresso. Questo perché lavorava dall'alto delle impalcature progredendo fisicamente lungo la cappella, e scelse di seguire quel percorso fisico piuttosto che l'ordine narrativo tradizionale della Genesi.<br><br>
+Attorno ai riquadri principali, Michelangelo dipinse anche dodici imponenti figure sedute in trono. Sette profeti dell'Antico Testamento e cinque sibille pagane, le sacerdotesse dell'antichità classica che secondo la tradizione avrebbero preannunciato la venuta di Cristo. Un accostamento audace tra cultura biblica e cultura pagana, tipico dello spirito sincretico del Rinascimento italiano.<br><br>
+Osserva anche gli ignudi, le venti figure maschili completamente nude che decorano gli angoli tra un riquadro e l'altro. Apparentemente non hanno alcun significato narrativo specifico. Secondo molti storici dell'arte, rappresentano piuttosto un puro esercizio di virtuosismo anatomico da parte di Michelangelo. Voleva dimostrare la propria maestria nel rappresentare il corpo umano in ogni possibile torsione, quasi scolpendo con il pennello invece che con lo scalpello.<br><br>
+Quando sei pronto, cerca il riquadro centrale della Creazione di Adamo.`,
+        deepen: [{ type: "link", title: "La volta — Storie della Genesi — Wikipedia", url: "https://it.wikipedia.org/wiki/Volta_della_Cappella_Sistina" }]
+      },
+      en: {
+        name: "The Ceiling — Stories of Genesis",
+        desc: "Michelangelo's masterpiece",
+        audio: "audio/en/tappa16.mp3",
+        photos: [{ time: 0, url: "img/t16_volta.jpg", caption: "The Ceiling — Stories of Genesis", credit: "Wikimedia Commons" }],
+        fullText: `Look up at the ceiling of the Sistine Chapel, Michelangelo Buonarroti's absolute masterpiece, completed in just over four years between 1508 and 1512.<br><br>
+Right at the center of the ceiling run nine main panels telling the Stories of Genesis, from the Creation of the world to the Drunkenness of Noah. The last episode is placed not by chance right above the chapel's entrance, almost suggesting humanity's gradual drift away from original perfection.<br><br>
+Michelangelo painted these episodes in reverse chronological order compared to their biblical narrative, starting from the end of the story, near the altar, then working backward toward the entrance. This was because he worked from the scaffolding, physically progressing along the chapel, and chose to follow that physical path rather than the traditional narrative order of Genesis.<br><br>
+Around the main panels, Michelangelo also painted twelve imposing enthroned figures. Seven Old Testament prophets and five pagan sibyls, the priestesses of classical antiquity who, according to tradition, had foretold the coming of Christ. A bold combination of biblical and pagan culture, typical of the syncretic spirit of the Italian Renaissance.<br><br>
+Look also at the ignudi, the twenty completely nude male figures decorating the corners between one panel and the next. They apparently have no specific narrative meaning. According to many art historians, they represent instead a pure exercise in anatomical virtuosity by Michelangelo. He wanted to demonstrate his own mastery in depicting the human body in every possible twist and movement, almost sculpting with the brush instead of the chisel.<br><br>
+When you're ready, look for the central panel of the Creation of Adam.`,
+        deepen: [{ type: "link", title: "The Ceiling — Stories of Genesis — Wikipedia", url: "https://en.wikipedia.org/wiki/Sistine_Chapel_ceiling" }]
+      }
+    }
+  },
+  {
+    id: 17, ready: true,
+    lat: 41.9065, lon: 12.4536,
+    i18n: {
+      it: {
+        name: "La Creazione di Adamo",
+        desc: "L'immagine più celebre della storia dell'arte",
+        audio: "audio/it/tappa17.mp3",
+        photos: [{ time: 0, url: "img/t17_adamo.jpg", caption: "La Creazione di Adamo", credit: "Wikimedia Commons" }],
+        fullText: `Sei davanti alla Creazione di Adamo, probabilmente l'immagine più riprodotta e più celebre nella storia dell'arte occidentale, capace di essere riconosciuta istantaneamente in ogni angolo del mondo, anche da chi non ha mai messo piede in un museo.<br><br>
+Il riquadro mostra il momento immediatamente precedente al contatto tra le dita di Dio e quelle di Adamo, il primo uomo, appena plasmato dal fango della terra. Le due mani non si toccano ancora. Restano separate da uno spazio minimo, quasi impercettibile. Secondo molti critici rappresenta proprio la scintilla della vita nel momento stesso in cui sta per essere trasmessa, in un istante sospeso che dura da oltre cinquecento anni.<br><br>
+Guarda con attenzione la figura di Dio, avvolto in un ampio manto rosso sostenuto da una schiera di angeli. Nel 1990 un chirurgo americano notò per primo che la sagoma complessiva di quella figura ricorda in modo sorprendente la forma anatomica di un cervello umano visto in sezione, completo di dettagli che corrispondono a specifiche strutture cerebrali. Nessuno sa con certezza se fosse un'intenzione consapevole di Michelangelo, che studiò a lungo l'anatomia umana attraverso dissezioni private, ma l'ipotesi resta oggi ampiamente discussa tra gli storici dell'arte.<br><br>
+Adamo, disteso mollemente sul fianco della montagna, ha un corpo perfettamente proporzionato. È ispirato direttamente alle statue classiche che Michelangelo aveva studiato per anni, incluso probabilmente il Torso del Belvedere che hai visto all'inizio del nostro percorso in questi stessi musei.<br><br>
+Un'ultima curiosità: Michelangelo dipinse l'intera volta praticamente da solo, con l'aiuto di pochissimi assistenti per compiti secondari. Rifiutò quasi sempre collaborazioni più ampie, convinto che nessun altro potesse eguagliare la sua visione artistica per un'opera di questa portata.<br><br>
+Quando sei pronto, guarda infine il Giudizio Universale, sulla parete dietro l'altare.`,
+        deepen: [{ type: "link", title: "La Creazione di Adamo — Wikipedia", url: "https://it.wikipedia.org/wiki/Creazione_di_Adamo" }]
+      },
+      en: {
+        name: "The Creation of Adam",
+        desc: "The most famous image in art history",
+        audio: "audio/en/tappa17.mp3",
+        photos: [{ time: 0, url: "img/t17_adamo.jpg", caption: "The Creation of Adam", credit: "Wikimedia Commons" }],
+        fullText: `You're in front of the Creation of Adam, probably the most reproduced and most famous image in the history of Western art, instantly recognizable anywhere in the world, even by those who have never set foot in a museum.<br><br>
+The panel shows the moment right before contact between the fingers of God and those of Adam, the first man, just shaped from the earth's clay. The two hands don't touch yet. They remain separated by a minimal, almost imperceptible gap, which according to many critics represents the very spark of life at the exact moment it's about to be transmitted, a suspended instant that has lasted over five hundred years.<br><br>
+Look closely at the figure of God, wrapped in a wide red cloak held up by a group of angels. In 1990, an American surgeon first noticed that the overall shape of that figure strikingly resembles the anatomical shape of a human brain seen in cross-section, complete with details matching specific brain structures. No one knows for certain whether this was a conscious intention by Michelangelo, who studied human anatomy extensively through private dissections, but the theory remains widely discussed among art historians today.<br><br>
+Adam, reclining loosely on the side of the mountain, has a perfectly proportioned body. It's directly inspired by the classical statues Michelangelo had studied for years, probably including the Belvedere Torso you saw at the beginning of our route through these same museums.<br><br>
+One last curiosity: Michelangelo painted the entire ceiling almost entirely alone, with the help of very few assistants for secondary tasks. He nearly always refused broader collaboration, convinced that no one else could match his artistic vision for a work of this scale and importance.<br><br>
+When you're ready, look finally at the Last Judgment, on the wall behind the altar.`,
+        deepen: [{ type: "link", title: "The Creation of Adam — Wikipedia", url: "https://en.wikipedia.org/wiki/The_Creation_of_Adam" }]
+      }
+    }
+  },
+  {
+    id: 18, ready: true,
+    lat: 41.9065, lon: 12.4536,
+    i18n: {
+      it: {
+        name: "Il Giudizio Universale",
+        desc: "L'ultima grande opera di Michelangelo",
+        audio: "audio/it/tappa18.mp3",
+        photos: [{ time: 0, url: "img/t18_giudizio.jpg", caption: "Il Giudizio Universale", credit: "Wikimedia Commons" }],
+        fullText: `Sei davanti al Giudizio Universale, l'ultima grande opera pittorica di Michelangelo, dipinta sulla parete dietro l'altare tra il 1536 e il 1541, venticinque anni dopo aver completato la volta sovrastante.<br><br>
+L'affresco copre l'intera parete, oltre centosettanta metri quadrati, e rappresenta il momento del ritorno di Cristo sulla terra per giudicare l'intera umanità, come descritto nel Vangelo di Matteo. Al centro, Cristo giudice, muscoloso e senza barba, quasi un Ercole cristiano, domina la scena. Con un gesto del braccio mette in moto un vortice di corpi che ruota da sinistra verso destra, dagli eletti che ascendono al paradiso fino ai dannati che precipitano verso l'inferno.<br><br>
+Michelangelo scelse una collocazione insolita per questo tema: la tradizione medievale voleva il Giudizio Universale dipinto solitamente sulla parete d'ingresso di una chiesa, come monito per i fedeli in uscita. Michelangelo lo posizionò invece dietro l'altare, rompendo quella convenzione secolare. Fu costretto a murare due finestre preesistenti e a demolire alcuni affreschi già completati, inclusi propri lavori precedenti, per fare spazio alla nuova, immensa composizione.<br><br>
+L'opera scandalizzò profondamente alcuni contemporanei per l'abbondanza di nudità: il maestro delle cerimonie papali Biagio da Cesena la definì pubblicamente più adatta a un bagno pubblico che a una cappella sacra. Michelangelo si vendicò a modo suo, dipingendo il volto dello stesso Biagio sul giudice dell'inferno Minosse. Gli aggiunse orecchie d'asino e un serpente che gli morde i genitali, un dettaglio ancora oggi perfettamente visibile in basso a destra dell'affresco.<br><br>
+Dopo la morte di Michelangelo, nel 1564, un decreto ufficiale ordinò di coprire le nudità più esplicite dell'affresco. L'incarico andò al pittore Daniele da Volterra, che dipinse decine di drappeggi e perizomi sopra le figure originali, guadagnandosi per questo il soprannome, tutt'altro che lusinghiero, di "il Braghettone". Alcuni di quei drappeggi, considerati ormai parte della storia dell'opera, sono stati deliberatamente conservati anche durante il grande restauro degli anni Novanta. Quel restauro restituì invece al resto dell'affresco i colori vividi, quasi accesi, che il fumo di secoli di candele aveva progressivamente oscurato fino a farli sembrare quasi monocromi.<br><br>
+Grazie per aver camminato con noi attraverso i capolavori dei Musei Vaticani e della Cappella Sistina.`,
+        deepen: [{ type: "link", title: "Il Giudizio Universale — Wikipedia", url: "https://it.wikipedia.org/wiki/Giudizio_Universale_(Michelangelo)" }]
+      },
+      en: {
+        name: "The Last Judgment",
+        desc: "Michelangelo's last great work",
+        audio: "audio/en/tappa18.mp3",
+        photos: [{ time: 0, url: "img/t18_giudizio.jpg", caption: "The Last Judgment", credit: "Wikimedia Commons" }],
+        fullText: `You're in front of the Last Judgment, Michelangelo's final great painted work, painted on the wall behind the altar between 1536 and 1541, twenty-five years after completing the ceiling above.<br><br>
+The fresco covers the entire wall, over one hundred seventy square meters, and depicts the moment of Christ's return to earth to judge all humanity, as described in the Gospel of Matthew. At the center, Christ the judge, muscular and beardless, almost a Christian Hercules, dominates the scene. With a gesture of his arm he sets in motion a swirling vortex of bodies rotating from left to right, from the elect ascending to paradise to the damned plunging toward hell.<br><br>
+Michelangelo chose an unusual placement for this theme. Medieval tradition usually had the Last Judgment painted on a church's entrance wall, as a warning for the faithful on their way out. Michelangelo instead placed it behind the altar, breaking that centuries-old convention. He was forced to wall up two existing windows and demolish some already completed frescoes, including some of his own earlier work, to make room for the new, immense composition.<br><br>
+The work deeply scandalized some contemporaries for its abundance of nudity. The papal master of ceremonies Biagio da Cesena publicly called it more fitting for a public bathhouse than a sacred chapel. Michelangelo took his revenge in his own way, painting Biagio's own face onto Minos, judge of the underworld, complete with donkey ears and a serpent biting his genitals, a detail still perfectly visible today in the lower right corner of the fresco.<br><br>
+After Michelangelo's death in 1564, an official decree ordered the most explicit nudity in the fresco to be covered. The task went to painter Daniele da Volterra, who painted dozens of draperies and loincloths over the original figures, earning him the less than flattering nickname "the Breeches Maker". Some of those draperies, now considered part of the work's history, were deliberately kept even during the major restoration of the 1990s. That restoration otherwise restored the rest of the fresco to its vivid, almost bright colors, which centuries of candle smoke had gradually darkened until they seemed almost monochrome.<br><br>
+Thank you for walking with us through the masterpieces of the Vatican Museums and the Sistine Chapel.`,
+        deepen: [{ type: "link", title: "The Last Judgment — Wikipedia", url: "https://en.wikipedia.org/wiki/Last_Judgment_(Michelangelo)" }]
+      }
+    }
+  }
+];
+</script>
+<script src="../shared/app-indoor.js"></script>
+</body>
+</html>
