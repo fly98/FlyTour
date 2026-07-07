@@ -36,8 +36,11 @@
   @media (display-mode: standalone){
     header{padding-top:calc(10px + env(safe-area-inset-top));}
   }
-  .brand{display:flex; align-items:center; gap:12px; margin-bottom:22px;}
+  .brand{display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:22px;}
   .logo-img{height:56px; width:auto; display:block;}
+  .lang-select{background:var(--stone-2); color:var(--limestone); border:1px solid var(--line);
+    border-radius:10px; padding:7px 10px; font-family:'Inter',sans-serif; font-size:13px;
+    font-weight:600; cursor:pointer;}
 
   .eyebrow{font-size:12px; letter-spacing:.14em; text-transform:uppercase;
     color:var(--patina); font-weight:600; margin-bottom:8px;}
@@ -94,10 +97,11 @@
   <header>
     <div class="brand">
       <img src="logo-lockup.png" alt="FlyTour" class="logo-img">
+      <select id="langSelect" class="lang-select"></select>
     </div>
-    <div class="eyebrow">Audioguide GPS narrate</div>
-    <h1>I tuoi percorsi</h1>
-    <p class="subtitle">Passeggiate a piedi con racconto sincronizzato alla posizione. Scegli un giro per iniziare.</p>
+    <div class="eyebrow" id="txtEyebrow">Audioguide GPS narrate</div>
+    <h1 id="txtH1">I tuoi percorsi</h1>
+    <p class="subtitle" id="txtSubtitle">Passeggiate a piedi con racconto sincronizzato alla posizione. Scegli un giro per iniziare.</p>
   </header>
 
   <div class="search-row">
@@ -112,14 +116,67 @@
 
   <div class="empty-hint" id="emptyHint" style="display:none;">Nessun percorso trovato. Prova con un altro termine.</div>
 
-  <footer>FlyTour · fatto per camminarci sopra</footer>
+  <footer id="txtFooter">FlyTour · fatto per camminarci sopra</footer>
 </div>
 
 <script>
 const AUDIENCE = "guest"; // questa pagina (root) è la vetrina per gli ospiti del B&B
 let TOURS = [];
-
 let userPos = null;
+
+// ---- Traduzioni interfaccia (7 lingue, le stesse presenti in tours.json) ----
+const LANGS = [
+  { code: "it", label: "Italiano" },
+  { code: "en", label: "English" },
+  { code: "es", label: "Español" },
+  { code: "fr", label: "Français" },
+  { code: "de", label: "Deutsch" },
+  { code: "pt", label: "Português" },
+  { code: "zh", label: "中文" }
+];
+const UI = {
+  eyebrow:  { it:"Audioguide GPS narrate", en:"Narrated GPS audio guides", es:"Audioguías GPS narradas", fr:"Audioguides GPS racontés", de:"Erzählte GPS-Audioguides", pt:"Audioguias GPS narrados", zh:"GPS语音导览" },
+  h1:       { it:"I tuoi percorsi", en:"Your tours", es:"Tus recorridos", fr:"Vos parcours", de:"Deine Touren", pt:"Os teus percursos", zh:"你的行程" },
+  subtitle: { it:"Passeggiate a piedi con racconto sincronizzato alla posizione. Scegli un giro per iniziare.", en:"Walking tours with narration synced to your location. Pick a tour to begin.", es:"Paseos a pie con narración sincronizada a tu ubicación. Elige un recorrido para empezar.", fr:"Promenades à pied avec récit synchronisé à votre position. Choisissez un parcours pour commencer.", de:"Spaziergänge mit ortsbezogener Erzählung. Wähle eine Tour, um zu beginnen.", pt:"Passeios a pé com narração sincronizada à tua localização. Escolhe um percurso para começar.", zh:"步行游览，讲解与您的位置同步。选择一个行程开始吧。" },
+  searchPlaceholder: { it:"Cerca un percorso, una città…", en:"Search a tour, a city…", es:"Busca un recorrido, una ciudad…", fr:"Recherchez un parcours, une ville…", de:"Suche nach Tour oder Stadt…", pt:"Procura um percurso, uma cidade…", zh:"搜索行程或城市…" },
+  emptyHint: { it:"Nessun percorso trovato. Prova con un altro termine.", en:"No tour found. Try a different search term.", es:"No se ha encontrado ningún recorrido. Prueba con otro término.", fr:"Aucun parcours trouvé. Essayez un autre terme.", de:"Keine Tour gefunden. Versuche einen anderen Suchbegriff.", pt:"Nenhum percurso encontrado. Tenta outro termo.", zh:"未找到行程。请尝试其他搜索词。" },
+  footer: { it:"FlyTour · fatto per camminarci sopra", en:"FlyTour · made to walk on", es:"FlyTour · hecho para recorrer", fr:"FlyTour · fait pour être parcouru", de:"FlyTour · zum Erwandern gemacht", pt:"FlyTour · feito para percorrer", zh:"FlyTour · 专为漫步而生" },
+  stops: { it:"tappe", en:"stops", es:"paradas", fr:"étapes", de:"Stationen", pt:"paragens", zh:"站" },
+  nearest: { it:"📍 Il più vicino a te", en:"📍 Closest to you", es:"📍 El más cercano a ti", fr:"📍 Le plus proche de vous", de:"📍 Am nächsten bei dir", pt:"📍 O mais próximo de ti", zh:"📍 离你最近" }
+};
+
+const LANG_STORAGE_KEY = "flytour_root_lang";
+function detectDefaultLang(){
+  const saved = localStorage.getItem(LANG_STORAGE_KEY);
+  if(saved && LANGS.some(l => l.code === saved)) return saved;
+  const browserLang = (navigator.language || "en").slice(0,2).toLowerCase();
+  return LANGS.some(l => l.code === browserLang) ? browserLang : "en";
+}
+let currentLang = detectDefaultLang();
+
+function applyStaticTexts(){
+  document.getElementById('txtEyebrow').textContent = UI.eyebrow[currentLang];
+  document.getElementById('txtH1').textContent = UI.h1[currentLang];
+  document.getElementById('txtSubtitle').textContent = UI.subtitle[currentLang];
+  document.getElementById('searchInput').placeholder = UI.searchPlaceholder[currentLang];
+  document.getElementById('emptyHint').textContent = UI.emptyHint[currentLang];
+  document.getElementById('txtFooter').textContent = UI.footer[currentLang];
+}
+
+const langSelect = document.getElementById('langSelect');
+LANGS.forEach(l => {
+  const opt = document.createElement('option');
+  opt.value = l.code;
+  opt.textContent = l.label;
+  langSelect.appendChild(opt);
+});
+langSelect.value = currentLang;
+langSelect.addEventListener('change', () => {
+  currentLang = langSelect.value;
+  localStorage.setItem(LANG_STORAGE_KEY, currentLang);
+  applyStaticTexts();
+  render();
+});
 
 function haversineKm(lat1, lon1, lat2, lon2){
   const R = 6371;
@@ -130,13 +187,17 @@ function haversineKm(lat1, lon1, lat2, lon2){
   return 2 * R * Math.asin(Math.sqrt(a));
 }
 
+function T(t, field){
+  return (t[field] && t[field][currentLang]) ? t[field][currentLang] : t[field]['it'];
+}
+
 function filterTours(query){
   const base = TOURS.filter(t => t.audience === AUDIENCE);
   if(!query) return base.slice();
   const q = query.toLowerCase();
   return base.filter(t =>
-    t.title.it.toLowerCase().includes(q) ||
-    t.desc.it.toLowerCase().includes(q) ||
+    T(t,'title').toLowerCase().includes(q) ||
+    T(t,'desc').toLowerCase().includes(q) ||
     t.city.toLowerCase().includes(q) ||
     t.country.toLowerCase().includes(q)
   );
@@ -149,13 +210,13 @@ function cardHtml(t, isNearest){
         <img src="${t.cover}" alt="" loading="lazy">
         <div class="tour-cover-overlay">
           <span class="tour-badge">${t.city}</span>
-          <span class="tour-badge tour-badge-ochre">${t.stops} tappe</span>
-          ${isNearest ? '<span class="tour-badge tour-badge-near">📍 Il più vicino a te</span>' : ''}
-          <div class="tour-title-onimg">${t.title.it}</div>
+          <span class="tour-badge tour-badge-ochre">${t.stops} ${UI.stops[currentLang]}</span>
+          ${isNearest ? `<span class="tour-badge tour-badge-near">${UI.nearest[currentLang]}</span>` : ''}
+          <div class="tour-title-onimg">${T(t,'title')}</div>
         </div>
       </div>
       <div class="tour-body">
-        <p class="tour-desc">${t.desc.it}</p>
+        <p class="tour-desc">${T(t,'desc')}</p>
         <div class="tour-meta">
           <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>${t.duration}</span>
           <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 12a9 9 0 0118 0"/></svg>${t.distance}</span>
@@ -242,6 +303,7 @@ async function caricaTours(){
   }
   render();
 }
+applyStaticTexts();
 caricaTours();
 requestLocation();
 
