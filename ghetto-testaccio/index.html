@@ -18,9 +18,9 @@
 <div class="wrap">
   <header>
     <a href="../index.html" class="back-link">← Tutti i percorsi</a>
-    <div class="eyebrow">Passeggiata narrata · ~2h30 · 4-5 km</div>
-    <h1>Dal Ghetto al Mattatoio</h1>
-    <p class="subtitle">La storia della cucina povera romana, dai carciofi alla giudia alla coda alla vaccinara. Cammina, e ti racconto io.</p>
+    <div class="eyebrow" id="txtEyebrow">Passeggiata narrata · ~2h30 · 4-5 km</div>
+    <h1 id="txtH1">Dal Ghetto al Mattatoio</h1>
+    <p class="subtitle" id="txtSubtitle">La storia della cucina povera romana, dai carciofi alla giudia alla coda alla vaccinara. Cammina, e ti racconto io.</p>
   </header>
 
   <div id="langToggle">
@@ -130,6 +130,15 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 // ---- Dati tappe (pilota: 2 tappe) ----
+const PAGE_I18N = {
+  it: { eyebrow: "Passeggiata narrata · ~2h30 · 4-5 km", h1: "Dal Ghetto al Mattatoio", subtitle: "La storia della cucina povera romana, dai carciofi alla giudia alla coda alla vaccinara. Cammina, e ti racconto io." },
+  en: { eyebrow: "Narrated walk · ~2h30 · 4-5 km", h1: "Dal Ghetto al Mattatoio", subtitle: "The story of humble Roman cuisine, from carciofi alla giudia to coda alla vaccinara. Walk, and I'll tell you the story." },
+  es: { eyebrow: "Paseo narrado · ~2h30 · 4-5 km", h1: "Dal Ghetto al Mattatoio", subtitle: "La historia de la cocina humilde romana, desde los carciofi alla giudia hasta la coda alla vaccinara. Camina, y yo te cuento la historia." },
+  fr: { eyebrow: "Promenade racontée · ~2h30 · 4-5 km", h1: "Dal Ghetto al Mattatoio", subtitle: "L'histoire de la cuisine populaire romaine, des carciofi alla giudia à la coda alla vaccinara. Marchez, et je vous raconte." },
+  de: { eyebrow: "Erzählter Spaziergang · ~2h30 · 4-5 km", h1: "Dal Ghetto al Mattatoio", subtitle: "Die Geschichte der einfachen römischen Küche, von carciofi alla giudia bis coda alla vaccinara. Geh, und ich erzähle dir die Geschichte." },
+  pt: { eyebrow: "Passeio narrado · ~2h30 · 4-5 km", h1: "Dal Ghetto al Mattatoio", subtitle: "A história da cozinha humilde romana, das carciofi alla giudia à coda alla vaccinara. Caminha, e eu conto-te a história." },
+  zh: { eyebrow: "讲解漫步 · 约2.5小时 · 4-5公里", h1: "Dal Ghetto al Mattatoio", subtitle: "罗马平民美食的故事，从犹太风味朝鲜蓟到牛尾炖菜。边走边听我讲述。" }
+};
 const STOPS = [
   {
     id: 1, ready: true,
@@ -174,7 +183,7 @@ When you're ready, head toward Piazza Mattei.`,
     ]
       },
       es: {
-        name: "Pórtico de Octavia",
+        name: "Portico d'Ottavia",
         desc: "El Gueto judío y las alcachofas a la judía",
         audio: "audio/en/tappa1.mp3",
         photos: [
@@ -193,7 +202,7 @@ Cuando estés listo, dirígete hacia Piazza Mattei.`,
     ]
       },
       fr: {
-        name: "Portique d'Octavie",
+        name: "Portico d'Ottavia",
         desc: "Le Ghetto juif et les artichauts à la juive",
         audio: "audio/en/tappa1.mp3",
         photos: [
@@ -212,7 +221,7 @@ Quand vous êtes prêt, dirigez-vous vers Piazza Mattei.`,
     ]
       },
       de: {
-        name: "Portikus der Octavia",
+        name: "Portico d'Ottavia",
         desc: "Das jüdische Ghetto und Artischocken nach jüdischer Art",
         audio: "audio/en/tappa1.mp3",
         photos: [
@@ -231,7 +240,7 @@ Wenn du bereit bist, geh weiter zur Piazza Mattei.`,
     ]
       },
       pt: {
-        name: "Pórtico de Otávia",
+        name: "Portico d'Ottavia",
         desc: "O Gueto judaico e as alcachofras à judaica",
         audio: "audio/en/tappa1.mp3",
         photos: [
@@ -250,7 +259,7 @@ Quando estiveres pronto, segue em direção à Piazza Mattei.`,
     ]
       },
       zh: {
-        name: "奥克塔维亚柱廊",
+        name: "Portico d'Ottavia",
         desc: "犹太区与犹太风味朝鲜蓟",
         audio: "audio/en/tappa1.mp3",
         photos: [
@@ -377,7 +386,7 @@ Quando estiveres pronto, segue em direção à Ponte Fabrício e à Ilha Tiberin
     ]
       },
       zh: {
-        name: "海龟喷泉",
+        name: "Fontana delle Tartarughe",
         desc: "马太广场的文艺复兴杰作",
         audio: "audio/en/tappa2.mp3",
         photos: [
@@ -442,7 +451,7 @@ Cross the island and continue toward Ponte Sublicio.`,
     ]
       },
       es: {
-        name: "Puente Fabricio e Isla Tiberina",
+        name: "Ponte Fabricio e Isola Tiberina",
         desc: "El puente más antiguo de Roma, entre leyenda y medicina",
         audio: "audio/en/tappa3.mp3",
         photos: [
@@ -463,7 +472,7 @@ Cruza la isla y continúa hacia el Puente Sublicio.`,
     ]
       },
       fr: {
-        name: "Pont Fabricius et Île Tibérine",
+        name: "Ponte Fabricio e Isola Tiberina",
         desc: "Le plus vieux pont de Rome, entre légende et médecine",
         audio: "audio/en/tappa3.mp3",
         photos: [
@@ -484,7 +493,7 @@ Traversez l'île et continuez vers le Pont Sublicius.`,
     ]
       },
       de: {
-        name: "Fabricius-Brücke und Tiberinsel",
+        name: "Ponte Fabricio e Isola Tiberina",
         desc: "Roms älteste Brücke, zwischen Legende und Medizin",
         audio: "audio/en/tappa3.mp3",
         photos: [
@@ -505,7 +514,7 @@ Auf dieser Insel gibt es auch eine historische Osteria, in der man angeblich ein
     ]
       },
       pt: {
-        name: "Ponte Fabrício e Ilha Tiberina",
+        name: "Ponte Fabricio e Isola Tiberina",
         desc: "A ponte mais antiga de Roma, entre lenda e medicina",
         audio: "audio/en/tappa3.mp3",
         photos: [
@@ -526,7 +535,7 @@ Atravessa a ilha e segue em direção à Ponte Sublício.`,
     ]
       },
       zh: {
-        name: "法布里丘斯桥与台伯岛",
+        name: "Ponte Fabricio e Isola Tiberina",
         desc: "罗马最古老的桥，传说与医学交织",
         audio: "audio/en/tappa3.mp3",
         photos: [
@@ -589,7 +598,7 @@ Continue toward Monte Testaccio.`,
     ]
       },
       es: {
-        name: "Puente Sublicio",
+        name: "Ponte Sublicio",
         desc: "El primer puente de Roma y Horacio Cocles",
         audio: "audio/en/tappa4.mp3",
         photos: [
@@ -607,7 +616,7 @@ Continúa hacia Monte Testaccio.`,
     ]
       },
       fr: {
-        name: "Pont Sublicius",
+        name: "Ponte Sublicio",
         desc: "Le premier pont de Rome et Horatius Coclès",
         audio: "audio/en/tappa4.mp3",
         photos: [
@@ -625,7 +634,7 @@ Continuez vers le Mont Testaccio.`,
     ]
       },
       de: {
-        name: "Sublicische Brücke",
+        name: "Ponte Sublicio",
         desc: "Roms erste Brücke und Horatius Cocles",
         audio: "audio/en/tappa4.mp3",
         photos: [
@@ -643,7 +652,7 @@ Geh weiter zum Monte Testaccio.`,
     ]
       },
       pt: {
-        name: "Ponte Sublício",
+        name: "Ponte Sublicio",
         desc: "A primeira ponte de Roma e Horácio Cocles",
         audio: "audio/en/tappa4.mp3",
         photos: [
@@ -661,7 +670,7 @@ Segue em direção ao Monte Testaccio.`,
     ]
       },
       zh: {
-        name: "苏布利丘斯桥",
+        name: "Ponte Sublicio",
         desc: "罗马第一座桥与贺拉提乌斯·科克莱斯",
         audio: "audio/en/tappa4.mp3",
         photos: [
@@ -739,7 +748,7 @@ Cuando estés listo, dirígete hacia el antiguo Matadero.`,
     ]
       },
       fr: {
-        name: "Mont Testaccio",
+        name: "Monte Testaccio",
         desc: "La colline faite d'amphores romaines",
         audio: "audio/en/tappa5.mp3",
         photos: [
@@ -793,7 +802,7 @@ Quando estiveres pronto, segue em direção ao antigo Matadouro.`,
     ]
       },
       zh: {
-        name: "陶片山",
+        name: "Monte Testaccio",
         desc: "由罗马陶罐碎片堆成的小山",
         audio: "audio/en/tappa5.mp3",
         photos: [
@@ -853,7 +862,7 @@ When you're ready, head toward Checchino, just a few steps away.`,
     ]
       },
       es: {
-        name: "Antiguo Matadero",
+        name: "Ex Mattatoio",
         desc: "El quinto cuarto y el nacimiento de la cocina pobre romana",
         audio: "audio/en/tappa6.mp3",
         photos: [
@@ -871,7 +880,7 @@ Cuando estés listo, dirígete hacia Checchino, a pocos pasos.`,
     ]
       },
       fr: {
-        name: "Ancien Abattoir",
+        name: "Ex Mattatoio",
         desc: "Le cinquième quart et la naissance de la cuisine populaire romaine",
         audio: "audio/en/tappa6.mp3",
         photos: [
@@ -889,7 +898,7 @@ Quand vous êtes prêt, dirigez-vous vers Checchino, à quelques pas.`,
     ]
       },
       de: {
-        name: "Ehemaliges Schlachthaus",
+        name: "Ex Mattatoio",
         desc: "Das fünfte Viertel und die Geburt der einfachen römischen Küche",
         audio: "audio/en/tappa6.mp3",
         photos: [
@@ -907,7 +916,7 @@ Wenn du bereit bist, geh weiter zu Checchino, nur wenige Schritte entfernt.`,
     ]
       },
       pt: {
-        name: "Antigo Matadouro",
+        name: "Ex Mattatoio",
         desc: "O quinto quarto e o nascimento da cozinha humilde romana",
         audio: "audio/en/tappa6.mp3",
         photos: [
@@ -925,7 +934,7 @@ Quando estiveres pronto, segue em direção ao Checchino, a poucos passos.`,
     ]
       },
       zh: {
-        name: "旧屠宰场",
+        name: "Ex Mattatoio",
         desc: "第五份与罗马平民美食的诞生",
         audio: "audio/en/tappa6.mp3",
         photos: [
@@ -1039,7 +1048,7 @@ Quando estiveres pronto, a última paragem fica a dois passos: o mercado de Test
     ]
       },
       zh: {
-        name: "Checchino dal 1887 餐厅",
+        name: "Checchino dal 1887",
         desc: "牛尾炖菜的诞生地",
         audio: "audio/en/tappa7.mp3",
         photos: [],
@@ -1096,7 +1105,7 @@ If you're still hungry, the market itself is a great spot for a quick bite. Than
     ]
       },
       es: {
-        name: "Mercado de Testaccio",
+        name: "Mercato di Testaccio",
         desc: "Fin del recorrido, entre los puestos del barrio",
         audio: "audio/en/tappa8.mp3",
         photos: [
@@ -1114,7 +1123,7 @@ Si todavía tienes hambre, el propio mercado es una excelente parada para un ten
     ]
       },
       fr: {
-        name: "Marché de Testaccio",
+        name: "Mercato di Testaccio",
         desc: "Fin du parcours, parmi les étals du quartier",
         audio: "audio/en/tappa8.mp3",
         photos: [
@@ -1132,7 +1141,7 @@ Si vous avez encore faim, le marché lui-même est un excellent endroit pour une
     ]
       },
       de: {
-        name: "Markt von Testaccio",
+        name: "Mercato di Testaccio",
         desc: "Ende der Tour, zwischen den Ständen des Viertels",
         audio: "audio/en/tappa8.mp3",
         photos: [
@@ -1150,7 +1159,7 @@ Wenn du noch Hunger hast, ist der Markt selbst ein hervorragender Ort für einen
     ]
       },
       pt: {
-        name: "Mercado de Testaccio",
+        name: "Mercato di Testaccio",
         desc: "Fim do percurso, entre as bancas do bairro",
         audio: "audio/en/tappa8.mp3",
         photos: [
@@ -1168,7 +1177,7 @@ Se ainda tiveres fome, o próprio mercado é uma ótima paragem para uma prova r
     ]
       },
       zh: {
-        name: "泰斯塔乔市场",
+        name: "Mercato di Testaccio",
         desc: "行程终点，街区摊位之间",
         audio: "audio/en/tappa8.mp3",
         photos: [
