@@ -4,12 +4,26 @@ const TOUR_SLUG = (() => {
   const segs = location.pathname.split('/').filter(Boolean).filter(s => !s.includes('.'));
   return segs[segs.length - 1] || 'home';
 })();
+function getOrCreateSid(){
+  let sid = localStorage.getItem('wb_sid');
+  if(!sid){
+    sid = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : (Date.now()+'-'+Math.random().toString(36).slice(2));
+    localStorage.setItem('wb_sid', sid);
+  }
+  return sid;
+}
+(function(){
+  const p = new URLSearchParams(location.search).get('notrack');
+  if(p === '1') localStorage.setItem('wb_notrack', '1');
+  if(p === '0') localStorage.removeItem('wb_notrack');
+})();
 function trackEvent(event, section, lang){
+  if(localStorage.getItem('wb_notrack') === '1') return;
   try{
     fetch(`${TRACK_WORKER}/wb/flytour/track`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ event, section: section || TOUR_SLUG, lang: lang || '' }),
+      body: JSON.stringify({ event, section: section || TOUR_SLUG, lang: lang || '', sid: getOrCreateSid() }),
       keepalive: true
     }).catch(()=>{});
   }catch(e){ /* mai bloccare l'esperienza per un ping di analytics */ }
