@@ -402,7 +402,7 @@ const isBilingual = !!(STOPS[0] && STOPS[0].i18n);
 const availableTextLangs = isBilingual ? Object.keys(STOPS[0].i18n) : [];
 const isMultiLang = availableTextLangs.length > 2; // più di IT/EN: serve il doppio controllo
 
-if(isBilingual && !isMultiLang){
+if(isBilingual && !isMultiLang && langToggleBtn){
   // ---- Giro solo IT/EN: comportamento invariato, un unico toggle statico ----
   langToggleBtn.style.display = 'flex';
   function renderLangToggle(){
@@ -435,7 +435,7 @@ if(isBilingual && !isMultiLang){
   renderLangToggle();
 } else if(isMultiLang){
   // ---- Giro con più di 2 lingue: testo (selettore in alto a destra) e audio (IT/EN, sopra le tappe) separati ----
-  langToggleBtn.style.display = 'none';
+  if(langToggleBtn) langToggleBtn.style.display = 'none';
 
   const LANG_LABELS = { it:"Italiano", en:"English", es:"Español", fr:"Français", de:"Deutsch", pt:"Português", zh:"中文" };
 
@@ -531,7 +531,7 @@ if(isBilingual && !isMultiLang){
     }
   });
 } else {
-  langToggleBtn.style.display = 'none';
+  if(langToggleBtn) langToggleBtn.style.display = 'none';
 }
 
 // ---- Geolocalizzazione ----
