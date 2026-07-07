@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="FlyTour">
+<meta name="theme-color" content="#2a2622">
+<link rel="manifest" href="../manifest.json">
+<link rel="apple-touch-icon" href="../icons/icon-180.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../icons/icon-32.png">
+<title>San Pietro e Borgo Pio — Audioguida</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet" href="../shared/app.css">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a href="../index.html" class="back-link">← Tutti i percorsi</a>
+    <div class="eyebrow">Passeggiata narrata · Vaticano esterno · Bilingue IT/EN</div>
+    <h1>San Pietro e Borgo Pio</h1>
+    <p class="subtitle">Da Castel Sant'Angelo alla Basilica, dal colonnato del Bernini all'ultimo quartiere medievale sopravvissuto. Otto tappe a cielo aperto attorno al più piccolo stato del mondo, in italiano e inglese.</p>
+  </header>
+
+  <div id="langToggle">
+    <button data-lang="it">Italiano</button>
+    <button data-lang="en">English</button>
+  </div>
+
+  <div class="trail" id="trail"></div>
+
+  <div class="map-wrap"><div id="map"></div></div>
+
+  <div class="toggle-row">
+    <div class="toggle-label"><b>Riproduzione automatica</b><br>Parte da sola quando arrivi a una tappa</div>
+    <label class="switch">
+      <input type="checkbox" id="autoplayToggle" checked>
+      <span class="slider"></span>
+    </label>
+  </div>
+
+  <div class="gps-status" id="gpsStatusRow" style="cursor:pointer;">
+    <div class="gps-dot" id="gpsDot"></div>
+    <span id="gpsText">Posizione non attiva — tocca "Attiva GPS" qui sotto</span>
+    <button class="reset-link" id="resetBtn">Ricomincia il giro</button>
+  </div>
+
+  <div id="gpsDebug" style="display:none; font-size:11px; opacity:0.6; padding:4px 20px 0; font-family:monospace; line-height:1.5;"></div>
+
+  <div class="stops" id="stops"></div>
+
+  <footer>Genera audio con Google Cloud TTS · fatto per camminarci sopra</footer>
+</div>
+
+<div class="arrival-overlay" id="arrivalOverlay">
+  <div class="arrival-card">
+    <div class="arrival-eyebrow">Sei arrivato</div>
+    <div class="arrival-title" id="arrivalTitle">—</div>
+    <div class="arrival-actions">
+      <button class="btn btn-ghost" id="laterBtn">Più tardi</button>
+      <button class="btn btn-primary" id="playNowBtn">▶ Riproduci</button>
+    </div>
+  </div>
+</div>
+
+<div class="text-modal-overlay" id="textModalOverlay">
+  <div class="text-modal">
+    <div class="text-modal-header">
+      <div class="text-modal-title" id="textModalTitle">—</div>
+      <button class="text-modal-close" id="textModalClose">✕</button>
+    </div>
+    <div class="text-modal-body" id="textModalBody"></div>
+    <div class="yt-links" id="ytLinks" style="display:none;">
+      <div class="yt-eyebrow">Approfondisci</div>
+      <div id="ytLinksList"></div>
+    </div>
+  </div>
+</div>
+
+<div class="arrival-overlay" id="endOverlay">
+  <div class="arrival-card">
+    <div class="arrival-eyebrow">Tappa completata</div>
+    <div class="arrival-title" id="endTitle">—</div>
+    <div class="yt-links" id="endYtLinks" style="display:none;">
+      <div class="yt-eyebrow">Approfondisci</div>
+      <div id="endYtLinksList"></div>
+    </div>
+    <div class="arrival-actions" style="margin-top:16px;">
+      <button class="btn btn-primary" id="endCloseBtn">Continua a camminare</button>
+    </div>
+  </div>
+</div>
+
+<div class="player" id="player">
+  <div class="photo-panel" id="photoPanel">
+    <img id="photoImg" src="" alt="">
+    <button class="player-close" id="playerCloseBtn">✕</button>
+    <div class="photo-caption" id="photoCaption"></div>
+  </div>
+  <div class="player-top">
+    <div class="player-name" id="playerName">—</div>
+  </div>
+  <div class="seek-row">
+    <span class="time-label" id="timeElapsed">0:00</span>
+    <input type="range" class="seek" id="seekBar" min="0" max="100" value="0" step="0.1">
+    <span class="time-label right" id="timeRemaining">-0:00</span>
+  </div>
+  <div class="transport">
+    <button class="skip-btn" id="backBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 19l-7-7 7-7M4 12h13a4 4 0 000-8"/></svg>
+      <span>15s</span>
+    </button>
+    <button class="play-btn" id="playPauseBtn" style="width:52px;height:52px;">
+      <svg viewBox="0 0 24 24" fill="#241a12" style="width:20px;height:20px;"><path id="playIcon" d="M8 5v14l11-7z"/></svg>
+    </button>
+    <button class="skip-btn" id="fwdBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 5l7 7-7 7M20 12H7a4 4 0 010-8"/></svg>
+      <span>15s</span>
+    </button>
+  </div>
+  <audio id="audioEl" style="display:none;"></audio>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+// ---- Dati tappe (pilota: 2 tappe) ----
+const STOPS = [
+  {
+    id: 1, ready: true,
+    lat: 41.901901, lon: 12.4664498,
+    i18n: {
+      it: {
+        name: "Ponte Sant'Angelo",
+        desc: "Il ponte di Adriano e il Passetto di Borgo",
+        audio: "audio/it/tappa1.mp3",
+        photos: [
+      { time: 0, url: "img/t1_ponte1.jpg", caption: "Ponte Sant'Angelo", credit: "Wikimedia Commons" },
+      { time: 73, url: "img/t1_ponte2.jpg", caption: "Ponte Sant'Angelo, dettaglio", credit: "Wikimedia Commons" }
+    ],
+        fullText: `Sei arrivato a Ponte Sant'Angelo, e da qui comincia il nostro giro verso San Pietro. Guarda avanti a te: in fondo alla strada dritta si intravede già la cupola. Non è un caso. Quell'asse visivo è stato costruito apposta, a colpi di piccone, nel Novecento.<br><br>
+Il ponte su cui ti trovi ha quasi duemila anni, costruito dall'imperatore Adriano nel 134 dopo Cristo per collegare la città al proprio mausoleo, quello che oggi chiamiamo Castel Sant'Angelo. Le dieci statue di angeli che lo decorano oggi furono aggiunte nel Seicento su progetto di Gian Lorenzo Bernini, che ne scolpì personalmente due, oggi conservate al sicuro in una chiesa vicina per proteggerle dalle intemperie.<br><br>
+Guarda ora verso il castello alle tue spalle. Un passaggio sopraelevato lo collega ancora oggi ai palazzi vaticani: si chiama Passetto di Borgo. Fu costruito nel Medioevo come via di fuga per i papi in caso di pericolo. Venne usato realmente nel 1527, durante il terribile Sacco di Roma, quando papa Clemente Settimo lo percorse di corsa per mettersi in salvo, mentre centoquarantasette guardie svizzere morivano per proteggere la sua fuga.<br><br>
+Da qui, guardando lungo l'asse di Via della Conciliazione, stai vedendo qualcosa che per secoli non esisteva. Fino al 1936, un intero quartiere medievale occupava lo spazio tra te e la basilica. Si chiamava la Spina di Borgo, un dedalo di vicoli e case che nascondeva completamente San Pietro alla vista, fino all'ultimo istante del cammino.<br><br>
+Quel nascondimento non era un difetto urbanistico, ma un effetto scenico voluto. I pellegrini medievali camminavano tra vicoli stretti e bui, senza mai vedere la meta, finché all'improvviso si aprivano davanti a loro la piazza immensa e la cupola, in un momento di sorpresa calcolato con precisione. Quell'effetto sparì per sempre quando il quartiere fu demolito. Tra poco scoprirai perché, e da chi.<br><br>
+Guarda anche le statue dei santi Pietro e Paolo che affiancano l'accesso al ponte dal lato della città. Furono aggiunte nell'Ottocento, molto più tardi rispetto agli angeli barocchi di Bernini. Il ponte era ormai diventato uno dei punti panoramici più fotografati di tutta Roma, con Castel Sant'Angelo da un lato e, in lontananza, la cupola di San Pietro dall'altro.<br><br>
+Vale la pena fermarsi un momento proprio qui, prima di proseguire, per osservare il fiume Tevere che scorre sotto di te. Per secoli è stato la vera arteria di Roma, ben più trafficata di qualunque strada. Lungo queste stesse acque viaggiavano i blocchi di travertino destinati alla costruzione della nuova basilica. Erano trasportati su chiatte fino a un piccolo porto fluviale che sorgeva proprio nei pressi di questo ponte.<br><br>
+Quando sei pronto, attraversa il ponte e dirigiti verso Via della Conciliazione.`,
+        deepen: []
+      },
+      en: {
+        name: "Ponte Sant'Angelo",
+        desc: "Hadrian's bridge and the Passetto di Borgo",
+        audio: "audio/en/tappa1.mp3",
+        photos: [
+      { time: 0, url: "img/t1_ponte1.jpg", caption: "Ponte Sant'Angelo", credit: "Wikimedia Commons" },
+      { time: 67, url: "img/t1_ponte2.jpg", caption: "Ponte Sant'Angelo, detail", credit: "Wikimedia Commons" }
+    ],
+        fullText: `You've arrived at Ponte Sant'Angelo, and here begins our tour toward Saint Peter's. Look ahead of you: at the end of the straight street, the dome is already visible in the distance. That's no accident. This visual axis was deliberately built, with a pickaxe, in the twentieth century.<br><br>
+The bridge you're standing on is nearly two thousand years old, built by Emperor Hadrian in 134 AD to connect the city to his own mausoleum, what we now call Castel Sant'Angelo. The ten angel statues decorating it today were added in the seventeenth century, designed by Gian Lorenzo Bernini, who personally carved two of them, now kept safe inside a nearby church to protect them from the weather.<br><br>
+Now look toward the castle behind you. An elevated passageway still connects it today to the Vatican palaces: it's called the Passetto di Borgo. It was built in the Middle Ages as an escape route for popes in case of danger. It was actually used in 1527, during the terrible Sack of Rome, when Pope Clement the Seventh ran through it to reach safety, while one hundred forty-seven Swiss Guards died protecting his escape.<br><br>
+From here, looking along the axis of Via della Conciliazione, you're seeing something that didn't exist for centuries. Until 1936, an entire medieval neighborhood occupied the space between you and the basilica. It was called the Spina di Borgo, a maze of alleys and houses that completely hid Saint Peter's from view, right until the very last stretch of the walk.<br><br>
+That concealment wasn't an urban planning flaw, but a deliberate theatrical effect. Medieval pilgrims walked through narrow, dark alleys, never seeing their destination, until suddenly the immense square and the dome opened up before them. A moment of surprise calculated with precision. That effect disappeared forever when the neighborhood was demolished. Soon you'll discover why, and by whom.<br><br>
+Also look at the statues of Saints Peter and Paul flanking the bridge entrance on the city side. They were added in the nineteenth century, much later than Bernini's Baroque angels. The bridge had by then become one of the most photographed panoramic spots in all of Rome, with Castel Sant'Angelo on one side and, in the distance, Saint Peter's dome on the other.<br><br>
+It's worth pausing here, before continuing, to look at the Tiber flowing beneath you. For centuries it was Rome's real artery, far busier than any road. Along these same waters traveled the travertine blocks destined for the new basilica, carried on barges to a small river port that once stood right near this bridge.<br><br>
+When you're ready, cross the bridge and head toward Via della Conciliazione.`,
+        deepen: []
+      }
+    }
+  },
+  {
+    id: 2, ready: true,
+    lat: 41.9023407, lon: 12.4619505,
+    i18n: {
+      it: {
+        name: "Via della Conciliazione",
+        desc: "La strada nata da una demolizione controversa",
+        audio: "audio/it/tappa2.mp3",
+        photos: [
+      { time: 0, url: "img/t2_conciliazione1.jpg", caption: "Via della Conciliazione", credit: "Wikimedia Commons" },
+      { time: 76, url: "img/t2_conciliazione2.jpg", caption: "Via della Conciliazione, dettaglio", credit: "Wikimedia Commons" }
+    ],
+        fullText: `Sei arrivato in Via della Conciliazione, la grande strada che porta dritta a San Pietro. Sembra antica quanto la basilica stessa. In realtà ha meno di cento anni, e la sua storia nasconde una demolizione controversa.<br><br>
+Fino al 1936, al posto di questa strada, si estendeva la Spina di Borgo: un intero quartiere rinascimentale e medievale, fatto di case, botteghe artigiane, piccole chiese, abitato da oltre milleduecento famiglie. Il ventotto ottobre di quell'anno, Benito Mussolini in persona salì su un tetto del quartiere e diede il primo colpo di piccone alla demolizione. In meno di dodici mesi, oltre seicentomila metri cubi di edifici storici furono rasi al suolo.<br><br>
+L'obiettivo era creare un collegamento visivo diretto tra Castel Sant'Angelo e la Basilica di San Pietro, simbolo della riconciliazione tra lo Stato italiano e la Chiesa cattolica sancita nel 1929 con i Patti Lateranensi. Da qui il nome della strada. Ma quella riconciliazione politica costò caro a chi viveva qui: migliaia di persone furono sfollate nelle periferie agricole di Roma, in insediamenti chiamati borgate, spesso privi dei servizi essenziali.<br><br>
+C'è un dettaglio che pochi conoscono. Già nel Seicento, Gian Lorenzo Bernini aveva immaginato qualcosa di simile, ma opposto nello spirito. Voleva costruire un terzo braccio di colonnato, di fronte alla piazza, per chiudere ulteriormente lo spazio e amplificare l'effetto sorpresa di chi usciva dai vicoli stretti del Borgo. La morte del suo papa committente, Alessandro Settimo, bloccò il progetto per sempre.<br><br>
+Ironia della storia. Quando negli anni Trenta si dovette decidere come completare la nuova strada, gli stessi architetti del regime fascista non erano soddisfatti dell'effetto prospettico ottenuto. Pensarono di recuperare proprio l'idea del terzo colonnato di Bernini, per creare un "nobile impedimento" alla vista. Il progetto non fu mai realizzato, e oggi la piazza resta aperta su questo lato, esattamente come la lasciò incompiuta il Bernini tre secoli prima.<br><br>
+Camminando lungo questa via, guarda i ventotto lampioni a forma di obelisco che costeggiano entrambi i lati della strada. Furono l'ultimo elemento aggiunto, solo nel 1950, in occasione dell'Anno Santo. Completarono finalmente un progetto iniziato quattordici anni prima e più volte interrotto dallo scoppio della Seconda Guerra Mondiale.<br><br>
+Pochi degli edifici storici che affiancano oggi la via sono davvero antichi: la maggior parte furono costruiti ex novo dopo la demolizione, pensati fin dall'inizio per ospitare uffici e attività commerciali, non abitazioni popolari come un tempo. Solo cinque edifici storici, tra cui la chiesa di Santa Maria in Traspontina e Palazzo Torlonia, si trovavano abbastanza in asse con il nuovo tracciato da poter essere risparmiati dalle demolizioni.<br><br>
+Quando sei pronto, prosegui fino a Piazza San Pietro.`,
+        deepen: []
+      },
+      en: {
+        name: "Via della Conciliazione",
+        desc: "The street born from a controversial demolition",
+        audio: "audio/en/tappa2.mp3",
+        photos: [
+      { time: 0, url: "img/t2_conciliazione1.jpg", caption: "Via della Conciliazione", credit: "Wikimedia Commons" },
+      { time: 68, url: "img/t2_conciliazione2.jpg", caption: "Via della Conciliazione, detail", credit: "Wikimedia Commons" }
+    ],
+        fullText: `You've arrived on Via della Conciliazione, the grand street leading straight to Saint Peter's. It looks as old as the basilica itself. In reality it's less than a hundred years old, and its history hides a controversial demolition.<br><br>
+Until 1936, in place of this street stood the Spina di Borgo: an entire Renaissance and medieval neighborhood, made of houses, artisan workshops, small churches, home to over one thousand two hundred families. On October twenty-eighth of that year, Benito Mussolini himself climbed onto a rooftop in the neighborhood and struck the first blow of the demolition with a pickaxe. In less than twelve months, over six hundred thousand cubic meters of historic buildings were leveled.<br><br>
+The goal was to create a direct visual link between Castel Sant'Angelo and Saint Peter's Basilica, symbolizing the reconciliation between the Italian state and the Catholic Church sealed in 1929 with the Lateran Treaty. Hence the street's name. But that political reconciliation came at a steep cost for those who lived here: thousands of people were displaced to agricultural outskirts of Rome, in settlements called "borgate", often lacking basic services.<br><br>
+There's a detail few people know. Already in the seventeenth century, Gian Lorenzo Bernini had imagined something similar, but opposite in spirit. He wanted to build a third arm of colonnade, facing the square, to further enclose the space and amplify the surprise effect for anyone emerging from Borgo's narrow alleys. The death of his patron pope, Alexander the Seventh, halted the project forever.<br><br>
+Irony of history. When in the 1930s it came time to decide how to complete the new street, the very architects of the fascist regime were dissatisfied with the perspective effect they'd achieved. They considered reviving Bernini's own idea of a third colonnade, to create a "noble obstacle" to the view. The project was never carried out, and today the square remains open on this side, exactly as Bernini left it unfinished three centuries earlier.<br><br>
+Walking along this street, look at the twenty-eight obelisk-shaped lamp posts lining both sides. They were the very last element added, only in 1950, for the Holy Year. They finally completed a project begun fourteen years earlier and repeatedly interrupted by the outbreak of the Second World War.<br><br>
+Few of the historic buildings lining the street today are truly ancient. Most were built from scratch after the demolition, designed from the start to house offices and businesses, not working-class housing like before. Only five historic buildings, including the church of Santa Maria in Traspontina and Palazzo Torlonia, were aligned closely enough with the new route to be spared from demolition.<br><br>
+When you're ready, continue on to Saint Peter's Square.`,
+        deepen: []
+      }
+    }
+  },
+  {
+    id: 3, ready: true,
+    lat: 41.9022359, lon: 12.4568158,
+    i18n: {
+      it: {
+        name: "Piazza San Pietro",
+        desc: "Il colonnato del Bernini e l'obelisco senza geroglifici",
+        audio: "audio/it/tappa3.mp3",
+        photos: [
+      { time: 0, url: "img/t3_piazza1.jpg", caption: "Piazza San Pietro", credit: "Wikimedia Commons" },
+      { time: 79, url: "img/t3_piazza2.jpg", caption: "Piazza San Pietro, dettaglio", credit: "Wikimedia Commons" }
+    ],
+        fullText: `Sei arrivato in Piazza San Pietro, uno dei capolavori urbanistici assoluti del Barocco. Guarda il colonnato che ti abbraccia su entrambi i lati: quattro file di colonne doriche, per un totale di duecentottaquattro colonne e ottantotto pilastri.<br><br>
+Fu progettata da Gian Lorenzo Bernini a partire dal 1656, su commissione di papa Alessandro Settimo. I lavori durarono undici anni, per una piazza che l'artista stesso descrisse come le braccia materne della Chiesa, pronte ad abbracciare i fedeli cattolici, gli eretici da riportare all'ovile, e persino gli infedeli, verso la vera fede.<br><br>
+Cerca a terra, tra l'obelisco centrale e una delle due fontane gemelle, un disco di marmo bianco incassato nel selciato. È il cosiddetto "centro del vento". Fermandoti esattamente su quel punto, le quattro file di colonne che compongono ciascun braccio del colonnato si allineano perfettamente. Quello che vedevi come una selva di ottantotto colonne appare improvvisamente come una sola fila. Un trucco prospettico geniale, pensato apposta da Bernini per stupire i visitatori.<br><br>
+L'obelisco egizio al centro della piazza non ha alcun geroglifico, a differenza di quasi tutti gli altri obelischi di Roma. Fu portato qui dall'Egitto in epoca romana per decorare il Circo di Nerone, che sorgeva proprio in quest'area duemila anni fa: secondo la tradizione, l'apostolo Pietro fu martirizzato e crocifisso a testa in giù esattamente in quel circo. L'obelisco, quindi, è probabilmente l'ultimo testimone sopravvissuto e ancora visibile del luogo esatto del martirio.<br><br>
+Spostare quel monolite di trecentoventisette tonnellate dalla sua posizione originale fino al centro della piazza, nel 1586, fu un'impresa ingegneristica memorabile. Ci vollero novecento uomini, centoquaranta cavalli, e quaranta argani. Secondo la leggenda, durante il sollevamento le corde cominciarono a fumare per l'attrito, rischiando di spezzarsi. Un marinaio genovese tra la folla, disobbedendo all'ordine di silenzio assoluto imposto sotto pena di morte, gridò "acqua alle funi!". I tecnici bagnarono le corde appena in tempo, salvando l'obelisco. Come premio, papa Sisto Quinto concesse per sempre alla città natale del marinaio, Bordighera, il privilegio esclusivo di fornire le palme per la domenica delle Palme in Vaticano.<br><br>
+Guarda anche le due fontane gemelle che affiancano l'obelisco. Quella sul lato destro fu realizzata da Carlo Maderno nel 1613. Quella sinistra, apparentemente identica, fu aggiunta solo nel 1675 da Carlo Fontana, che riprodusse fedelmente il disegno originale per mantenere la simmetria perfetta voluta da Bernini.<br><br>
+Ogni anno, la domenica di Pasqua e in altre grandi occasioni, questa stessa piazza si riempie di centinaia di migliaia di fedeli, provenienti da ogni angolo del mondo. Ascoltano la benedizione papale "Urbi et Orbi", alla città e al mondo, pronunciata dalla loggia centrale della basilica che vedi di fronte a te.<br><br>
+Quando sei pronto, dirigiti verso la facciata della Basilica di San Pietro.`,
+        deepen: []
+      },
+      en: {
+        name: "Saint Peter's Square",
+        desc: "Bernini's colonnade and the obelisk without hieroglyphs",
+        audio: "audio/en/tappa3.mp3",
+        photos: [
+      { time: 0, url: "img/t3_piazza1.jpg", caption: "Saint Peter's Square", credit: "Wikimedia Commons" },
+      { time: 71, url: "img/t3_piazza2.jpg", caption: "Saint Peter's Square, detail", credit: "Wikimedia Commons" }
+    ],
+        fullText: `You've arrived at Saint Peter's Square, one of the absolute masterpieces of Baroque urban design. Look at the colonnade embracing you on both sides: four rows of Doric columns, for a total of two hundred eighty-four columns and eighty-eight pilasters.<br><br>
+It was designed by Gian Lorenzo Bernini starting in 1656, commissioned by Pope Alexander the Seventh. The work took eleven years, for a square the artist himself described as the maternal arms of the Church, ready to embrace Catholic believers, heretics to be brought back into the fold, and even non-believers, toward the true faith.<br><br>
+Look on the ground, between the central obelisk and one of the two twin fountains, for a white marble disc set into the pavement. It's the so-called "center of the wind". Standing exactly on that spot, the four rows of columns making up each arm of the colonnade align perfectly, and what looked like a forest of eighty-eight columns suddenly appears as a single row. A brilliant optical trick, deliberately designed by Bernini to astonish visitors.<br><br>
+The Egyptian obelisk at the center of the square has no hieroglyphs at all, unlike almost every other obelisk in Rome. It was brought here from Egypt in Roman times to decorate Nero's Circus, which once stood right in this area two thousand years ago. According to tradition, the apostle Peter was martyred and crucified upside down exactly in that circus. The obelisk is therefore probably the last surviving, still visible witness to the exact site of his martyrdom.<br><br>
+Moving that three-hundred-twenty-seven-ton monolith from its original position to the center of the square, in 1586, was a memorable feat of engineering. It took nine hundred men, one hundred forty horses, and forty winches. Legend says that during the lifting, the ropes began to smoke from friction, at risk of snapping. A Genoese sailor in the crowd, disobeying the order of absolute silence imposed under penalty of death, shouted "water on the ropes!" The technicians wet the ropes just in time, saving the obelisk. As a reward, Pope Sixtus the Fifth granted the sailor's hometown, Bordighera, the permanent exclusive privilege of supplying palm fronds for Palm Sunday at the Vatican.<br><br>
+Look also at the two twin fountains flanking the obelisk. The one on the right was made by Carlo Maderno in 1613. The one on the left, apparently identical, was added only in 1675 by Carlo Fontana, who faithfully reproduced the original design to maintain the perfect symmetry Bernini wanted for the whole composition.<br><br>
+Every year, on Easter Sunday and other major occasions, this same square fills with hundreds of thousands of faithful from every corner of the world. They come to hear the papal blessing "Urbi et Orbi", to the city and to the world, delivered from the central loggia of the basilica in front of you.<br><br>
+When you're ready, head toward the facade of Saint Peter's Basilica.`,
+        deepen: []
+      }
+    }
+  },
+  {
+    id: 4, ready: true,
+    lat: 41.9021667, lon: 12.4539367,
+    i18n: {
+      it: {
+        name: "Basilica di San Pietro",
+        desc: "La Pietà di Michelangelo e il Baldacchino del Bernini",
+        audio: "audio/it/tappa4.mp3",
+        photos: [
+      { time: 0, url: "img/t4_basilica1.jpg", caption: "Basilica di San Pietro", credit: "Wikimedia Commons" },
+      { time: 72, url: "img/t4_pieta1.jpg", caption: "Basilica di San Pietro, dettaglio", credit: "Wikimedia Commons" }
+    ],
+        fullText: `Sei arrivato davanti alla facciata della Basilica di San Pietro, la chiesa più grande del mondo cristiano. Duecentodiciotto metri di lunghezza, capace di contenere fino a sessantamila fedeli. Prima di entrare, guarda in alto: sopra il cornicione, tredici statue alte quasi sei metri rappresentano Cristo, Giovanni Battista e undici apostoli. Manca San Pietro: la sua statua si trova già dentro, seduta accanto all'ingresso.<br><br>
+La facciata attuale, opera di Carlo Maderno del primo Seicento, nasconde una storia lunga e travagliata. La prima basilica su questo sito fu voluta dall'imperatore Costantino nel quarto secolo, sopra la tomba dell'apostolo Pietro. Dopo oltre mille anni, quell'edificio ormai fatiscente fu completamente demolito per far spazio alla chiesa che vedi oggi. Il cantiere coinvolse, in successione, alcuni dei più grandi architetti della storia. Bramante, Raffaello, Antonio da Sangallo il Giovane, e infine Michelangelo Buonarroti.<br><br>
+Appena entrato, sulla destra, cerca la Pietà di Michelangelo, protetta oggi da un vetro antiproiettile dopo un grave atto vandalico negli anni Settanta. Michelangelo la scolpì quando aveva solo ventiquattro anni. È l'unica opera che abbia mai firmato: la sua firma, incisa sulla fascia che attraversa il petto della Madonna, nacque da un episodio di orgoglio ferito, quando sentì per caso alcuni visitatori attribuire l'opera a un altro scultore.<br><br>
+Al centro della basilica, sotto l'immensa cupola, si erge il Baldacchino di Bernini, alto quasi trenta metri, fuso in gran parte con il bronzo prelevato dal Pantheon per volere di papa Urbano Ottavo. Da qui nacque un famoso detto romano, pungente verso i Barberini, la famiglia del papa: "Quod non fecerunt barbari, fecerunt Barberini", quello che non fecero i barbari, lo fecero i Barberini.<br><br>
+Sotto l'altare maggiore, nelle Grotte Vaticane, riposa la tomba tradizionalmente attribuita all'apostolo Pietro stesso. Fu riscoperta con scavi archeologici sistematici solo a partire dagli anni Quaranta del Novecento, per volontà di papa Pio Dodicesimo.<br><br>
+Poco distante dalla Pietà, cerca la statua bronzea di San Pietro seduto in cattedra. Il suo piede destro è ormai consumato e levigato dal tocco di milioni di pellegrini, che nel corso dei secoli lo hanno sfiorato o baciato in segno di devozione. Un gesto che continua ancora oggi, praticamente ininterrotto da generazioni.<br><br>
+La basilica custodisce anche le tombe di numerosi papi, disposte lungo le navate laterali e nelle grotte sottostanti. Tra le più visitate, quella di Giovanni Paolo Secondo, proclamato santo nel 2014. La sua tomba semplice contrasta volutamente con lo sfarzo barocco che la circonda.<br><br>
+Quando sei pronto, se hai tempo ed energie, dirigiti verso l'ingresso della Cupola.`,
+        deepen: []
+      },
+      en: {
+        name: "Saint Peter's Basilica",
+        desc: "Michelangelo's Pietà and Bernini's Baldachin",
+        audio: "audio/en/tappa4.mp3",
+        photos: [
+      { time: 0, url: "img/t4_basilica1.jpg", caption: "Saint Peter's Basilica", credit: "Wikimedia Commons" },
+      { time: 64, url: "img/t4_pieta1.jpg", caption: "Saint Peter's Basilica, detail", credit: "Wikimedia Commons" }
+    ],
+        fullText: `You've arrived in front of the facade of Saint Peter's Basilica, the largest church in Christendom. Two hundred eighteen meters long, able to hold up to sixty thousand worshippers. Before entering, look up: above the cornice, thirteen statues nearly six meters tall represent Christ, John the Baptist, and eleven apostles. Saint Peter is missing: his statue is already inside, seated near the entrance.<br><br>
+Today's facade, the work of Carlo Maderno in the early seventeenth century, hides a long and troubled history. The first basilica on this site was commissioned by Emperor Constantine in the fourth century, over the tomb of the apostle Peter. After over a thousand years, that decaying building was completely demolished to make room for the church you see today. The construction site involved, one after another, some of the greatest architects in history. Bramante, Raphael, Antonio da Sangallo the Younger, and finally Michelangelo Buonarroti.<br><br>
+Just inside, on the right, look for Michelangelo's Pietà, today protected by bulletproof glass after a serious act of vandalism in the 1970s. Michelangelo carved it when he was only twenty-four years old. It's the only work he ever signed. His signature, carved on the sash across the Madonna's chest, came from an episode of wounded pride, when he overheard some visitors attributing the work to another sculptor.<br><br>
+At the center of the basilica, beneath the immense dome, stands Bernini's Baldachin, nearly thirty meters tall, cast largely from bronze taken from the Pantheon by order of Pope Urban the Eighth. This gave rise to a famous, biting Roman saying about the Barberini, the pope's family: "Quod non fecerunt barbari, fecerunt Barberini". What the barbarians didn't do, the Barberini did.<br><br>
+Beneath the main altar, in the Vatican Grottoes, rests the tomb traditionally attributed to the apostle Peter himself, rediscovered through systematic archaeological excavations only starting in the 1940s, by order of Pope Pius the Twelfth.<br><br>
+Not far from the Pietà, look for the bronze statue of Saint Peter seated on his throne. Its right foot is now worn smooth by the touch of millions of pilgrims, who over the centuries have touched or kissed it as a sign of devotion. A gesture that continues today, practically unbroken across generations.<br><br>
+The basilica also holds the tombs of numerous popes, arranged along the side aisles and in the grottoes below. Among the most visited, that of John Paul the Second, canonized in 2014. His simple tomb deliberately contrasts with the Baroque splendor surrounding it.<br><br>
+When you're ready, if you have time and energy, head toward the entrance to the Dome.`,
+        deepen: []
+      }
+    }
+  },
+  {
+    id: 5, ready: true,
+    lat: 41.9017398, lon: 12.4548942,
+    i18n: {
+      it: {
+        name: "Cupola di San Pietro",
+        desc: "Il progetto di Michelangelo e la salita panoramica",
+        audio: "audio/it/tappa5.mp3",
+        photos: [
+      { time: 0, url: "img/t5_cupola1.jpg", caption: "Cupola di San Pietro", credit: "Wikimedia Commons" },
+      { time: 76, url: "img/t5_cupola2.jpg", caption: "Cupola di San Pietro, dettaglio", credit: "Wikimedia Commons" }
+    ],
+        fullText: `Sei arrivato all'ingresso della Cupola di San Pietro, uno dei simboli più celebri al mondo, popolarmente chiamata dai romani semplicemente "il cupolone". Alta oltre centotrentatré metri dalla strada fino alla sommità della croce, con un diametro interno di circa quarantadue metri.<br><br>
+Il progetto definitivo fu di Michelangelo Buonarroti, che vi lavorò dal 1546 fino alla sua morte nel 1564, senza mai vederla completata. Michelangelo aveva ottantasette anni quando accettò l'incarico, rifiutando qualunque compenso per devozione religiosa. Riorganizzò completamente il progetto dei suoi predecessori, ispirandosi non al Pantheon romano ma alla cupola del Duomo di Firenze, la sua città natale.<br><br>
+La costruzione della cupola vera e propria iniziò solo ventitré anni dopo la morte di Michelangelo, affidata all'architetto Giacomo della Porta insieme a Domenico Fontana. I due completarono l'intera struttura in meno di due anni, un ritmo di lavoro frenetico per gli standard dell'epoca, lavorando anche di notte a lume di torcia per rispettare i tempi voluti da papa Sisto Quinto.<br><br>
+Se hai un biglietto e voglia di salire, ti aspettano cinquecentotrentasette gradini dal livello della basilica, oppure trecentoventi se prendi l'ascensore fino alla terrazza panoramica sul tetto. Attenzione: l'ultimo tratto della scalinata si stringe progressivamente, seguendo la curvatura interna della cupola stessa, fino a diventare quasi orizzontale in alcuni punti, un dettaglio che sorprende sempre chi non se lo aspetta.<br><br>
+Dalla sommità, il panorama a trecentosessanta gradi spazia su tutta Roma e sull'intera Città del Vaticano, il più piccolo stato sovrano del mondo, appena quarantaquattro ettari di superficie. Nelle giornate più limpide, lo sguardo arriva fino ai Castelli Romani e, verso il mare, fino alla costa di Ostia.<br><br>
+Un ultimo dettaglio che pochi notano. Con la costruzione della moderna Via della Conciliazione negli anni Trenta, la cupola divenne visibile da un asse rettilineo lunghissimo. Un effetto scenografico che lo stesso Bernini, tre secoli prima, aveva deliberatamente evitato, preferendo la sorpresa improvvisa allo spettacolo annunciato da lontano.<br><br>
+Il peso complessivo della cupola è stimato in circa quattordicimila tonnellate, sostenuto da quattro enormi pilastri interni, ciascuno con una circonferenza di oltre settanta metri. All'interno di quei pilastri sono ricavate piccole cappelle e persino delle scale a chiocciola, invisibili dall'esterno, che i tecnici della Fabbrica di San Pietro usano ancora oggi per le operazioni di manutenzione ordinaria.<br><br>
+Un ultimo dato che aiuta a capire le proporzioni di questo edificio. L'intera Basilica di San Pietro potrebbe letteralmente contenere al proprio interno la Statua della Libertà di New York, dal piedistallo alla fiamma della torcia. Con margine di spazio residuo sopra la testa.<br><br>
+Quando sei pronto, torna verso la piazza e dirigiti verso l'ingresso della Guardia Svizzera, sulla destra della basilica.`,
+        deepen: []
+      },
+      en: {
+        name: "Dome of Saint Peter's",
+        desc: "Michelangelo's design and the panoramic climb",
+        audio: "audio/en/tappa5.mp3",
+        photos: [
+      { time: 0, url: "img/t5_cupola1.jpg", caption: "Dome of Saint Peter's", credit: "Wikimedia Commons" },
+      { time: 56, url: "img/t5_cupola2.jpg", caption: "Dome of Saint Peter's, detail", credit: "Wikimedia Commons" }
+    ],
+        fullText: `You've arrived at the entrance to the Dome of Saint Peter's, one of the world's most famous symbols, popularly called by Romans simply "il cupolone", the big dome. It stands over one hundred thirty-three meters tall from street level to the top of the cross, with an internal diameter of about forty-two meters.<br><br>
+The final design was by Michelangelo Buonarroti, who worked on it from 1546 until his death in 1564, never seeing it completed. Michelangelo was eighty-seven years old when he accepted the commission, refusing any payment out of religious devotion. He completely reorganized his predecessors' project, drawing inspiration not from the Roman Pantheon but from the dome of Florence Cathedral, his native city.<br><br>
+Construction of the dome itself began only twenty-three years after Michelangelo's death, entrusted to architect Giacomo della Porta together with Domenico Fontana. The two completed the entire structure in less than two years, a frantic pace by the standards of the time, working even at night by torchlight to meet the deadlines set by Pope Sixtus the Fifth.<br><br>
+If you have a ticket and the energy to climb, five hundred thirty-seven steps await you from the basilica level, or three hundred twenty if you take the elevator to the rooftop terrace. Watch out: the last stretch of the staircase progressively narrows, following the dome's inner curvature, becoming almost horizontal in some spots. A detail that always surprises those who don't expect it.<br><br>
+From the top, the three-hundred-sixty-degree view stretches across all of Rome and the entire Vatican City, the smallest sovereign state in the world, just forty-four hectares in size. On the clearest days, the view reaches all the way to the Roman Castles hills and, toward the sea, to the coast at Ostia.<br><br>
+The dome's overall weight is estimated at about fourteen thousand tons, supported by four enormous internal pillars, each with a circumference of over seventy meters. Inside those pillars are small chapels and even spiral staircases, invisible from outside, still used today by Saint Peter's maintenance technicians for routine work.<br><br>
+One last figure to help grasp this building's scale: the entire Saint Peter's Basilica could literally contain the Statue of Liberty in New York, from pedestal to torch flame, with room to spare above its head.<br><br>
+When you're ready, head back toward the square and toward the Swiss Guard entrance, on the right side of the basilica.`,
+        deepen: []
+      }
+    }
+  },
+  {
+    id: 6, ready: true,
+    lat: 41.9017398, lon: 12.4548942,
+    i18n: {
+      it: {
+        name: "Guardia Svizzera",
+        desc: "Il sacco di Roma del 1527 e il più antico esercito al mondo",
+        audio: "audio/it/tappa6.mp3",
+        photos: [
+      { time: 0, url: "img/t6_guardia1.jpg", caption: "Guardia Svizzera", credit: "Wikimedia Commons" },
+      { time: 72, url: "img/t6_guardia2.jpg", caption: "Guardia Svizzera, dettaglio", credit: "Wikimedia Commons" }
+    ],
+        fullText: `Sei arrivato vicino a uno degli ingressi controllati dalla Guardia Svizzera Pontificia, riconoscibile dalla celebre uniforme a righe blu, rosse e gialle. È il più antico esercito ancora in servizio attivo al mondo.<br><br>
+Il corpo fu fondato il ventidue gennaio 1506. Circa centocinquanta mercenari svizzeri, dopo un cammino di quasi ottocento chilometri a piedi da Lucerna, entrarono a Roma attraverso Porta del Popolo. Furono accolti personalmente da papa Giulio Secondo, soprannominato "il papa guerriero".<br><br>
+La prova più drammatica per il giovane corpo militare arrivò appena ventuno anni dopo, durante il Sacco di Roma del 1527. Le truppe imperiali di Carlo Quinto, in gran parte lanzichenecchi tedeschi, misero la città a ferro e fuoco. Delle centottantanove guardie svizzere in servizio quel giorno, centoquarantasette morirono combattendo sulle scale della basilica. Garantirono a papa Clemente Settimo il tempo necessario a fuggire lungo il Passetto di Borgo verso Castel Sant'Angelo, che hai visto all'inizio del nostro giro. Solo quarantadue guardie sopravvissero, quelle che riuscirono ad accompagnare il papa fino in salvo.<br><br>
+Ancora oggi, ogni sei maggio, anniversario di quella strage, le nuove reclute prestano giuramento proprio in ricordo di quel sacrificio, tenendo in mano il vessillo del corpo con la mano destra alzata a tre dita, simbolo della Trinità.<br><br>
+Contrariamente a una leggenda molto diffusa, l'uniforme colorata non fu disegnata da Michelangelo Buonarroti, come si racconta spesso ai turisti. Documenti storici attribuiscono il disegno attuale al comandante Jules Repond, che lo definì agli inizi del Novecento ispirandosi liberamente a modelli rinascimentali, ufficializzandolo solo nel 1914.<br><br>
+Per entrare nel corpo, oggi come cinquecento anni fa, bisogna essere cittadini svizzeri, cattolici praticanti, non sposati, con un'età compresa tra diciannove e trent'anni, e aver completato il servizio militare nell'esercito svizzero. Una selezione rimasta sorprendentemente identica nei secoli, in un'epoca in cui quasi tutto il resto, intorno a questa piazza, è cambiato profondamente.<br><br>
+Le armi tradizionali della Guardia Svizzera restano ancora oggi l'alabarda e la spada, esattamente come cinquecento anni fa. Ogni guardia riceve però anche un addestramento moderno completo in tecniche di sicurezza e uso di armi da fuoco contemporanee, meno visibili ma sempre pronte sotto l'uniforme storica.<br><br>
+Il comandante del corpo porta ancora oggi il titolo di colonnello, e risponde direttamente al papa. È una delle poche istituzioni al mondo in cui una divisa apparentemente uscita da un dipinto rinascimentale convive quotidianamente con protocolli di sicurezza pensati per il ventunesimo secolo.<br><br>
+Quando sei pronto, dirigiti verso Borgo Pio, il quartiere alle spalle del colonnato.`,
+        deepen: []
+      },
+      en: {
+        name: "Swiss Guard",
+        desc: "The 1527 Sack of Rome and the world's oldest army",
+        audio: "audio/en/tappa6.mp3",
+        photos: [
+      { time: 0, url: "img/t6_guardia1.jpg", caption: "Swiss Guard", credit: "Wikimedia Commons" },
+      { time: 63, url: "img/t6_guardia2.jpg", caption: "Swiss Guard, detail", credit: "Wikimedia Commons" }
+    ],
+        fullText: `You've arrived near one of the entrances guarded by the Pontifical Swiss Guard, recognizable by their famous blue, red, and yellow striped uniform. It's the oldest army still in active service in the world.<br><br>
+The corps was founded on January twenty-second, 1506, when about one hundred fifty Swiss mercenaries, after a journey of nearly eight hundred kilometers on foot from Lucerne, entered Rome through Porta del Popolo. They were personally welcomed by Pope Julius the Second, nicknamed "the warrior pope".<br><br>
+The young military corps faced its most dramatic test just twenty-one years later, during the Sack of Rome in 1527. The imperial troops of Charles the Fifth, mostly German Landsknechts, put the city to fire and sword. Of the one hundred eighty-nine Swiss Guards on duty that day, one hundred forty-seven died fighting on the basilica's steps. They bought Pope Clement the Seventh the time he needed to flee along the Passetto di Borgo toward Castel Sant'Angelo, which you saw at the start of our tour. Only forty-two guards survived, those who managed to escort the pope to safety.<br><br>
+Still today, every May sixth, the anniversary of that massacre, new recruits take their oath in memory of that sacrifice, holding the corps' banner with their right hand raised, three fingers extended, symbolizing the Trinity.<br><br>
+Contrary to a widespread legend, the colorful uniform was not designed by Michelangelo Buonarroti, as tourists are often told. Historical documents credit today's design to commander Jules Repond, who defined it in the early twentieth century, loosely inspired by Renaissance models, officially adopting it only in 1914.<br><br>
+To join the corps, today just as five hundred years ago, one must be a Swiss citizen, a practicing Catholic, unmarried, between nineteen and thirty years old, and have completed military service in the Swiss army. A selection process that has remained remarkably unchanged over the centuries, in an era when almost everything else around this square has changed profoundly.<br><br>
+The Swiss Guard's traditional weapons remain the halberd and the sword, exactly as five hundred years ago. Each guard also receives full modern training in security techniques and contemporary firearms, though, less visible but always ready beneath the historic uniform.<br><br>
+The corps commander still holds the title of colonel today, and answers directly to the pope. It's one of the few institutions in the world where a uniform seemingly straight out of a Renaissance painting coexists daily with security protocols designed for the twenty-first century.<br><br>
+When you're ready, head toward Borgo Pio, the neighborhood behind the colonnade.`,
+        deepen: []
+      }
+    }
+  },
+  {
+    id: 7, ready: true,
+    lat: 41.9037914, lon: 12.4603491,
+    i18n: {
+      it: {
+        name: "Borgo Pio",
+        desc: "L'ultimo lembo del quartiere medievale sopravvissuto",
+        audio: "audio/it/tappa7.mp3",
+        photos: [
+      { time: 0, url: "img/t7_borgopio1.jpg", caption: "Borgo Pio", credit: "Wikimedia Commons" },
+      { time: 77, url: "img/t7_borgopio2.jpg", caption: "Borgo Pio, dettaglio", credit: "Wikimedia Commons" }
+    ],
+        fullText: `Sei arrivato a Borgo Pio, l'ultimo lembo superstite del quartiere medievale che un tempo circondava San Pietro da ogni lato, prima delle grandi demolizioni del Novecento. Vicoli stretti, case basse, negozi artigiani: qui puoi ancora respirare l'atmosfera che regnava in tutta questa zona fino a meno di cento anni fa.<br><br>
+Il nome deriva da papa Pio Quarto, che nel 1565 firmò la bolla istitutiva di questa nuova espansione urbanistica, proseguita poi da papa Gregorio Tredicesimo. Le sue origini sono però molto più antiche. La zona era già abitata in epoca romana, quando si chiamava Ager Vaticanus. Fu a lungo un semplice terreno di sepoltura, prima di trasformarsi in meta di pellegrinaggio dopo il martirio dell'apostolo Pietro nel 67 dopo Cristo.<br><br>
+Borgo Pio è l'unico rione di Roma a non avere una piazza principale vera e propria. Le sue strade non si chiamano "vie", ma "borghi", un dettaglio linguistico che sottolinea l'identità autonoma di questo quartiere, quasi una città a parte rispetto al resto di Roma, cresciuta all'ombra diretta del potere pontificio.<br><br>
+Un dettaglio curioso: l'allora cardinale Joseph Ratzinger, futuro papa Benedetto Sedicesimo, visse in un appartamento proprio qui a Borgo Pio per oltre vent'anni, prima della sua elezione al soglio pontificio nel 2005. Una scelta abitativa che raccontava bene il carattere di questo quartiere, amato da religiosi e prelati di ogni rango per la sua vicinanza silenziosa al Vaticano.<br><br>
+Cammina lungo la via principale e osserva le piccole fontane storiche che punteggiano il percorso. La Fontana delle Tiare, con le tre corone papali e le chiavi di San Pietro. E la Fontana delle Palle di Cannone, vicino al Passetto, che ricorda le antiche difese militari di questa zona di confine.<br><br>
+Oggi Borgo Pio è anche una piccola galleria d'arte a cielo aperto. Sui muri di alcuni vicoli sono comparse negli ultimi anni opere di street art dell'artista romano Maupal. Gioca spesso con l'iconografia papale in chiave ironica e contemporanea, un contrasto sorprendente con l'atmosfera altrimenti solenne di tutto il quartiere.<br><br>
+Fino agli anni Trenta del Novecento, Borgo Pio si estendeva su entrambi i lati del Passetto, la struttura sopraelevata che hai visto all'inizio del nostro giro collegare Castel Sant'Angelo al Vaticano. Oggi il quartiere sopravvive solo a nord di quella struttura. A sud, dove un tempo si estendevano altri vicoli popolari, sorgono adesso quasi esclusivamente uffici vaticani. E il grande complesso dell'Ospedale di Santo Spirito, uno dei più antichi d'Europa, fondato nel dodicesimo secolo.<br><br>
+Gli abitanti storici di questo rione si chiamano ancora oggi, in romanesco, "borghiciani". Una comunità che per secoli ha vissuto letteralmente all'ombra del Vaticano, mantenendo però sempre un'identità popolare distinta. Fatta di artigiani, piccoli commercianti e famiglie che si tramandavano casa e mestiere di generazione in generazione.<br><br>
+Quando sei pronto, dirigiti verso Porta Sant'Anna, l'ultima tappa del nostro giro.`,
+        deepen: []
+      },
+      en: {
+        name: "Borgo Pio",
+        desc: "The last surviving fragment of the medieval neighborhood",
+        audio: "audio/en/tappa7.mp3",
+        photos: [
+      { time: 0, url: "img/t7_borgopio1.jpg", caption: "Borgo Pio", credit: "Wikimedia Commons" },
+      { time: 72, url: "img/t7_borgopio2.jpg", caption: "Borgo Pio, detail", credit: "Wikimedia Commons" }
+    ],
+        fullText: `You've arrived at Borgo Pio, the last surviving fragment of the medieval neighborhood that once surrounded Saint Peter's on every side, before the great demolitions of the twentieth century. Narrow alleys, low houses, artisan shops. Here you can still breathe the atmosphere that once reigned across this entire area, less than a hundred years ago.<br><br>
+The name comes from Pope Pius the Fourth, who in 1565 signed the founding bull for this new urban expansion, later continued by Pope Gregory the Thirteenth. Its origins, though, are much older. The area was already inhabited in Roman times, when it was called Ager Vaticanus, and for a long time it was simply a burial ground, before becoming a pilgrimage destination after the apostle Peter's martyrdom in 67 AD.<br><br>
+Borgo Pio is the only district in Rome without a real main square. Its streets aren't called "vie", but "borghi", a linguistic detail underlining this neighborhood's independent identity, almost a separate city compared to the rest of Rome, grown directly in the shadow of papal power.<br><br>
+A curious detail: the future Pope Benedict the Sixteenth, then Cardinal Joseph Ratzinger, lived in an apartment right here in Borgo Pio for over twenty years, before his election to the papacy in 2005. A housing choice that says a lot about this neighborhood's character, loved by clergy and prelates of every rank for its quiet proximity to the Vatican.<br><br>
+Walk along the main street and notice the small historic fountains dotting the route. The Fontana delle Tiare, with the three papal crowns and Saint Peter's keys. And the Fontana delle Palle di Cannone, near the Passetto, recalling the old military defenses of this border area.<br><br>
+Until the 1930s, Borgo Pio extended on both sides of the Passetto, the elevated structure you saw at the start of our tour connecting Castel Sant'Angelo to the Vatican. Today the neighborhood survives only north of that structure. South of it, where other working-class alleys once stood, there are now almost exclusively Vatican offices and the large complex of the Santo Spirito Hospital, one of the oldest in Europe, founded in the twelfth century.<br><br>
+The historic residents of this district are still called, in Roman dialect, "borghiciani". A community that for centuries lived literally in the shadow of the Vatican. It always maintained a distinct working-class identity, made up of artisans, small shopkeepers, and families who passed down home and trade from generation to generation.<br><br>
+Today Borgo Pio is also a small open-air art gallery. On the walls of some alleys, street art by Roman artist Maupal has appeared in recent years. He often plays with papal iconography in an ironic, contemporary key, a surprising contrast with the otherwise solemn atmosphere of the whole neighborhood.<br><br>
+When you're ready, head toward Porta Sant'Anna, the last stop of our tour.`,
+        deepen: []
+      }
+    }
+  },
+  {
+    id: 8, ready: true,
+    lat: 41.9040674, lon: 12.4574884,
+    i18n: {
+      it: {
+        name: "Porta Sant'Anna",
+        desc: "Il confine più piccolo del mondo, chiusura del giro",
+        audio: "audio/it/tappa8.mp3",
+        photos: [
+      { time: 0, url: "img/t8_portasantanna1.jpg", caption: "Porta Sant'Anna", credit: "Wikimedia Commons" },
+      { time: 65, url: "img/t8_portasantanna2.jpg", caption: "Porta Sant'Anna, dettaglio", credit: "Wikimedia Commons" }
+    ],
+        fullText: `Sei arrivato a Porta Sant'Anna, e qui chiudiamo il nostro giro attorno a San Pietro. Questo è oggi, di fatto, l'ingresso principale per chiunque debba entrare nella Città del Vaticano per motivi diversi dalla semplice visita turistica. Dipendenti, residenti, fornitori, e chiunque abbia bisogno di accedere alla celebre farmacia vaticana.<br><br>
+Il nome della porta deriva dalla chiesa di Sant'Anna dei Palafrenieri, che si affaccia proprio qui accanto, con la sua caratteristica pianta ellittica. Fu progettata a partire dal 1565 da Jacopo Barozzi da Vignola, uno dei più importanti architetti del secondo Cinquecento romano. Il nome "Palafrenieri" ricorda che la chiesa era originariamente destinata ai servitori a cavallo del papa, gli stallieri che si occupavano delle scuderie pontificie.<br><br>
+Dal 1929, in seguito ai Patti Lateranensi che stabilirono i confini definitivi tra il Regno d'Italia e la nuova Città del Vaticano, questa chiesa si trova ufficialmente in territorio vaticano. Resta però l'unico luogo di culto all'interno delle mura ad essere regolarmente aperto al pubblico, senza restrizioni particolari di accesso.<br><br>
+Guarda le basse mura di confine che corrono lungo questo tratto. Furono costruite proprio nel 1929, subito dopo la firma dei Patti Lateranensi. Segnano fisicamente e simbolicamente il nuovo stato sovrano appena nato, il più piccolo del mondo per estensione territoriale.<br><br>
+Questa porta rappresenta bene il carattere sfumato e permeabile di tutto il confine vaticano. Non un muro imponente e ostile, ma un passaggio quotidiano, attraversato ogni giorno da centinaia di persone normali, lavoratori e residenti. Un viavai che contrasta con l'immagine solitamente più solenne e cerimoniale che si ha del più piccolo stato sovrano del pianeta.<br><br>
+Ripensa al percorso di oggi. Da un ponte romano di quasi duemila anni, attraverso una strada nata da una demolizione controversa, fino a una piazza pensata per abbracciare l'umanità intera. Una cupola che ha richiesto quasi un secolo per essere completata, un esercito rimasto identico da cinquecento anni, e un quartiere che ancora oggi conserva l'anima di un piccolo borgo dentro la grande città. Se un giorno vorrai tornare per scoprire cosa si nasconde oltre queste mura, i Musei Vaticani e la Cappella Sistina restano una delle esperienze artistiche più straordinarie al mondo. Richiedono però un giro tutto loro, con un ritmo e un tipo di visita molto diversi da quello di oggi, tra chilometri di corridoi e migliaia di opere d'arte.<br><br>
+Grazie per aver camminato con noi attorno a San Pietro.`,
+        deepen: []
+      },
+      en: {
+        name: "Porta Sant'Anna",
+        desc: "The world's smallest border, end of the tour",
+        audio: "audio/en/tappa8.mp3",
+        photos: [
+      { time: 0, url: "img/t8_portasantanna1.jpg", caption: "Porta Sant'Anna", credit: "Wikimedia Commons" },
+      { time: 61, url: "img/t8_portasantanna2.jpg", caption: "Porta Sant'Anna, detail", credit: "Wikimedia Commons" }
+    ],
+        fullText: `You've arrived at Porta Sant'Anna, and here we close our tour around Saint Peter's. This is today, in practice, the main entrance for anyone who needs to enter Vatican City for reasons other than simple tourism. Employees, residents, suppliers, and anyone needing access to the famous Vatican pharmacy.<br><br>
+The gate's name comes from the church of Sant'Anna dei Palafrenieri, facing right next to it, with its distinctive elliptical floor plan. It was designed starting in 1565 by Jacopo Barozzi da Vignola, one of the most important architects of the late sixteenth century in Rome. The name "Palafrenieri" recalls that the church was originally intended for the pope's mounted attendants, the stable hands who cared for the papal stables.<br><br>
+Since 1929, following the Lateran Treaty that established the final borders between the Kingdom of Italy and the new Vatican City, this church officially sits on Vatican territory. It remains, though, the only place of worship within the walls regularly open to the public, without particular access restrictions.<br><br>
+Look at the low border walls running along this stretch. They were built right in 1929, immediately after the signing of the Lateran Treaty, to physically and symbolically mark the newly born sovereign state, the smallest in the world by territorial size.<br><br>
+This gate represents well the blurred, permeable character of the entire Vatican border. Not an imposing, hostile wall, but a daily passage, crossed every day by hundreds of ordinary people, workers and residents. A constant flow that contrasts with the usually more solemn and ceremonial image people have of the world's smallest sovereign state.<br><br>
+If you ever want to come back to discover what lies beyond these walls, the Vatican Museums and the Sistine Chapel remain one of the most extraordinary artistic experiences in the world. They require a tour of their own, though, with a pace and style of visit very different from today's, through kilometers of corridors and thousands of works of art.<br><br>
+Think back on today's route. From a nearly two-thousand-year-old Roman bridge, through a street born from a controversial demolition, to a square designed to embrace all of humanity. A dome that took nearly a century to complete, an army that has remained unchanged for five hundred years, and a neighborhood that still today keeps the soul of a small village inside the great city.<br><br>
+Thank you for walking with us around Saint Peter's.`,
+        deepen: []
+      }
+    }
+  }
+];
+const ROUTE_COORDS = [[41.901902, 12.466462], [41.902457, 12.466415], [41.902467, 12.466414], [41.902513, 12.46641], [41.902483, 12.465836], [41.902431, 12.465426], [41.902407, 12.465068], [41.902404, 12.464867], [41.902399, 12.464406], [41.902396, 12.464293], [41.90246, 12.464289], [41.90246, 12.464231], [41.90246, 12.464201], [41.902459, 12.463666], [41.902459, 12.463631], [41.902458, 12.463593], [41.902456, 12.463069], [41.902456, 12.463047], [41.902455, 12.462958], [41.902453, 12.462786], [41.902454, 12.462767], [41.902448, 12.462013], [41.902448, 12.461982], [41.902447, 12.461946], [41.902341, 12.461947], [41.902447, 12.461946], [41.902446, 12.461918], [41.90243, 12.460952], [41.902428, 12.4609], [41.902426, 12.460858], [41.902421, 12.460693], [41.9024, 12.459674], [41.902398, 12.459641], [41.902398, 12.459613], [41.902397, 12.459586], [41.902389, 12.459172], [41.902367, 12.459173], [41.902269, 12.459178], [41.902264, 12.458794], [41.902258, 12.45838], [41.902256, 12.458275], [41.902245, 12.457483], [41.902176, 12.457467], [41.902123, 12.457422], [41.902084, 12.457345], [41.902071, 12.457266], [41.902082, 12.457179], [41.902116, 12.457108], [41.902166, 12.457056], [41.902233, 12.457035], [41.902227, 12.456816], [41.902212, 12.456337], [41.902205, 12.455892], [41.902198, 12.455579], [41.90247, 12.455574], [41.902477, 12.455419], [41.902536, 12.455421], [41.902544, 12.455178], [41.902441, 12.455174], [41.90244, 12.455079], [41.902185, 12.455081], [41.902184, 12.454938], [41.902516, 12.454935], [41.902515, 12.454861], [41.902622, 12.454858], [41.902635, 12.454668], [41.902532, 12.454668], [41.902525, 12.454279], [41.902532, 12.454668], [41.902635, 12.454668], [41.902622, 12.454858], [41.902515, 12.454861], [41.902516, 12.454935], [41.902184, 12.454938], [41.902185, 12.455081], [41.901919, 12.455087], [41.901806, 12.455089], [41.901764, 12.45509], [41.901761, 12.455024], [41.901764, 12.45509], [41.901806, 12.455089], [41.901919, 12.455087], [41.902185, 12.455081], [41.90244, 12.455079], [41.902457, 12.455077], [41.902565, 12.455076], [41.90263, 12.455074], [41.902631, 12.455341], [41.902622, 12.456336], [41.902662, 12.456347], [41.902702, 12.45636], [41.90276, 12.456394], [41.90295, 12.456548], [41.903041, 12.456668], [41.90311, 12.456808], [41.903164, 12.456969], [41.903197, 12.45714], [41.9032, 12.45731], [41.903157, 12.457577], [41.903236, 12.457616], [41.903267, 12.457622], [41.903262, 12.457727], [41.903306, 12.457714], [41.903351, 12.457717], [41.903558, 12.457716], [41.903553, 12.457764], [41.903549, 12.457859], [41.903494, 12.458536], [41.90353, 12.458541], [41.903727, 12.458567], [41.903861, 12.458584], [41.90386, 12.458601], [41.903855, 12.45866], [41.903849, 12.458742], [41.903848, 12.458756], [41.903858, 12.458757], [41.903814, 12.459437], [41.903841, 12.459442], [41.903786, 12.460348], [41.903841, 12.459442], [41.903889, 12.45876], [41.903889, 12.458753], [41.903895, 12.458664], [41.903903, 12.458574], [41.903952, 12.457821], [41.903959, 12.457726], [41.903967, 12.457618], [41.904009, 12.457622], [41.904008, 12.457594], [41.904013, 12.457595], [41.904015, 12.457486], [41.904029, 12.457487]];
+</script>
+<script src="../shared/app.js"></script>
+</body>
+</html>
