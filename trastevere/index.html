@@ -23,6 +23,11 @@
     <p class="subtitle">Il lato del rione che i turisti non vedono. Cammina, e ti racconto io.</p>
   </header>
 
+  <div id="langToggle">
+    <button data-lang="it">Italiano</button>
+    <button data-lang="en">English</button>
+  </div>
+
   <div class="trail" id="trail"></div>
 
   <div class="map-wrap"><div id="map"></div></div>
@@ -123,11 +128,13 @@
 const STOPS = [
   {
     id: 1, ready: true,
-    name: "Piazza Trilussa",
-    desc: "Ponte Sisto, la fontana spostata, l'ingresso a Trastevere",
     lat: 41.8917821, lon: 12.4702261,
-    audio: "audio/tappa1.mp3",
-    photos: [
+    i18n: {
+      it: {
+        name: "Piazza Trilussa",
+        desc: "Ponte Sisto, la fontana spostata, l'ingresso a Trastevere",
+        audio: "audio/tappa1.mp3",
+        photos: [
       { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Roma_-_ponte_Sisto.JPG?width=900",
         caption: "Ponte Sisto, alle tue spalle", credit: "Wikimedia Commons" },
       { time: 8, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Trastevere_-_piazza_Trilussa_-_monumento_a_Trilussa_1531.JPG?width=900",
@@ -135,146 +142,351 @@ const STOPS = [
       { time: 45, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Trastevere_-_Fontanone_dei_cento_preti_a_piazza_Trilussa_1527.JPG?width=900",
         caption: "Il Fontanone dei Cento Preti, spostato qui da Ponte Sisto", credit: "Wikimedia Commons" }
     ],
-    fullText: `Benvenuto a Piazza Trilussa. Fermati un attimo qui, con le spalle rivolte al fiume.<br><br>
+        fullText: `Benvenuto a Piazza Trilussa. Fermati un attimo qui, con le spalle rivolte al fiume.<br><br>
 Guarda alla tua sinistra: quella figura in bronzo, seduta comoda su una panchina di marmo, con il cappello e l'aria un po' sorniona, è <a href="https://it.wikipedia.org/wiki/Trilussa" target="_blank">Trilussa</a>. Non un antico romano, ma un poeta romanesco vissuto tra Ottocento e Novecento, che con i suoi versi in dialetto raccontava il popolo di questi vicoli con ironia e un pizzico di malinconia.<br><br>
 Ora guarda davanti a te: quella fontana monumentale, con le tre grandi arcate e i mascheroni che sputano acqua, non è nata qui. Veniva da Ponte Sisto, il ponte pedonale alle tue spalle, e fu smontata e ricostruita in questa piazza agli inizi del Novecento — il <a href="https://it.wikipedia.org/wiki/Fontanone_dei_cento_preti" target="_blank">Fontanone dei Cento Preti</a>.<br><br>
 Il nome Trastevere viene dal latino "trans Tiberim", cioè "al di là del Tevere". Per i romani antichi, questa sponda del fiume era letteralmente un'altra cosa: ci abitavano gli Etruschi, poi pescatori, artigiani, immigrati di ogni tipo.<br><br>
 Quello che vedremo oggi è deliberatamente l'altra faccia di Trastevere: i vicoli secondari, le piazzette dove i romani ancora stendono i panni alle finestre, i palazzi che raccontano otto secoli di storie.<br><br>
 Quando sei pronto, muoviti verso Piazza della Scala.`,
-    deepen: [
+        deepen: [
       { type: "video", title: "Perché si chiama Piazza Trilussa?", url: "https://www.youtube.com/watch?v=U3i0KuAjNEs" },
       { type: "link", title: "Piazza Trilussa — Wikipedia", url: "https://en.wikipedia.org/wiki/Piazza_Trilussa" },
       { type: "link", title: "Piazza Trilussa — Roma Segreta", url: "https://www.romasegreta.it/trastevere/piazza-di-s-calisto.html" },
       { type: "link", title: "Fontanone di Ponte Sisto — Wikipedia", url: "https://en.wikipedia.org/wiki/Fontanone_di_Ponte_Sisto" }
     ]
+      },
+      en: {
+        name: "Piazza Trilussa",
+        desc: "Ponte Sisto, the relocated fountain, the gateway to Trastevere",
+        audio: "audio/en/tappa1.mp3",
+        photos: [
+      { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Roma_-_ponte_Sisto.JPG?width=900",
+        caption: "Ponte Sisto, alle tue spalle", credit: "Wikimedia Commons" },
+      { time: 8, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Trastevere_-_piazza_Trilussa_-_monumento_a_Trilussa_1531.JPG?width=900",
+        caption: "Il monumento a Trilussa, 1954", credit: "Wikimedia Commons" },
+      { time: 45, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Trastevere_-_Fontanone_dei_cento_preti_a_piazza_Trilussa_1527.JPG?width=900",
+        caption: "Il Fontanone dei Cento Preti, spostato qui da Ponte Sisto", credit: "Wikimedia Commons" }
+    ],
+        fullText: `Welcome to Piazza Trilussa. Stop here for a moment, with your back to the river.<br><br>
+Look to your left: that bronze figure, sitting comfortably on a marble bench, with his hat and slightly sly look, is Trilussa. Not an ancient Roman, but a Romanesco dialect poet who lived between the nineteenth and twentieth centuries. His verses told the story of these streets with irony and a touch of melancholy.<br><br>
+Now look ahead of you: that monumental fountain, with its three large arches and mask-shaped spouts, wasn't born here. It came from Ponte Sisto, the pedestrian bridge behind you. It was dismantled and rebuilt in this square in the early twentieth century — the Fontanone dei Cento Preti, the great fountain of the hundred priests.<br><br>
+The name Trastevere comes from the Latin "trans Tiberim", meaning "beyond the Tiber". For the ancient Romans, this side of the river was literally a different world: first the Etruscans lived here, then fishermen, artisans, immigrants of every kind.<br><br>
+What we'll see today is deliberately the other face of Trastevere: the side streets, the small squares where Romans still hang laundry from their windows, the buildings that tell eight centuries of stories.<br><br>
+When you're ready, head toward Piazza della Scala.`,
+        deepen: [
+      { type: "video", title: "Perché si chiama Piazza Trilussa?", url: "https://www.youtube.com/watch?v=U3i0KuAjNEs" },
+      { type: "link", title: "Piazza Trilussa — Wikipedia", url: "https://en.wikipedia.org/wiki/Piazza_Trilussa" },
+      { type: "link", title: "Piazza Trilussa — Roma Segreta", url: "https://www.romasegreta.it/trastevere/piazza-di-s-calisto.html" },
+      { type: "link", title: "Fontanone di Ponte Sisto — Wikipedia", url: "https://en.wikipedia.org/wiki/Fontanone_di_Ponte_Sisto" }
+    ]
+      }
+    }
   },
   {
     id: 2, ready: true,
-    name: "Antica Farmacia S. Maria della Scala",
-    desc: "La farmacia dei Papi, teriaca e frati speziali",
     lat: 41.8913020, lon: 12.4679727,
-    audio: "audio/tappa2.mp3",
-    photos: [
+    i18n: {
+      it: {
+        name: "Antica Farmacia S. Maria della Scala",
+        desc: "La farmacia dei Papi, teriaca e frati speziali",
+        audio: "audio/tappa2.mp3",
+        photos: [
       { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Trastevere_-_santa_maria_della_scala_01586-9.JPG?width=900",
         caption: "Piazza della Scala e la facciata del convento carmelitano", credit: "Wikimedia Commons" }
     ],
-    fullText: `Eccoci in Piazza della Scala. Guarda l'edificio davanti a te, con la scritta "Farmacia" sopra l'ingresso: hai davanti una delle farmacie più antiche d'Europa ancora attive.<br><br>
+        fullText: `Eccoci in Piazza della Scala. Guarda l'edificio davanti a te, con la scritta "Farmacia" sopra l'ingresso: hai davanti una delle farmacie più antiche d'Europa ancora attive.<br><br>
 La storia comincia nel Cinquecento, quando i frati <a href="https://it.wikipedia.org/wiki/Ordine_dei_Carmelitani_Scalzi" target="_blank">Carmelitani Scalzi</a> cominciarono a coltivare erbe officinali nel giardino del monastero. Nel Seicento decisero di aprire la farmacia al pubblico: divenne la farmacia dei Papi.<br><br>
 Uno dei prodotti più richiesti era la <a href="https://it.wikipedia.org/wiki/Teriaca" target="_blank">teriaca</a>, un preparato con anche sessanta ingredienti diversi — tra cui carne di vipera essiccata — venduto come rimedio universale.<br><br>
 Oggi il museo della farmacia antica è chiuso per restauro (dovrebbe riaprire nel 2027), ma la farmacia moderna al piano terra è ancora perfettamente funzionante, nello stesso identico luogo.<br><br>
 Quando sei pronto, ci spostiamo verso la prossima tappa.`,
-    deepen: [
+        deepen: [
       { type: "video", title: "Antica Spezieria S. Maria della Scala — visita", url: "https://www.youtube.com/watch?v=rIlv0o0SkHg" },
       { type: "link", title: "Spezieria di Santa Maria della Scala — Wikipedia", url: "https://it.wikipedia.org/wiki/Spezieria_di_Santa_Maria_della_Scala" },
       { type: "link", title: "La farmacia più antica d'Europa — Romeing", url: "https://www.romeing.it/it/antica-farmacia-santa-maria-della-scala/" },
       { type: "link", title: "Antica Spezieria — Turismo Roma (ufficiale)", url: "https://www.turismoroma.it/en/places/antica-spezieria-di-santa-maria-della-scala" }
     ]
+      },
+      en: {
+        name: "Antica Farmacia S. Maria della Scala",
+        desc: "The popes' pharmacy, theriac and apothecary friars",
+        audio: "audio/en/tappa2.mp3",
+        photos: [
+      { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Trastevere_-_santa_maria_della_scala_01586-9.JPG?width=900",
+        caption: "Piazza della Scala e la facciata del convento carmelitano", credit: "Wikimedia Commons" }
+    ],
+        fullText: `Here we are in Piazza della Scala. Look at the building in front of you, with the word "Farmacia" above the entrance: you're facing one of the oldest still-active pharmacies in Europe.<br><br>
+The story begins in the sixteenth century, when the Discalced Carmelite friars started growing medicinal herbs in the monastery garden. In the seventeenth century they decided to open the pharmacy to the public: it became the popes' pharmacy.<br><br>
+One of the most requested products was theriac, a preparation with up to sixty different ingredients, including dried viper meat, sold as a universal remedy.<br><br>
+Today the antique pharmacy museum is closed for restoration, expected to reopen in 2027, but the modern pharmacy on the ground floor is still perfectly functional, in the exact same spot.<br><br>
+When you're ready, we move on to the next stop.`,
+        deepen: [
+      { type: "video", title: "Antica Spezieria S. Maria della Scala — visita", url: "https://www.youtube.com/watch?v=rIlv0o0SkHg" },
+      { type: "link", title: "Spezieria di Santa Maria della Scala — Wikipedia", url: "https://it.wikipedia.org/wiki/Spezieria_di_Santa_Maria_della_Scala" },
+      { type: "link", title: "La farmacia più antica d'Europa — Romeing", url: "https://www.romeing.it/it/antica-farmacia-santa-maria-della-scala/" },
+      { type: "link", title: "Antica Spezieria — Turismo Roma (ufficiale)", url: "https://www.turismoroma.it/en/places/antica-spezieria-di-santa-maria-della-scala" }
+    ]
+      }
+    }
   },
-  { id: 3, ready: true, name: "Piazza di San Cosimato", desc: "Il chiostro medievale nascosto nell'ospedale",
+  {
+    id: 3, ready: true,
     lat: 41.8872138, lon: 12.4698488,
-    audio: "audio/tappa3.mp3",
-    photos: [
+    i18n: {
+      it: {
+        name: "Piazza di San Cosimato",
+        desc: "Il chiostro medievale nascosto nell'ospedale",
+        audio: "audio/tappa3.mp3",
+        photos: [
       { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Trastevere_-_s_Cosimato_convento_1160386.JPG?width=900",
         caption: "Il convento di San Cosimato", credit: "Wikimedia Commons" }
     ],
-    fullText: `Sei arrivato in Piazza di San Cosimato. Guarda alla tua destra: quell'ingresso semplice è la porta di uno dei chiostri medievali meglio conservati di Roma. E la maggior parte delle persone che passano qui ogni giorno non lo sa nemmeno.<br><br>
+        fullText: `Sei arrivato in Piazza di San Cosimato. Guarda alla tua destra: quell'ingresso semplice è la porta di uno dei chiostri medievali meglio conservati di Roma. E la maggior parte delle persone che passano qui ogni giorno non lo sa nemmeno.<br><br>
 Dietro quella porta c'è oggi un ospedale, il Nuovo Regina Margherita. Ma se entri, gratuitamente, e chiedi del <a href="https://it.wikipedia.org/wiki/Chiesa_di_San_Cosimato" target="_blank">chiostro</a>, ti ritrovi improvvisamente nel Duecento.<br><br>
 Nel Novecento un nobile romano fondò qui un monastero dedicato a due fratelli medici, Cosma e Damiano, detti "anargiri" perché curavano gratis i poveri. Nel 1230 circa arrivarono le Clarisse, le suore di Santa Chiara, e costruirono il chiostro che vedi ancora oggi: uno dei più grandi della Roma medievale.<br><br>
 Le monache restarono fino al 1891, quando lo stato espropriò il convento: prima ospizio, poi ambulatorio, infine, dal 1970, l'ospedale di oggi. Otto secoli di preghiera trasformati in sale d'attesa, senza che l'edificio medievale sparisse.<br><br>
 Se hai tempo, entra: l'accesso al chiostro è libero. Poi dirigiti verso via dell'Arco di San Calisto.`,
-    deepen: [
+        deepen: [
       { type: "video", title: "Il cortile di San Cosimato — FAI, I Luoghi del Cuore", url: "https://www.youtube.com/watch?v=QpGiE2NFGSk" },
       { type: "link", title: "Chiesa di San Cosimato — Wikipedia", url: "https://it.wikipedia.org/wiki/Chiesa_di_San_Cosimato" },
       { type: "link", title: "S.Cosimato — Roma Segreta", url: "https://www.romasegreta.it/trastevere/s-cosimato.html" },
       { type: "link", title: "Il Medioevo nel cuore di Trastevere — Roma Capitale", url: "https://www.comune.roma.it/web/it/notizia.page?contentId=NWS1382379" }
     ]
+      },
+      en: {
+        name: "Piazza di San Cosimato",
+        desc: "The medieval cloister hidden inside a hospital",
+        audio: "audio/en/tappa3.mp3",
+        photos: [
+      { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Trastevere_-_s_Cosimato_convento_1160386.JPG?width=900",
+        caption: "Il convento di San Cosimato", credit: "Wikimedia Commons" }
+    ],
+        fullText: `You've arrived in Piazza di San Cosimato. Look to your right: that simple entrance is the door to one of the best preserved medieval cloisters in Rome. Most people who pass by here every day don't even know it.<br><br>
+Behind that door today is a hospital, the Nuovo Regina Margherita. But if you go in, for free, and ask for the cloister, you suddenly find yourself in the thirteenth century.<br><br>
+In the twelfth century, a Roman noble founded a monastery here dedicated to two physician brothers, Cosmas and Damian, called "anargyroi" because they treated the poor for free. Around 1230 the Poor Clares arrived, the nuns of Saint Clare, and built the cloister you still see today: one of the largest in medieval Rome.<br><br>
+The nuns stayed until 1891, when the state expropriated the convent: first a hospice, then a clinic, and finally, since 1970, today's hospital. Eight centuries of prayer turned into waiting rooms, without the medieval building disappearing.<br><br>
+If you have time, go in: access to the cloister is free. Then head toward Via dell'Arco di San Calisto.`,
+        deepen: [
+      { type: "video", title: "Il cortile di San Cosimato — FAI, I Luoghi del Cuore", url: "https://www.youtube.com/watch?v=QpGiE2NFGSk" },
+      { type: "link", title: "Chiesa di San Cosimato — Wikipedia", url: "https://it.wikipedia.org/wiki/Chiesa_di_San_Cosimato" },
+      { type: "link", title: "S.Cosimato — Roma Segreta", url: "https://www.romasegreta.it/trastevere/s-cosimato.html" },
+      { type: "link", title: "Il Medioevo nel cuore di Trastevere — Roma Capitale", url: "https://www.comune.roma.it/web/it/notizia.page?contentId=NWS1382379" }
+    ]
+      }
+    }
   },
-  { id: 4, ready: true, name: "Via dell'Arco di San Calisto", desc: "La casa più piccola di Roma",
+  {
+    id: 4, ready: true,
     lat: 41.8891452, lon: 12.4713973,
-    audio: "audio/tappa4.mp3",
-    photos: [],
-    fullText: `Sei in via dell'Arco di San Calisto. Cerca il civico quarantatré, sulla tua destra: una casa vera su due piani, larga forse tre metri, con scaletta esterna e un'edicola settecentesca della Madonna. È conosciuta come la casa più piccola di Roma.<br><br>
+    i18n: {
+      it: {
+        name: "Via dell'Arco di San Calisto",
+        desc: "La casa più piccola di Roma",
+        audio: "audio/tappa4.mp3",
+        photos: [],
+        fullText: `Sei in via dell'Arco di San Calisto. Cerca il civico quarantatré, sulla tua destra: una casa vera su due piani, larga forse tre metri, con scaletta esterna e un'edicola settecentesca della Madonna. È conosciuta come la casa più piccola di Roma.<br><br>
 Dentro, mi dicono da chi ci ha abitato, non era così angusta come sembra da fuori — tre stanze, una vita di quartiere vera.<br><br>
 Proprio qui accanto c'era l'Osteria della Vedovella, gestita da una vedova che a quanto pare mandava avanti l'attività benissimo. Un dettaglio da vicolo che rende Trastevere diversa da una cartolina.<br><br>
 Questa casa è finita persino in una canzone popolare cantata da Claudio Villa — folklore urbano più che monumento da guida turistica.<br><br>
 Quando sei pronto, dirigiti verso vicolo dell'Atleta.`,
-    deepen: [
+        deepen: [
       { type: "link", title: "Piazza di S.Calisto — Roma Segreta", url: "https://www.romasegreta.it/trastevere/piazza-di-s-calisto.html" },
       { type: "link", title: "Via dell'Arco di San Calisto — Rerum Romanarum", url: "https://www.rerumromanarum.com/2019/06/via-dellarco-di-san-calisto.html" },
       { type: "link", title: "La casa più piccola di Trastevere — Turismo Emozionale a Roma", url: "http://turismoemozionaleroma.altervista.org/via-dell-arco-di-san-calisto.html" }
     ]
+      },
+      en: {
+        name: "Via dell'Arco di San Calisto",
+        desc: "The smallest house in Rome",
+        audio: "audio/en/tappa4.mp3",
+        photos: [],
+        fullText: `You're on Via dell'Arco di San Calisto. Look for number forty-three, on your right: a real two-story house, maybe three meters wide, with an outside staircase and an eighteenth-century shrine to the Madonna. It's known as the smallest house in Rome.<br><br>
+Inside, according to people who once lived there, it wasn't as cramped as it looks from outside — three rooms, a real neighborhood life.<br><br>
+Right next door stood the Osteria della Vedovella, run by a widow who apparently managed the business quite well. A back-alley detail that makes Trastevere different from a postcard.<br><br>
+This house even ended up in a popular song sung by Claudio Villa — urban folklore more than a guidebook monument.<br><br>
+When you're ready, head toward Vicolo dell'Atleta.`,
+        deepen: [
+      { type: "link", title: "Piazza di S.Calisto — Roma Segreta", url: "https://www.romasegreta.it/trastevere/piazza-di-s-calisto.html" },
+      { type: "link", title: "Via dell'Arco di San Calisto — Rerum Romanarum", url: "https://www.rerumromanarum.com/2019/06/via-dellarco-di-san-calisto.html" },
+      { type: "link", title: "La casa più piccola di Trastevere — Turismo Emozionale a Roma", url: "http://turismoemozionaleroma.altervista.org/via-dell-arco-di-san-calisto.html" }
+    ]
+      }
+    }
   },
-  { id: 5, ready: true, name: "Vicolo dell'Atleta", desc: "L'Apoxyomenos e la sinagoga medievale",
+  {
+    id: 5, ready: true,
     lat: 41.8880541, lon: 12.4769812,
-    audio: "audio/tappa5.mp3",
-    photos: [
+    i18n: {
+      it: {
+        name: "Vicolo dell'Atleta",
+        desc: "L'Apoxyomenos e la sinagoga medievale",
+        audio: "audio/tappa5.mp3",
+        photos: [
       { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Apoxyomenos_Pio-Clementino_Inv1185.jpg?width=900",
         caption: "L'Apoxyomenos, trovato qui nel 1849, oggi ai Musei Vaticani", credit: "Wikimedia Commons" },
       { time: 45, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Trastevere_-_la_Sinagoga_di_vicolo_dell_Atleta_1504.JPG?width=900",
         caption: "La casa medievale, forse un'antica sinagoga", credit: "Wikimedia Commons" }
     ],
-    fullText: `Sei in vicolo dell'Atleta, uno dei vicoli più stretti di Trastevere. Nell'Ottocento, scavando qui, venne alla luce una statua greca straordinaria: un atleta che si deterge col <a href="https://it.wikipedia.org/wiki/Apoxy%C3%B3menos" target="_blank">strigile</a>, oggi noto come l'Apoxyomenos, attribuito a Lisippo. Oggi è ai Musei Vaticani, e il vicolo prese il suo nome da lei.<br><br>
+        fullText: `Sei in vicolo dell'Atleta, uno dei vicoli più stretti di Trastevere. Nell'Ottocento, scavando qui, venne alla luce una statua greca straordinaria: un atleta che si deterge col <a href="https://it.wikipedia.org/wiki/Apoxy%C3%B3menos" target="_blank">strigile</a>, oggi noto come l'Apoxyomenos, attribuito a Lisippo. Oggi è ai Musei Vaticani, e il vicolo prese il suo nome da lei.<br><br>
 Guarda ora la palazzina medievale con la loggia su colonnine: potrebbe essere stata, nel milleduecento, una sinagoga. Trastevere ospitò una delle comunità ebraiche più antiche d'Europa, secoli prima del ghetto cinquecentesco. Su una colonnina si vedono ancora caratteri ebraici incisi.<br><br>
 In pochi metri: un capolavoro greco e otto secoli di storia ebraica romana. Questa stratificazione è la vera cifra di Trastevere.<br><br>
 Quando sei pronto, dirigiti verso piazza in Piscinula.`,
-    deepen: [
+        deepen: [
       { type: "video", title: "Vicolo dell'Atleta e l'antica sinagoga", url: "https://www.youtube.com/watch?v=IWKZbTyrWEI" },
       { type: "link", title: "Apoxyómenos — Wikipedia", url: "https://it.wikipedia.org/wiki/Apoxy%C3%B3menos" },
       { type: "link", title: "Vicolo dell'Atleta — Roma Segreta", url: "https://www.romasegreta.it/trastevere/vicolo-dell-atleta.html" },
       { type: "link", title: "Vicolo dell'Atleta and Ancient Synagogue — Turismo Roma", url: "https://www.turismoroma.it/en/page/vicolo-dell%E2%80%99atleta-and-ancient-synagogue" }
     ]
+      },
+      en: {
+        name: "Vicolo dell'Atleta",
+        desc: "The Apoxyomenos and the medieval synagogue",
+        audio: "audio/en/tappa5.mp3",
+        photos: [
+      { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Apoxyomenos_Pio-Clementino_Inv1185.jpg?width=900",
+        caption: "L'Apoxyomenos, trovato qui nel 1849, oggi ai Musei Vaticani", credit: "Wikimedia Commons" },
+      { time: 45, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Trastevere_-_la_Sinagoga_di_vicolo_dell_Atleta_1504.JPG?width=900",
+        caption: "La casa medievale, forse un'antica sinagoga", credit: "Wikimedia Commons" }
+    ],
+        fullText: `You're in Vicolo dell'Atleta, one of the narrowest alleys in Trastevere. In the nineteenth century, digging here uncovered an extraordinary Greek statue: an athlete cleaning himself with a strigil, known today as the Apoxyomenos, attributed to Lysippos. Today it's in the Vatican Museums, and the alley took its name from it.<br><br>
+Now look at the medieval building with the loggia on small columns: it may have been, around the year 1200, a synagogue. Trastevere hosted one of the oldest Jewish communities in Europe, centuries before the sixteenth-century ghetto. On one small column you can still see engraved Hebrew characters.<br><br>
+In just a few meters: a Greek masterpiece and eight centuries of Roman Jewish history. This layering is the true signature of Trastevere.<br><br>
+When you're ready, head toward Piazza in Piscinula.`,
+        deepen: [
+      { type: "video", title: "Vicolo dell'Atleta e l'antica sinagoga", url: "https://www.youtube.com/watch?v=IWKZbTyrWEI" },
+      { type: "link", title: "Apoxyómenos — Wikipedia", url: "https://it.wikipedia.org/wiki/Apoxy%C3%B3menos" },
+      { type: "link", title: "Vicolo dell'Atleta — Roma Segreta", url: "https://www.romasegreta.it/trastevere/vicolo-dell-atleta.html" },
+      { type: "link", title: "Vicolo dell'Atleta and Ancient Synagogue — Turismo Roma", url: "https://www.turismoroma.it/en/page/vicolo-dell%E2%80%99atleta-and-ancient-synagogue" }
+    ]
+      }
+    }
   },
-  { id: 6, ready: true, name: "Piazza in Piscinula", desc: "Terme romane, i Mattei, il campanile più piccolo",
+  {
+    id: 6, ready: true,
     lat: 41.8891703, lon: 12.4767016,
-    audio: "audio/tappa6.mp3",
-    photos: [
+    i18n: {
+      it: {
+        name: "Piazza in Piscinula",
+        desc: "Terme romane, i Mattei, il campanile più piccolo",
+        audio: "audio/tappa6.mp3",
+        photos: [
       { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Trastevere_-_s_Benedetto_in_Piscinula_facciata_1040034.JPG?width=900",
         caption: "San Benedetto in Piscinula, il campanile più piccolo di Roma", credit: "Wikimedia Commons" }
     ],
-    fullText: `Sei in piazza in Piscinula. "Piscinula" significa piccola piscina: qui sorgeva uno stabilimento termale romano, con vasche oggi sepolte sotto il livello stradale.<br><br>
+        fullText: `Sei in piazza in Piscinula. "Piscinula" significa piccola piscina: qui sorgeva uno stabilimento termale romano, con vasche oggi sepolte sotto il livello stradale.<br><br>
 Gli edifici medievali attorno appartenevano alla famiglia Mattei, "guardiani dei ponti e delle ripe" per lo Stato Pontificio — un incarico che si trasformò in un'attività redditizia grazie a pedaggi non proprio leciti.<br><br>
 Nell'angolo, la chiesetta di <a href="https://it.wikipedia.org/wiki/San_Benedetto_in_Piscinula" target="_blank">San Benedetto in Piscinula</a> ha il campanile più piccolo di Roma e la campana più antica della città, fusa nel 1238. La tradizione vuole che qui abbia vissuto da ragazzo San Benedetto da Norcia.<br><br>
 Terme romane, potere medievale, memoria monastica: tutto in una piazzetta che attraverseresti in trenta secondi senza accorgertene.<br><br>
 Quando sei pronto, dirigiti verso via dei Genovesi.`,
-    deepen: [
+        deepen: [
       { type: "video", title: "San Benedetto in Piscinula", url: "https://www.youtube.com/shorts/vQC7_GmYBQE" },
       { type: "link", title: "Chiesa di San Benedetto in Piscinula — Wikipedia", url: "https://it.wikipedia.org/wiki/Chiesa_di_San_Benedetto_in_Piscinula" },
       { type: "link", title: "Church of San Benedetto in Piscinula — Turismo Roma", url: "https://www.turismoroma.it/en/node/667" },
       { type: "link", title: "Piazza in Piscinula & S.Benedetto — Trastevere App", url: "https://www.trastevereapp.com/piazza-in-piscinula-s-benedetto/" }
     ]
+      },
+      en: {
+        name: "Piazza in Piscinula",
+        desc: "Roman baths, the Mattei family, the smallest bell tower",
+        audio: "audio/en/tappa6.mp3",
+        photos: [
+      { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Trastevere_-_s_Benedetto_in_Piscinula_facciata_1040034.JPG?width=900",
+        caption: "San Benedetto in Piscinula, il campanile più piccolo di Roma", credit: "Wikimedia Commons" }
+    ],
+        fullText: `You're in Piazza in Piscinula. "Piscinula" means small pool: a Roman bath complex once stood here, with pools now buried below street level.<br><br>
+The medieval buildings around you belonged to the Mattei family, "guardians of the bridges and riverbanks" for the Papal States — a role that turned into a profitable business thanks to not entirely legal tolls.<br><br>
+In the corner, the small church of San Benedetto in Piscinula has the smallest bell tower in Rome and the oldest bell in the city, cast in 1238. Tradition holds that Saint Benedict of Norcia lived here as a boy.<br><br>
+Roman baths, medieval power, monastic memory: all in a tiny square you'd cross in thirty seconds without noticing.<br><br>
+When you're ready, head toward Via dei Genovesi.`,
+        deepen: [
+      { type: "video", title: "San Benedetto in Piscinula", url: "https://www.youtube.com/shorts/vQC7_GmYBQE" },
+      { type: "link", title: "Chiesa di San Benedetto in Piscinula — Wikipedia", url: "https://it.wikipedia.org/wiki/Chiesa_di_San_Benedetto_in_Piscinula" },
+      { type: "link", title: "Church of San Benedetto in Piscinula — Turismo Roma", url: "https://www.turismoroma.it/en/node/667" },
+      { type: "link", title: "Piazza in Piscinula & S.Benedetto — Trastevere App", url: "https://www.trastevereapp.com/piazza-in-piscinula-s-benedetto/" }
+    ]
+      }
+    }
   },
-  { id: 7, ready: true, name: "Via dei Genovesi", desc: "Il quartiere degli scaricatori portuali",
+  {
+    id: 7, ready: true,
     lat: 41.8880671, lon: 12.4759053,
-    audio: "audio/tappa7.mp3",
-    photos: [
+    i18n: {
+      it: {
+        name: "Via dei Genovesi",
+        desc: "Il quartiere degli scaricatori portuali",
+        audio: "audio/tappa7.mp3",
+        photos: [
       { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Trastevere_-_S._Giovanni_Battista_dei_Genovesi.JPG?width=900",
         caption: "San Giovanni Battista dei Genovesi, la chiesa dei marinai liguri", credit: "Wikimedia Commons" }
     ],
-    fullText: `Sei in via dei Genovesi. Qui, dal Medioevo, si stabilì una comunità di mercanti e marinai genovesi, attratti dal vicino porto fluviale di Ripa Grande.<br><br>
+        fullText: `Sei in via dei Genovesi. Qui, dal Medioevo, si stabilì una comunità di mercanti e marinai genovesi, attratti dal vicino porto fluviale di Ripa Grande.<br><br>
 Immagina questa strada nei secoli scorsi: scaricatori di porto, sacchi di merci, lingue diverse — Trastevere era prima di tutto un quartiere portuale.<br><br>
 Oggi via dei Genovesi e le strade parallele, come via della Luce, mantengono un'atmosfera diversa dal cuore turistico: meno insegne multilingue, più botteghe artigiane che resistono da generazioni.<br><br>
 È qui che si misura meglio la differenza tra la Trastevere fotografata e quella che abbiamo raccontato oggi.<br><br>
 Quando sei pronto, dirigiti verso piazza de' Renzi, l'ultima tappa.`,
-    deepen: [
+        deepen: [
       { type: "link", title: "S.Giovanni dei Genovesi — Roma Segreta", url: "https://www.romasegreta.it/trastevere/s-giovanni-dei-genovesi.html" },
       { type: "link", title: "Chiesa di San Giovanni Battista dei Genovesi — Wikipedia", url: "https://it.wikipedia.org/wiki/Chiesa_di_San_Giovanni_Battista_dei_Genovesi" },
       { type: "link", title: "Il Chiostro dei Melangoli — Il Blog dell'Asino d'Oro", url: "https://lasinodoro.it/san-giovanni-dei-genovesi-e-il-chiostro-dei-melangoli-a-trastevere/" }
     ]
+      },
+      en: {
+        name: "Via dei Genovesi",
+        desc: "The neighborhood of dockworkers",
+        audio: "audio/en/tappa7.mp3",
+        photos: [
+      { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Trastevere_-_S._Giovanni_Battista_dei_Genovesi.JPG?width=900",
+        caption: "San Giovanni Battista dei Genovesi, la chiesa dei marinai liguri", credit: "Wikimedia Commons" }
+    ],
+        fullText: `You're on Via dei Genovesi. Since the Middle Ages, a community of Genoese merchants and sailors settled here, drawn by the nearby river port of Ripa Grande.<br><br>
+Picture this street in past centuries: dock workers, sacks of goods, different languages — Trastevere was first and foremost a port district.<br><br>
+Today Via dei Genovesi and the parallel streets, like Via della Luce, keep an atmosphere different from the tourist core: fewer multilingual signs, more artisan workshops that have survived for generations.<br><br>
+This is where you can best measure the difference between the photographed Trastevere and the one we've told you about today.<br><br>
+When you're ready, head toward Piazza de' Renzi, the last stop.`,
+        deepen: [
+      { type: "link", title: "S.Giovanni dei Genovesi — Roma Segreta", url: "https://www.romasegreta.it/trastevere/s-giovanni-dei-genovesi.html" },
+      { type: "link", title: "Chiesa di San Giovanni Battista dei Genovesi — Wikipedia", url: "https://it.wikipedia.org/wiki/Chiesa_di_San_Giovanni_Battista_dei_Genovesi" },
+      { type: "link", title: "Il Chiostro dei Melangoli — Il Blog dell'Asino d'Oro", url: "https://lasinodoro.it/san-giovanni-dei-genovesi-e-il-chiostro-dei-melangoli-a-trastevere/" }
+    ]
+      }
+    }
   },
-  { id: 8, ready: true, name: "Piazza de' Renzi", desc: "Chiusura del giro, tempo di aperitivo",
+  {
+    id: 8, ready: true,
     lat: 41.8905483, lon: 12.470249,
-    audio: "audio/tappa8.mp3",
-    photos: [],
-    fullText: `Sei arrivato in piazza de' Renzi: con questa tappa si chiude il giro nella Trastevere nascosta.<br><br>
+    i18n: {
+      it: {
+        name: "Piazza de' Renzi",
+        desc: "Chiusura del giro, tempo di aperitivo",
+        audio: "audio/tappa8.mp3",
+        photos: [],
+        fullText: `Sei arrivato in piazza de' Renzi: con questa tappa si chiude il giro nella Trastevere nascosta.<br><br>
 Ripensa al percorso: da Piazza Trilussa e la fontana spostata, alla farmacia dei Papi, al chiostro medievale nell'ospedale, alla casa più piccola di Roma, al vicolo che ha restituito un capolavoro greco, alla piazzetta con le terme romane e il campanile più piccolo, fino al quartiere portuale dimenticato.<br><br>
 Un unico filo: Trastevere non è mai stata solo il quartiere da cartolina. È stata per duemila anni un margine della città — e proprio lì si sono accumulate le storie più sorprendenti.<br><br>
 Ora la parte piacevole: sei in una delle zone migliori per un aperitivo lontano dal caos. Gira un isolato o due e scegli il tavolino che ti convince di più.<br><br>
 Grazie per aver camminato con noi oggi.`,
-    deepen: [
+        deepen: [
       { type: "link", title: "Dove fare aperitivo a Trastevere — Puntarella Rossa", url: "https://www.puntarellarossa.it/2024/12/20/dove-fare-aperitivo-a-trastevere-roma/" },
       { type: "link", title: "Trastevere — Wikipedia", url: "https://en.wikipedia.org/wiki/Trastevere" },
       { type: "link", title: "Vita notturna a Trastevere — Uniplaces", url: "https://www.uniplaces.com/city-explorer/vita-notturna-trastevere-migliori-posti-divertirsi/" }
     ]
+      },
+      en: {
+        name: "Piazza de' Renzi",
+        desc: "End of the tour, time for a drink",
+        audio: "audio/en/tappa8.mp3",
+        photos: [],
+        fullText: `You've arrived at Piazza de' Renzi: with this stop, our tour of hidden Trastevere comes to an end.<br><br>
+Think back on the route: from Piazza Trilussa and its relocated fountain, to the popes' pharmacy, the medieval cloister inside the hospital, the smallest house in Rome. From the alley that gave back a Greek masterpiece, to the little square with Roman baths and the smallest bell tower, all the way to the forgotten port district.<br><br>
+One single thread: Trastevere was never just the postcard neighborhood. For two thousand years it was a margin of the city — and it's exactly there that the most surprising stories piled up.<br><br>
+Now for the pleasant part: you're in one of the best areas for a drink away from the chaos. Walk a block or two and pick whichever table looks most inviting.<br><br>
+Thank you for walking with us today.`,
+        deepen: [
+      { type: "link", title: "Dove fare aperitivo a Trastevere — Puntarella Rossa", url: "https://www.puntarellarossa.it/2024/12/20/dove-fare-aperitivo-a-trastevere-roma/" },
+      { type: "link", title: "Trastevere — Wikipedia", url: "https://en.wikipedia.org/wiki/Trastevere" },
+      { type: "link", title: "Vita notturna a Trastevere — Uniplaces", url: "https://www.uniplaces.com/city-explorer/vita-notturna-trastevere-migliori-posti-divertirsi/" }
+    ]
+      }
+    }
   }
 ];
 
