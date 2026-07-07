@@ -325,7 +325,7 @@ const isBilingual = !!(STOPS[0] && STOPS[0].i18n);
 const availableTextLangs = isBilingual ? Object.keys(STOPS[0].i18n) : [];
 const isMultiLang = availableTextLangs.length > 2;
 
-if(isBilingual && !isMultiLang){
+if(isBilingual && !isMultiLang && langToggleBtn){
   langToggleBtn.style.display = 'flex';
   function renderLangToggle(){
     langToggleBtn.querySelectorAll('[data-lang]').forEach(btn => {
@@ -356,7 +356,7 @@ if(isBilingual && !isMultiLang){
   });
   renderLangToggle();
 } else if(isMultiLang){
-  langToggleBtn.style.display = 'none';
+  if(langToggleBtn) langToggleBtn.style.display = 'none';
 
   const LANG_LABELS = { it:"Italiano", en:"English", es:"Español", fr:"Français", de:"Deutsch", pt:"Português", zh:"中文" };
 
@@ -451,7 +451,7 @@ if(isBilingual && !isMultiLang){
     }
   });
 } else {
-  langToggleBtn.style.display = 'none';
+  if(langToggleBtn) langToggleBtn.style.display = 'none';
 }
 
 // ---- Wake Lock (schermo sempre acceso mentre l'app è in uso) ----
