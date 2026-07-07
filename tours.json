@@ -31,37 +31,6 @@
     "url": "https://fly98.github.io/FlyTour/roma/index.html"
   },
   {
-    "slug": "esoterica",
-    "country": "Italia",
-    "city": "Roma",
-    "audience": "guest",
-    "title": {
-      "it": "Roma Esoterica",
-      "en": "Esoteric Rome",
-      "es": "Roma Esotérica",
-      "fr": "Rome Ésotérique",
-      "de": "Esoterisches Rom",
-      "pt": "Roma Esotérica",
-      "zh": "神秘罗马"
-    },
-    "desc": {
-      "it": "Fantasmi imperiali, astrologia nascosta nelle chiese, ossari trasformati in arte, leggende di scimmie salvifiche e quartieri costruiti come enigmi di pietra. 9 tappe, disponibile in italiano e inglese.",
-      "en": "Imperial ghosts, astrology hidden inside churches, ossuaries turned into art, legends of life-saving monkeys, and districts built like puzzles in stone. 9 stops, available in Italian and English.",
-      "es": "Fantasmas imperiales, astrología oculta en las iglesias, osarios transformados en arte, leyendas de monos salvadores y barrios construidos como enigmas de piedra. 9 paradas, disponible en italiano e inglés.",
-      "fr": "Fantômes impériaux, astrologie cachée dans les églises, ossuaires transformés en art, légendes de singes sauveurs et quartiers construits comme des énigmes de pierre. 9 étapes, disponible en italien et en anglais.",
-      "de": "Kaiserliche Geister, in Kirchen versteckte Astrologie, in Kunst verwandelte Beinhäuser, Legenden von lebensrettenden Affen und Viertel, die wie steinerne Rätsel gebaut sind. 9 Stationen, verfügbar auf Italienisch und Englisch.",
-      "pt": "Fantasmas imperiais, astrologia escondida nas igrejas, ossários transformados em arte, lendas de macacos salvadores e bairros construídos como enigmas de pedra. 9 paragens, disponível em italiano e inglês.",
-      "zh": "帝王幽灵、教堂中隐藏的占星术、变成艺术品的藏骨堂、拯救生命的猴子传说，以及像石头谜题一样建造的街区。9个站点，提供意大利语和英语版本。"
-    },
-    "duration": "Mezza giornata",
-    "distance": "8,6 km (con tratti in metro)",
-    "stops": 9,
-    "lat": 41.9107038,
-    "lon": 12.4763579,
-    "cover": "https://commons.wikimedia.org/wiki/Special:FilePath/Piazza%20del%20Popolo%20Obelisco%20Flaminio%20a%20Roma.jpg?width=700",
-    "url": "https://fly98.github.io/FlyTour/esoterica/index.html"
-  },
-  {
     "slug": "trastevere",
     "country": "Italia",
     "city": "Roma",
@@ -370,5 +339,36 @@
     "lon": -9.1367671,
     "cover": "https://commons.wikimedia.org/wiki/Special:FilePath/El%C3%A9ctrico%2028%2C%20Lisbo%C3%A3%20(42110049232).jpg?width=700",
     "url": "https://fly98.github.io/FlyTour/tram28/index.html"
+  },
+  {
+    "slug": "esoterica",
+    "country": "Italia",
+    "city": "Roma",
+    "audience": "guest",
+    "title": {
+      "it": "Roma Esoterica",
+      "en": "Esoteric Rome",
+      "es": "Roma Esotérica",
+      "fr": "Rome Ésotérique",
+      "de": "Esoterisches Rom",
+      "pt": "Roma Esotérica",
+      "zh": "神秘罗马"
+    },
+    "desc": {
+      "it": "Fantasmi imperiali, astrologia nascosta nelle chiese, ossari trasformati in arte, leggende di scimmie salvifiche e quartieri costruiti come enigmi di pietra. 9 tappe nella Roma segreta, in italiano e inglese.",
+      "en": "Imperial ghosts, astrology hidden in churches, bone-filled crypts turned into art, legends of saving monkeys, and neighbourhoods built like stone riddles. 9 stops through secret Rome, in Italian and English.",
+      "es": "Fantasmas imperiales, astrología escondida en las iglesias, osarios convertidos en arte, leyendas de monos salvadores y barrios construidos como enigmas de piedra. 9 paradas en la Roma secreta, en italiano e inglés.",
+      "fr": "Fantômes impériaux, astrologie cachée dans les églises, ossuaires transformés en art, légendes de singes sauveurs et quartiers construits comme des énigmes de pierre. 9 étapes dans la Rome secrète, en italien et en anglais.",
+      "de": "Kaiserliche Geister, in Kirchen versteckte Astrologie, zu Kunst gewordene Gebeinkrypten, Legenden rettender Affen und Viertel, die wie steinerne Rätsel gebaut sind. 9 Stationen durch das geheime Rom, auf Italienisch und Englisch.",
+      "pt": "Fantasmas imperiais, astrologia escondida nas igrejas, ossários transformados em arte, lendas de macacos salvadores e bairros construídos como enigmas de pedra. 9 paragens na Roma secreta, em italiano e inglês.",
+      "zh": "帝国幽灵、隐藏在教堂中的占星术、化为艺术的骸骨墓穴、拯救者猿猴的传说，以及如石头谜题般建造的街区。9个站点带您探索神秘罗马，配有意大利语和英语讲解。"
+    },
+    "duration": "~3h",
+    "distance": "8-9 km",
+    "stops": 9,
+    "lat": 41.9107038,
+    "lon": 12.4763579,
+    "cover": "https://commons.wikimedia.org/wiki/Special:FilePath/Flaminio%20Obelisk%20on%20the%20Piazza%20del%20Popolo.jpg?width=700",
+    "url": "https://fly98.github.io/FlyTour/esoterica/index.html"
   }
 ]
