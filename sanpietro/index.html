@@ -18,9 +18,9 @@
 <div class="wrap">
   <header>
     <a href="../index.html" class="back-link">← Tutti i percorsi</a>
-    <div class="eyebrow">Passeggiata narrata · Vaticano esterno · Bilingue IT/EN</div>
-    <h1>San Pietro e Borgo Pio</h1>
-    <p class="subtitle">Da Ponte Sant'Angelo alla Cupola di Michelangelo, passando per la Guardia Svizzera e l'ultimo quartiere popolare rimasto accanto al Vaticano. 8 tappe a cielo aperto, disponibile in italiano e inglese.</p>
+    <div class="eyebrow" id="txtEyebrow">Passeggiata narrata · Vaticano esterno</div>
+    <h1 id="txtH1">San Pietro e Borgo Pio</h1>
+    <p class="subtitle" id="txtSubtitle">Da Ponte Sant'Angelo alla Cupola di Michelangelo, passando per la Guardia Svizzera e l'ultimo quartiere popolare rimasto accanto al Vaticano. 8 tappe a cielo aperto.</p>
   </header>
 
   <div id="langToggle">
@@ -125,6 +125,15 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 // ---- Dati tappe (pilota: 2 tappe) ----
+const PAGE_I18N = {
+  it: { eyebrow: "Passeggiata narrata · Vaticano esterno", h1: "San Pietro e Borgo Pio", subtitle: "Da Ponte Sant'Angelo alla Cupola di Michelangelo, passando per la Guardia Svizzera e l'ultimo quartiere popolare rimasto accanto al Vaticano. 8 tappe a cielo aperto." },
+  en: { eyebrow: "Narrated walk · Outside the Vatican", h1: "San Pietro e Borgo Pio", subtitle: "From Ponte Sant'Angelo to Michelangelo's Dome, passing through the Swiss Guard and the last working-class neighborhood left beside the Vatican. 8 open-air stops." },
+  es: { eyebrow: "Paseo narrado · Exterior del Vaticano", h1: "San Pietro e Borgo Pio", subtitle: "Desde Ponte Sant'Angelo hasta la Cúpula de Miguel Ángel, pasando por la Guardia Suiza y el último barrio popular junto al Vaticano. 8 paradas al aire libre." },
+  fr: { eyebrow: "Promenade racontée · Extérieur du Vatican", h1: "San Pietro e Borgo Pio", subtitle: "Du Ponte Sant'Angelo à la Coupole de Michel-Ange, en passant par la Garde suisse et le dernier quartier populaire près du Vatican. 8 étapes en plein air." },
+  de: { eyebrow: "Erzählter Spaziergang · Vatikan außen", h1: "San Pietro e Borgo Pio", subtitle: "Von der Ponte Sant'Angelo zur Kuppel Michelangelos, vorbei an der Schweizergarde und dem letzten Arbeiterviertel neben dem Vatikan. 8 Stationen unter freiem Himmel." },
+  pt: { eyebrow: "Passeio narrado · Exterior do Vaticano", h1: "San Pietro e Borgo Pio", subtitle: "Da Ponte Sant'Angelo à Cúpula de Miguel Ângelo, passando pela Guarda Suíça e o último bairro popular junto ao Vaticano. 8 paragens ao ar livre." },
+  zh: { eyebrow: "讲解漫步 · 梵蒂冈外围", h1: "圣彼得与庇护城区", subtitle: "从圣天使桥到米开朗基罗穹顶，途经瑞士卫队和梵蒂冈旁最后的平民街区。8个露天站点。" }
+};
 const STOPS = [
   {
     id: 1, ready: true,
@@ -251,7 +260,7 @@ Quando estiveres pronto, atravessa a ponte e segue em direção à Via della Con
     ]
       },
       zh: {
-        name: "圣天使桥",
+        name: "Ponte Sant'Angelo",
         desc: "帕塞托秘道与教皇的逃生路线",
         audio: "audio/en/tappa1.mp3",
         photos: [
@@ -397,7 +406,7 @@ Quando estiveres pronto, segue até à Praça de São Pedro.`,
     ]
       },
       zh: {
-        name: "和解大道",
+        name: "Via della Conciliazione",
         desc: "墨索里尼下令拆除的博尔戈脊街区",
         audio: "audio/en/tappa2.mp3",
         photos: [
@@ -463,7 +472,7 @@ When you're ready, head toward the facade of Saint Peter's Basilica.`,
     ]
       },
       es: {
-        name: "Plaza de San Pedro",
+        name: "Piazza San Pietro",
         desc: "La columnata de Bernini y el obelisco sin jeroglíficos",
         audio: "audio/en/tappa3.mp3",
         photos: [
@@ -483,7 +492,7 @@ Cuando estés listo, dirígete hacia la fachada de la Basílica de San Pedro.`,
     ]
       },
       fr: {
-        name: "Place Saint-Pierre",
+        name: "Piazza San Pietro",
         desc: "La colonnade du Bernin et l'obélisque sans hiéroglyphes",
         audio: "audio/en/tappa3.mp3",
         photos: [
@@ -503,7 +512,7 @@ Quand vous êtes prêt, dirigez-vous vers la façade de la Basilique Saint-Pierr
     ]
       },
       de: {
-        name: "Petersplatz",
+        name: "Piazza San Pietro",
         desc: "Berninis Kolonnade und der Obelisk ohne Hieroglyphen",
         audio: "audio/en/tappa3.mp3",
         photos: [
@@ -523,7 +532,7 @@ Wenn du bereit bist, geh weiter zur Fassade des Petersdoms.`,
     ]
       },
       pt: {
-        name: "Praça de São Pedro",
+        name: "Piazza San Pietro",
         desc: "A colunata de Bernini e o obelisco sem hieróglifos",
         audio: "audio/en/tappa3.mp3",
         photos: [
@@ -543,7 +552,7 @@ Quando estiveres pronto, segue em direção à fachada da Basílica de São Pedr
     ]
       },
       zh: {
-        name: "圣彼得广场",
+        name: "Piazza San Pietro",
         desc: "贝尼尼柱廊与没有象形文字的方尖碑",
         audio: "audio/en/tappa3.mp3",
         photos: [
@@ -609,7 +618,7 @@ When you're ready, if you have time and energy, head toward the entrance to the 
     ]
       },
       es: {
-        name: "Basílica de San Pedro",
+        name: "Basilica di San Pietro",
         desc: "La fachada, la Piedad de Miguel Ángel, el Baldaquino de Bernini",
         audio: "audio/en/tappa4.mp3",
         photos: [
@@ -629,7 +638,7 @@ Cuando estés listo, si tienes tiempo y energías, dirígete hacia la entrada de
     ]
       },
       fr: {
-        name: "Basilique Saint-Pierre",
+        name: "Basilica di San Pietro",
         desc: "La façade, la Pietà de Michel-Ange, le baldaquin du Bernin",
         audio: "audio/en/tappa4.mp3",
         photos: [
@@ -649,7 +658,7 @@ Quand vous êtes prêt, si vous avez le temps et l'énergie, dirigez-vous vers l
     ]
       },
       de: {
-        name: "Petersdom",
+        name: "Basilica di San Pietro",
         desc: "Die Fassade, Michelangelos Pietà, Berninis Baldachin",
         audio: "audio/en/tappa4.mp3",
         photos: [
@@ -669,7 +678,7 @@ Wenn du bereit bist und noch Zeit und Kraft hast, geh weiter zum Eingang der Kup
     ]
       },
       pt: {
-        name: "Basílica de São Pedro",
+        name: "Basilica di San Pietro",
         desc: "A fachada, a Pietà de Miguel Ângelo, o Baldaquino de Bernini",
         audio: "audio/en/tappa4.mp3",
         photos: [
@@ -689,7 +698,7 @@ Quando estiveres pronto, se tiveres tempo e energia, segue em direção à entra
     ]
       },
       zh: {
-        name: "圣彼得大教堂",
+        name: "Basilica di San Pietro",
         desc: "立面、米开朗基罗的圣殇像、贝尼尼的华盖",
         audio: "audio/en/tappa4.mp3",
         photos: [
@@ -756,7 +765,7 @@ When you're ready, head back toward the square and toward the Swiss Guard entran
     ]
       },
       es: {
-        name: "Cúpula de San Pedro",
+        name: "Cupola di San Pietro",
         desc: "La obra maestra de Miguel Ángel, la subida y el panorama",
         audio: "audio/en/tappa5.mp3",
         photos: [
@@ -777,7 +786,7 @@ Cuando estés listo, vuelve hacia la plaza y dirígete hacia la entrada de la Gu
     ]
       },
       fr: {
-        name: "Coupole de Saint-Pierre",
+        name: "Cupola di San Pietro",
         desc: "Le chef-d'œuvre de Michel-Ange, la montée et le panorama",
         audio: "audio/en/tappa5.mp3",
         photos: [
@@ -798,7 +807,7 @@ Quand vous êtes prêt, retournez vers la place et dirigez-vous vers l'entrée d
     ]
       },
       de: {
-        name: "Kuppel von Sankt Peter",
+        name: "Cupola di San Pietro",
         desc: "Michelangelos Meisterwerk, der Aufstieg und der Ausblick",
         audio: "audio/en/tappa5.mp3",
         photos: [
@@ -819,7 +828,7 @@ Wenn du bereit bist, kehre zum Platz zurück und geh weiter zum Eingang der Schw
     ]
       },
       pt: {
-        name: "Cúpula de São Pedro",
+        name: "Cupola di San Pietro",
         desc: "A obra-prima de Miguel Ângelo, a subida e o panorama",
         audio: "audio/en/tappa5.mp3",
         photos: [
@@ -840,7 +849,7 @@ Quando estiveres pronto, volta em direção à praça e segue até à entrada da
     ]
       },
       zh: {
-        name: "圣彼得大教堂穹顶",
+        name: "Cupola di San Pietro",
         desc: "米开朗基罗的杰作、攀登与全景",
         audio: "audio/en/tappa5.mp3",
         photos: [
@@ -909,7 +918,7 @@ When you're ready, head toward Borgo Pio, the neighborhood behind the colonnade.
     ]
       },
       es: {
-        name: "Guardia Suiza",
+        name: "Guardia Svizzera",
         desc: "El Saco de Roma de 1527 y el ejército más antiguo del mundo",
         audio: "audio/en/tappa6.mp3",
         photos: [
@@ -930,7 +939,7 @@ Cuando estés listo, dirígete hacia Borgo Pio, el barrio detrás de la columnat
     ]
       },
       fr: {
-        name: "Garde suisse",
+        name: "Guardia Svizzera",
         desc: "Le sac de Rome de 1527 et la plus vieille armée du monde",
         audio: "audio/en/tappa6.mp3",
         photos: [
@@ -951,7 +960,7 @@ Quand vous êtes prêt, dirigez-vous vers Borgo Pio, le quartier derrière la co
     ]
       },
       de: {
-        name: "Schweizergarde",
+        name: "Guardia Svizzera",
         desc: "Der Sacco di Roma von 1527 und die älteste Armee der Welt",
         audio: "audio/en/tappa6.mp3",
         photos: [
@@ -972,7 +981,7 @@ Wenn du bereit bist, geh weiter zum Borgo Pio, dem Viertel hinter der Kolonnade.
     ]
       },
       pt: {
-        name: "Guarda Suíça",
+        name: "Guardia Svizzera",
         desc: "O Saque de Roma de 1527 e o exército mais antigo do mundo",
         audio: "audio/en/tappa6.mp3",
         photos: [
@@ -993,7 +1002,7 @@ Quando estiveres pronto, segue em direção a Borgo Pio, o bairro atrás da colu
     ]
       },
       zh: {
-        name: "瑞士卫队",
+        name: "Guardia Svizzera",
         desc: "1527年罗马之劫与世界上最古老的军队",
         audio: "audio/en/tappa6.mp3",
         photos: [
@@ -1146,7 +1155,7 @@ Quando estiveres pronto, segue em direção à Porta Sant'Anna, a última parage
     ]
       },
       zh: {
-        name: "庇护城区",
+        name: "Borgo Pio",
         desc: "梵蒂冈旁最后的平民街区遗迹",
         audio: "audio/en/tappa7.mp3",
         photos: [
@@ -1288,7 +1297,7 @@ Obrigado por caminhares connosco em torno de São Pedro.`,
     ]
       },
       zh: {
-        name: "圣安娜门",
+        name: "Porta Sant'Anna",
         desc: "世界最小国家的日常边界",
         audio: "audio/en/tappa8.mp3",
         photos: [
