@@ -20,9 +20,9 @@
     <div class="eyebrow">Percorso a tappe · Senza GPS · Bilingue IT/EN</div>
     <h1>Musei Vaticani e Cappella Sistina</h1>
     <p class="subtitle">Le opere imperdibili in un paio d'ore: dalla Pinacoteca al Laocoonte, dalle Stanze di Raffaello fino alla Cappella Sistina. Tocca la tappa che stai guardando: qui non serve il GPS.</p>
-    <a class="ticket-link" href="https://tickets.museivaticani.va" target="_blank" id="ticketLink">
-      <span class="ticket-link-label">Biglietti ufficiali<small>Sito ufficiale dei Musei Vaticani, salta la fila incluso</small></span>
-      <span class="ticket-link-price">da €25</span>
+    <a class="ticket-link" href="https://www.tiqets.com/it/attrazioni-roma-c71631/biglietti-per-musei-vaticani-e-cappella-sistina-biglietto-con-accesso-rapido-p1111450/?partner=www.vatican-museums.com" target="_blank" id="ticketLink">
+      <span class="ticket-link-label">Biglietti Musei e Cappella Sistina<small>Accesso rapido, cancellazione gratuita fino al giorno prima</small></span>
+      <span class="ticket-link-price">da circa €40</span>
     </a>
   </header>
 
@@ -753,6 +753,35 @@ Thank you for walking with us through the masterpieces of the Vatican Museums an
     }
   }
 ];
+
+// ---- Link biglietti: adatta alla lingua del telefono tra quelle disponibili su Tiqets ----
+(function(){
+  var TICKET_URLS = {
+    it: 'https://www.tiqets.com/it/attrazioni-roma-c71631/biglietti-per-musei-vaticani-e-cappella-sistina-biglietto-con-accesso-rapido-p1111450/?partner=www.vatican-museums.com',
+    en: 'https://www.tiqets.com/en/rome-attractions-c71631/tickets-for-vatican-museums-sistine-chapel-fast-track-ticket-p1111450/?partner=www.vatican-museums.com',
+    ca: 'https://www.tiqets.com/ca/atraccions-rome-c71631/tiquets-per-a-museus-vaticans-i-capella-sixtina-tiquet-d-acces-rapid-p1111450/?partner=www.vatican-museums.com',
+    cs: 'https://www.tiqets.com/cs/co-podniknout-ve-meste-rim-c71631/vstupenky-na-vatikanska-muzea-a-sixtinska-kaple-vstupenka-s-rychlejsim-vstupem-p1111450/?partner=www.vatican-museums.com',
+    da: 'https://www.tiqets.com/da/aktiviteter-i-rom-c71631/billetter-til-vatikanmuseet-og-det-sixtinske-kapel-hurtigko-billet-p1111450/?partner=www.vatican-museums.com',
+    de: 'https://www.tiqets.com/de/rom-sehenswuerdigkeiten-c71631/tickets-fur-vatikanische-museen-sixtinische-kapelle-fast-track-eintritt-p1111450/?partner=www.vatican-museums.com',
+    el: 'https://www.tiqets.com/el/rome-attractions-c71631/tickets-for-vatican-museums-sistine-chapel-fast-track-ticket-p1111450/?partner=www.vatican-museums.com',
+    es: 'https://www.tiqets.com/es/atracciones-roma-c71631/entradas-para-museos-vaticanos-y-capilla-sixtina-entrada-de-acceso-rapido-p1111450/?partner=www.vatican-museums.com',
+    fr: 'https://www.tiqets.com/fr/activites-attractions-rome-c71631/billets-pour-musees-du-vatican-chapelle-sixtine-billet-avec-acces-rapide-p1111450/?partner=www.vatican-museums.com',
+    ko: 'https://www.tiqets.com/ko/rome-attractions-c71631/tickets-for-vatican-museums-sistine-chapel-fast-track-ticket-p1111450/?partner=www.vatican-museums.com',
+    nl: 'https://www.tiqets.com/nl/rome-bezienswaardigheden-attracties-c71631/tickets-voor-vaticaanse-musea-sixtijnse-kapel-fast-track-ticket-p1111450/?partner=www.vatican-museums.com',
+    ja: 'https://www.tiqets.com/ja/rome-attractions-c71631/tickets-for-vatican-museums-sistine-chapel-fast-track-ticket-p1111450/?partner=www.vatican-museums.com',
+    pt: 'https://www.tiqets.com/pt/atracoes-roma-c71631/bilhetes-para-museus-do-vaticano-e-capela-sistina-bilhete-de-acesso-rapido-p1111450/?partner=www.vatican-museums.com',
+    pl: 'https://www.tiqets.com/pl/rzym-atrakcje-c71631/muzea-watykanskie-i-kaplica-sykstynska-bilet-szybkiego-wstepu-bilety-p1111450/?partner=www.vatican-museums.com',
+    ru: 'https://www.tiqets.com/ru/rome-attractions-c71631/tickets-for-vatican-museums-sistine-chapel-fast-track-ticket-p1111450/?partner=www.vatican-museums.com',
+    sv: 'https://www.tiqets.com/sv/saker-att-gora-i-rom-c71631/biljetter-till-vatikanmuseerna-sixtinska-kapellet-fast-track-biljett-p1111450/?partner=www.vatican-museums.com',
+    zh: 'https://www.tiqets.com/zh/rome-attractions-c71631/tickets-for-vatican-museums-sistine-chapel-fast-track-ticket-p1111450/?partner=www.vatican-museums.com'
+  };
+  var browserLang = (navigator.language || navigator.userLanguage || 'en').slice(0,2).toLowerCase();
+  var url = TICKET_URLS[browserLang] || TICKET_URLS['en'];
+  var ticketLink = document.getElementById('ticketLink');
+  if(ticketLink){
+    ticketLink.href = url;
+  }
+})();
 </script>
 <script src="../shared/app-indoor.js"></script>
 </body>
