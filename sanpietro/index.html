@@ -20,7 +20,7 @@
     <a href="../index.html" class="back-link">← Tutti i percorsi</a>
     <div class="eyebrow">Passeggiata narrata · Vaticano esterno · Bilingue IT/EN</div>
     <h1>San Pietro e Borgo Pio</h1>
-    <p class="subtitle">Da Castel Sant'Angelo alla Basilica, dal colonnato del Bernini all'ultimo quartiere medievale sopravvissuto. Otto tappe a cielo aperto attorno al più piccolo stato del mondo, in italiano e inglese.</p>
+    <p class="subtitle">Da Ponte Sant'Angelo alla Cupola di Michelangelo, passando per la Guardia Svizzera e l'ultimo quartiere popolare rimasto accanto al Vaticano. 8 tappe a cielo aperto, disponibile in italiano e inglese.</p>
   </header>
 
   <div id="langToggle">
@@ -132,7 +132,7 @@ const STOPS = [
     i18n: {
       it: {
         name: "Ponte Sant'Angelo",
-        desc: "Il ponte di Adriano e il Passetto di Borgo",
+        desc: "Il Passetto di Borgo e la via di fuga dei papi",
         audio: "audio/it/tappa1.mp3",
         photos: [
       { time: 0, url: "img/t1_ponte1.jpg", caption: "Ponte Sant'Angelo", credit: "Wikimedia Commons" },
@@ -146,11 +146,13 @@ Quel nascondimento non era un difetto urbanistico, ma un effetto scenico voluto.
 Guarda anche le statue dei santi Pietro e Paolo che affiancano l'accesso al ponte dal lato della città. Furono aggiunte nell'Ottocento, molto più tardi rispetto agli angeli barocchi di Bernini. Il ponte era ormai diventato uno dei punti panoramici più fotografati di tutta Roma, con Castel Sant'Angelo da un lato e, in lontananza, la cupola di San Pietro dall'altro.<br><br>
 Vale la pena fermarsi un momento proprio qui, prima di proseguire, per osservare il fiume Tevere che scorre sotto di te. Per secoli è stato la vera arteria di Roma, ben più trafficata di qualunque strada. Lungo queste stesse acque viaggiavano i blocchi di travertino destinati alla costruzione della nuova basilica. Erano trasportati su chiatte fino a un piccolo porto fluviale che sorgeva proprio nei pressi di questo ponte.<br><br>
 Quando sei pronto, attraversa il ponte e dirigiti verso Via della Conciliazione.`,
-        deepen: []
+        deepen: [
+      { type: "link", title: "Ponte Sant'Angelo — Wikipedia", url: "https://it.wikipedia.org/wiki/Ponte_Sant'Angelo" }
+    ]
       },
       en: {
         name: "Ponte Sant'Angelo",
-        desc: "Hadrian's bridge and the Passetto di Borgo",
+        desc: "The Passetto di Borgo, the popes' escape route",
         audio: "audio/en/tappa1.mp3",
         photos: [
       { time: 0, url: "img/t1_ponte1.jpg", caption: "Ponte Sant'Angelo", credit: "Wikimedia Commons" },
@@ -164,7 +166,9 @@ That concealment wasn't an urban planning flaw, but a deliberate theatrical effe
 Also look at the statues of Saints Peter and Paul flanking the bridge entrance on the city side. They were added in the nineteenth century, much later than Bernini's Baroque angels. The bridge had by then become one of the most photographed panoramic spots in all of Rome, with Castel Sant'Angelo on one side and, in the distance, Saint Peter's dome on the other.<br><br>
 It's worth pausing here, before continuing, to look at the Tiber flowing beneath you. For centuries it was Rome's real artery, far busier than any road. Along these same waters traveled the travertine blocks destined for the new basilica, carried on barges to a small river port that once stood right near this bridge.<br><br>
 When you're ready, cross the bridge and head toward Via della Conciliazione.`,
-        deepen: []
+        deepen: [
+      { type: "link", title: "Ponte Sant'Angelo — Wikipedia", url: "https://en.wikipedia.org/wiki/Ponte_Sant'Angelo" }
+    ]
       }
     }
   },
@@ -174,7 +178,7 @@ When you're ready, cross the bridge and head toward Via della Conciliazione.`,
     i18n: {
       it: {
         name: "Via della Conciliazione",
-        desc: "La strada nata da una demolizione controversa",
+        desc: "La demolizione della Spina di Borgo voluta da Mussolini",
         audio: "audio/it/tappa2.mp3",
         photos: [
       { time: 0, url: "img/t2_conciliazione1.jpg", caption: "Via della Conciliazione", credit: "Wikimedia Commons" },
@@ -188,11 +192,13 @@ Ironia della storia. Quando negli anni Trenta si dovette decidere come completar
 Camminando lungo questa via, guarda i ventotto lampioni a forma di obelisco che costeggiano entrambi i lati della strada. Furono l'ultimo elemento aggiunto, solo nel 1950, in occasione dell'Anno Santo. Completarono finalmente un progetto iniziato quattordici anni prima e più volte interrotto dallo scoppio della Seconda Guerra Mondiale.<br><br>
 Pochi degli edifici storici che affiancano oggi la via sono davvero antichi: la maggior parte furono costruiti ex novo dopo la demolizione, pensati fin dall'inizio per ospitare uffici e attività commerciali, non abitazioni popolari come un tempo. Solo cinque edifici storici, tra cui la chiesa di Santa Maria in Traspontina e Palazzo Torlonia, si trovavano abbastanza in asse con il nuovo tracciato da poter essere risparmiati dalle demolizioni.<br><br>
 Quando sei pronto, prosegui fino a Piazza San Pietro.`,
-        deepen: []
+        deepen: [
+      { type: "link", title: "Via della Conciliazione — Wikipedia", url: "https://it.wikipedia.org/wiki/Via_della_Conciliazione" }
+    ]
       },
       en: {
         name: "Via della Conciliazione",
-        desc: "The street born from a controversial demolition",
+        desc: "The demolition of the Spina di Borgo ordered by Mussolini",
         audio: "audio/en/tappa2.mp3",
         photos: [
       { time: 0, url: "img/t2_conciliazione1.jpg", caption: "Via della Conciliazione", credit: "Wikimedia Commons" },
@@ -206,7 +212,9 @@ Irony of history. When in the 1930s it came time to decide how to complete the n
 Walking along this street, look at the twenty-eight obelisk-shaped lamp posts lining both sides. They were the very last element added, only in 1950, for the Holy Year. They finally completed a project begun fourteen years earlier and repeatedly interrupted by the outbreak of the Second World War.<br><br>
 Few of the historic buildings lining the street today are truly ancient. Most were built from scratch after the demolition, designed from the start to house offices and businesses, not working-class housing like before. Only five historic buildings, including the church of Santa Maria in Traspontina and Palazzo Torlonia, were aligned closely enough with the new route to be spared from demolition.<br><br>
 When you're ready, continue on to Saint Peter's Square.`,
-        deepen: []
+        deepen: [
+      { type: "link", title: "Via della Conciliazione — Wikipedia", url: "https://en.wikipedia.org/wiki/Via_della_Conciliazione" }
+    ]
       }
     }
   },
@@ -230,15 +238,17 @@ Spostare quel monolite di trecentoventisette tonnellate dalla sua posizione orig
 Guarda anche le due fontane gemelle che affiancano l'obelisco. Quella sul lato destro fu realizzata da Carlo Maderno nel 1613. Quella sinistra, apparentemente identica, fu aggiunta solo nel 1675 da Carlo Fontana, che riprodusse fedelmente il disegno originale per mantenere la simmetria perfetta voluta da Bernini.<br><br>
 Ogni anno, la domenica di Pasqua e in altre grandi occasioni, questa stessa piazza si riempie di centinaia di migliaia di fedeli, provenienti da ogni angolo del mondo. Ascoltano la benedizione papale "Urbi et Orbi", alla città e al mondo, pronunciata dalla loggia centrale della basilica che vedi di fronte a te.<br><br>
 Quando sei pronto, dirigiti verso la facciata della Basilica di San Pietro.`,
-        deepen: []
+        deepen: [
+      { type: "link", title: "Piazza San Pietro — Wikipedia", url: "https://it.wikipedia.org/wiki/Piazza_San_Pietro" }
+    ]
       },
       en: {
-        name: "Saint Peter's Square",
-        desc: "Bernini's colonnade and the obelisk without hieroglyphs",
+        name: "St. Peter's Square",
+        desc: "Bernini's colonnade and the obelisk with no hieroglyphs",
         audio: "audio/en/tappa3.mp3",
         photos: [
-      { time: 0, url: "img/t3_piazza1.jpg", caption: "Saint Peter's Square", credit: "Wikimedia Commons" },
-      { time: 71, url: "img/t3_piazza2.jpg", caption: "Saint Peter's Square, detail", credit: "Wikimedia Commons" }
+      { time: 0, url: "img/t3_piazza1.jpg", caption: "St. Peter's Square", credit: "Wikimedia Commons" },
+      { time: 71, url: "img/t3_piazza2.jpg", caption: "St. Peter's Square, detail", credit: "Wikimedia Commons" }
     ],
         fullText: `You've arrived at Saint Peter's Square, one of the absolute masterpieces of Baroque urban design. Look at the colonnade embracing you on both sides: four rows of Doric columns, for a total of two hundred eighty-four columns and eighty-eight pilasters.<br><br>
 It was designed by Gian Lorenzo Bernini starting in 1656, commissioned by Pope Alexander the Seventh. The work took eleven years, for a square the artist himself described as the maternal arms of the Church, ready to embrace Catholic believers, heretics to be brought back into the fold, and even non-believers, toward the true faith.<br><br>
@@ -248,7 +258,9 @@ Moving that three-hundred-twenty-seven-ton monolith from its original position t
 Look also at the two twin fountains flanking the obelisk. The one on the right was made by Carlo Maderno in 1613. The one on the left, apparently identical, was added only in 1675 by Carlo Fontana, who faithfully reproduced the original design to maintain the perfect symmetry Bernini wanted for the whole composition.<br><br>
 Every year, on Easter Sunday and other major occasions, this same square fills with hundreds of thousands of faithful from every corner of the world. They come to hear the papal blessing "Urbi et Orbi", to the city and to the world, delivered from the central loggia of the basilica in front of you.<br><br>
 When you're ready, head toward the facade of Saint Peter's Basilica.`,
-        deepen: []
+        deepen: [
+      { type: "link", title: "St. Peter's Square — Wikipedia", url: "https://en.wikipedia.org/wiki/St._Peter's_Square" }
+    ]
       }
     }
   },
@@ -258,7 +270,7 @@ When you're ready, head toward the facade of Saint Peter's Basilica.`,
     i18n: {
       it: {
         name: "Basilica di San Pietro",
-        desc: "La Pietà di Michelangelo e il Baldacchino del Bernini",
+        desc: "La facciata, la Pietà di Michelangelo, il Baldacchino del Bernini",
         audio: "audio/it/tappa4.mp3",
         photos: [
       { time: 0, url: "img/t4_basilica1.jpg", caption: "Basilica di San Pietro", credit: "Wikimedia Commons" },
@@ -272,15 +284,17 @@ Sotto l'altare maggiore, nelle Grotte Vaticane, riposa la tomba tradizionalmente
 Poco distante dalla Pietà, cerca la statua bronzea di San Pietro seduto in cattedra. Il suo piede destro è ormai consumato e levigato dal tocco di milioni di pellegrini, che nel corso dei secoli lo hanno sfiorato o baciato in segno di devozione. Un gesto che continua ancora oggi, praticamente ininterrotto da generazioni.<br><br>
 La basilica custodisce anche le tombe di numerosi papi, disposte lungo le navate laterali e nelle grotte sottostanti. Tra le più visitate, quella di Giovanni Paolo Secondo, proclamato santo nel 2014. La sua tomba semplice contrasta volutamente con lo sfarzo barocco che la circonda.<br><br>
 Quando sei pronto, se hai tempo ed energie, dirigiti verso l'ingresso della Cupola.`,
-        deepen: []
+        deepen: [
+      { type: "link", title: "Basilica di San Pietro — Wikipedia", url: "https://it.wikipedia.org/wiki/Basilica_di_San_Pietro_in_Vaticano" }
+    ]
       },
       en: {
-        name: "Saint Peter's Basilica",
-        desc: "Michelangelo's Pietà and Bernini's Baldachin",
+        name: "St. Peter's Basilica",
+        desc: "The facade, Michelangelo's Pietà, Bernini's Baldachin",
         audio: "audio/en/tappa4.mp3",
         photos: [
-      { time: 0, url: "img/t4_basilica1.jpg", caption: "Saint Peter's Basilica", credit: "Wikimedia Commons" },
-      { time: 64, url: "img/t4_pieta1.jpg", caption: "Saint Peter's Basilica, detail", credit: "Wikimedia Commons" }
+      { time: 0, url: "img/t4_basilica1.jpg", caption: "St. Peter's Basilica", credit: "Wikimedia Commons" },
+      { time: 64, url: "img/t4_pieta1.jpg", caption: "St. Peter's Basilica, detail", credit: "Wikimedia Commons" }
     ],
         fullText: `You've arrived in front of the facade of Saint Peter's Basilica, the largest church in Christendom. Two hundred eighteen meters long, able to hold up to sixty thousand worshippers. Before entering, look up: above the cornice, thirteen statues nearly six meters tall represent Christ, John the Baptist, and eleven apostles. Saint Peter is missing: his statue is already inside, seated near the entrance.<br><br>
 Today's facade, the work of Carlo Maderno in the early seventeenth century, hides a long and troubled history. The first basilica on this site was commissioned by Emperor Constantine in the fourth century, over the tomb of the apostle Peter. After over a thousand years, that decaying building was completely demolished to make room for the church you see today. The construction site involved, one after another, some of the greatest architects in history. Bramante, Raphael, Antonio da Sangallo the Younger, and finally Michelangelo Buonarroti.<br><br>
@@ -290,7 +304,9 @@ Beneath the main altar, in the Vatican Grottoes, rests the tomb traditionally at
 Not far from the Pietà, look for the bronze statue of Saint Peter seated on his throne. Its right foot is now worn smooth by the touch of millions of pilgrims, who over the centuries have touched or kissed it as a sign of devotion. A gesture that continues today, practically unbroken across generations.<br><br>
 The basilica also holds the tombs of numerous popes, arranged along the side aisles and in the grottoes below. Among the most visited, that of John Paul the Second, canonized in 2014. His simple tomb deliberately contrasts with the Baroque splendor surrounding it.<br><br>
 When you're ready, if you have time and energy, head toward the entrance to the Dome.`,
-        deepen: []
+        deepen: [
+      { type: "link", title: "St. Peter's Basilica — Wikipedia", url: "https://en.wikipedia.org/wiki/St._Peter's_Basilica" }
+    ]
       }
     }
   },
@@ -300,7 +316,7 @@ When you're ready, if you have time and energy, head toward the entrance to the 
     i18n: {
       it: {
         name: "Cupola di San Pietro",
-        desc: "Il progetto di Michelangelo e la salita panoramica",
+        desc: "Il capolavoro di Michelangelo, la salita e il panorama",
         audio: "audio/it/tappa5.mp3",
         photos: [
       { time: 0, url: "img/t5_cupola1.jpg", caption: "Cupola di San Pietro", credit: "Wikimedia Commons" },
@@ -315,15 +331,17 @@ Un ultimo dettaglio che pochi notano. Con la costruzione della moderna Via della
 Il peso complessivo della cupola è stimato in circa quattordicimila tonnellate, sostenuto da quattro enormi pilastri interni, ciascuno con una circonferenza di oltre settanta metri. All'interno di quei pilastri sono ricavate piccole cappelle e persino delle scale a chiocciola, invisibili dall'esterno, che i tecnici della Fabbrica di San Pietro usano ancora oggi per le operazioni di manutenzione ordinaria.<br><br>
 Un ultimo dato che aiuta a capire le proporzioni di questo edificio. L'intera Basilica di San Pietro potrebbe letteralmente contenere al proprio interno la Statua della Libertà di New York, dal piedistallo alla fiamma della torcia. Con margine di spazio residuo sopra la testa.<br><br>
 Quando sei pronto, torna verso la piazza e dirigiti verso l'ingresso della Guardia Svizzera, sulla destra della basilica.`,
-        deepen: []
+        deepen: [
+      { type: "link", title: "Cupola di San Pietro — Wikipedia", url: "https://it.wikipedia.org/wiki/Cupola_di_San_Pietro" }
+    ]
       },
       en: {
-        name: "Dome of Saint Peter's",
-        desc: "Michelangelo's design and the panoramic climb",
+        name: "St. Peter's Dome",
+        desc: "Michelangelo's masterpiece, the climb and the view",
         audio: "audio/en/tappa5.mp3",
         photos: [
-      { time: 0, url: "img/t5_cupola1.jpg", caption: "Dome of Saint Peter's", credit: "Wikimedia Commons" },
-      { time: 56, url: "img/t5_cupola2.jpg", caption: "Dome of Saint Peter's, detail", credit: "Wikimedia Commons" }
+      { time: 0, url: "img/t5_cupola1.jpg", caption: "St. Peter's Dome", credit: "Wikimedia Commons" },
+      { time: 56, url: "img/t5_cupola2.jpg", caption: "St. Peter's Dome, detail", credit: "Wikimedia Commons" }
     ],
         fullText: `You've arrived at the entrance to the Dome of Saint Peter's, one of the world's most famous symbols, popularly called by Romans simply "il cupolone", the big dome. It stands over one hundred thirty-three meters tall from street level to the top of the cross, with an internal diameter of about forty-two meters.<br><br>
 The final design was by Michelangelo Buonarroti, who worked on it from 1546 until his death in 1564, never seeing it completed. Michelangelo was eighty-seven years old when he accepted the commission, refusing any payment out of religious devotion. He completely reorganized his predecessors' project, drawing inspiration not from the Roman Pantheon but from the dome of Florence Cathedral, his native city.<br><br>
@@ -333,7 +351,9 @@ From the top, the three-hundred-sixty-degree view stretches across all of Rome a
 The dome's overall weight is estimated at about fourteen thousand tons, supported by four enormous internal pillars, each with a circumference of over seventy meters. Inside those pillars are small chapels and even spiral staircases, invisible from outside, still used today by Saint Peter's maintenance technicians for routine work.<br><br>
 One last figure to help grasp this building's scale: the entire Saint Peter's Basilica could literally contain the Statue of Liberty in New York, from pedestal to torch flame, with room to spare above its head.<br><br>
 When you're ready, head back toward the square and toward the Swiss Guard entrance, on the right side of the basilica.`,
-        deepen: []
+        deepen: [
+      { type: "link", title: "St. Peter's Dome — Wikipedia", url: "https://en.wikipedia.org/wiki/Dome_of_St._Peter's_Basilica" }
+    ]
       }
     }
   },
@@ -343,7 +363,7 @@ When you're ready, head back toward the square and toward the Swiss Guard entran
     i18n: {
       it: {
         name: "Guardia Svizzera",
-        desc: "Il sacco di Roma del 1527 e il più antico esercito al mondo",
+        desc: "Il Sacco di Roma del 1527 e l'esercito più antico al mondo",
         audio: "audio/it/tappa6.mp3",
         photos: [
       { time: 0, url: "img/t6_guardia1.jpg", caption: "Guardia Svizzera", credit: "Wikimedia Commons" },
@@ -358,7 +378,9 @@ Per entrare nel corpo, oggi come cinquecento anni fa, bisogna essere cittadini s
 Le armi tradizionali della Guardia Svizzera restano ancora oggi l'alabarda e la spada, esattamente come cinquecento anni fa. Ogni guardia riceve però anche un addestramento moderno completo in tecniche di sicurezza e uso di armi da fuoco contemporanee, meno visibili ma sempre pronte sotto l'uniforme storica.<br><br>
 Il comandante del corpo porta ancora oggi il titolo di colonnello, e risponde direttamente al papa. È una delle poche istituzioni al mondo in cui una divisa apparentemente uscita da un dipinto rinascimentale convive quotidianamente con protocolli di sicurezza pensati per il ventunesimo secolo.<br><br>
 Quando sei pronto, dirigiti verso Borgo Pio, il quartiere alle spalle del colonnato.`,
-        deepen: []
+        deepen: [
+      { type: "link", title: "Guardia Svizzera Pontificia — Wikipedia", url: "https://it.wikipedia.org/wiki/Guardia_svizzera_pontificia" }
+    ]
       },
       en: {
         name: "Swiss Guard",
@@ -377,7 +399,9 @@ To join the corps, today just as five hundred years ago, one must be a Swiss cit
 The Swiss Guard's traditional weapons remain the halberd and the sword, exactly as five hundred years ago. Each guard also receives full modern training in security techniques and contemporary firearms, though, less visible but always ready beneath the historic uniform.<br><br>
 The corps commander still holds the title of colonel today, and answers directly to the pope. It's one of the few institutions in the world where a uniform seemingly straight out of a Renaissance painting coexists daily with security protocols designed for the twenty-first century.<br><br>
 When you're ready, head toward Borgo Pio, the neighborhood behind the colonnade.`,
-        deepen: []
+        deepen: [
+      { type: "link", title: "Pontifical Swiss Guard — Wikipedia", url: "https://en.wikipedia.org/wiki/Pontifical_Swiss_Guard" }
+    ]
       }
     }
   },
@@ -387,7 +411,7 @@ When you're ready, head toward Borgo Pio, the neighborhood behind the colonnade.
     i18n: {
       it: {
         name: "Borgo Pio",
-        desc: "L'ultimo lembo del quartiere medievale sopravvissuto",
+        desc: "L'ultimo lembo del quartiere popolare accanto al Vaticano",
         audio: "audio/it/tappa7.mp3",
         photos: [
       { time: 0, url: "img/t7_borgopio1.jpg", caption: "Borgo Pio", credit: "Wikimedia Commons" },
@@ -402,11 +426,13 @@ Oggi Borgo Pio è anche una piccola galleria d'arte a cielo aperto. Sui muri di 
 Fino agli anni Trenta del Novecento, Borgo Pio si estendeva su entrambi i lati del Passetto, la struttura sopraelevata che hai visto all'inizio del nostro giro collegare Castel Sant'Angelo al Vaticano. Oggi il quartiere sopravvive solo a nord di quella struttura. A sud, dove un tempo si estendevano altri vicoli popolari, sorgono adesso quasi esclusivamente uffici vaticani. E il grande complesso dell'Ospedale di Santo Spirito, uno dei più antichi d'Europa, fondato nel dodicesimo secolo.<br><br>
 Gli abitanti storici di questo rione si chiamano ancora oggi, in romanesco, "borghiciani". Una comunità che per secoli ha vissuto letteralmente all'ombra del Vaticano, mantenendo però sempre un'identità popolare distinta. Fatta di artigiani, piccoli commercianti e famiglie che si tramandavano casa e mestiere di generazione in generazione.<br><br>
 Quando sei pronto, dirigiti verso Porta Sant'Anna, l'ultima tappa del nostro giro.`,
-        deepen: []
+        deepen: [
+      { type: "link", title: "Borgo Pio — Wikipedia", url: "https://it.wikipedia.org/wiki/Borgo_Pio" }
+    ]
       },
       en: {
         name: "Borgo Pio",
-        desc: "The last surviving fragment of the medieval neighborhood",
+        desc: "The last surviving fragment of the working-class district by the Vatican",
         audio: "audio/en/tappa7.mp3",
         photos: [
       { time: 0, url: "img/t7_borgopio1.jpg", caption: "Borgo Pio", credit: "Wikimedia Commons" },
@@ -421,7 +447,9 @@ Until the 1930s, Borgo Pio extended on both sides of the Passetto, the elevated 
 The historic residents of this district are still called, in Roman dialect, "borghiciani". A community that for centuries lived literally in the shadow of the Vatican. It always maintained a distinct working-class identity, made up of artisans, small shopkeepers, and families who passed down home and trade from generation to generation.<br><br>
 Today Borgo Pio is also a small open-air art gallery. On the walls of some alleys, street art by Roman artist Maupal has appeared in recent years. He often plays with papal iconography in an ironic, contemporary key, a surprising contrast with the otherwise solemn atmosphere of the whole neighborhood.<br><br>
 When you're ready, head toward Porta Sant'Anna, the last stop of our tour.`,
-        deepen: []
+        deepen: [
+      { type: "link", title: "Borgo (rione) — Wikipedia", url: "https://en.wikipedia.org/wiki/Borgo_(rione_di_Roma)" }
+    ]
       }
     }
   },
@@ -431,11 +459,11 @@ When you're ready, head toward Porta Sant'Anna, the last stop of our tour.`,
     i18n: {
       it: {
         name: "Porta Sant'Anna",
-        desc: "Il confine più piccolo del mondo, chiusura del giro",
+        desc: "Il confine quotidiano del più piccolo stato del mondo",
         audio: "audio/it/tappa8.mp3",
         photos: [
-      { time: 0, url: "img/t8_portasantanna1.jpg", caption: "Porta Sant'Anna", credit: "Wikimedia Commons" },
-      { time: 65, url: "img/t8_portasantanna2.jpg", caption: "Porta Sant'Anna, dettaglio", credit: "Wikimedia Commons" }
+      { time: 0, url: "img/t8_portaanna1.jpg", caption: "Porta Sant'Anna", credit: "Wikimedia Commons" },
+      { time: 65, url: "img/t8_portaanna2.jpg", caption: "Porta Sant'Anna, dettaglio", credit: "Wikimedia Commons" }
     ],
         fullText: `Sei arrivato a Porta Sant'Anna, e qui chiudiamo il nostro giro attorno a San Pietro. Questo è oggi, di fatto, l'ingresso principale per chiunque debba entrare nella Città del Vaticano per motivi diversi dalla semplice visita turistica. Dipendenti, residenti, fornitori, e chiunque abbia bisogno di accedere alla celebre farmacia vaticana.<br><br>
 Il nome della porta deriva dalla chiesa di Sant'Anna dei Palafrenieri, che si affaccia proprio qui accanto, con la sua caratteristica pianta ellittica. Fu progettata a partire dal 1565 da Jacopo Barozzi da Vignola, uno dei più importanti architetti del secondo Cinquecento romano. Il nome "Palafrenieri" ricorda che la chiesa era originariamente destinata ai servitori a cavallo del papa, gli stallieri che si occupavano delle scuderie pontificie.<br><br>
@@ -444,15 +472,17 @@ Guarda le basse mura di confine che corrono lungo questo tratto. Furono costruit
 Questa porta rappresenta bene il carattere sfumato e permeabile di tutto il confine vaticano. Non un muro imponente e ostile, ma un passaggio quotidiano, attraversato ogni giorno da centinaia di persone normali, lavoratori e residenti. Un viavai che contrasta con l'immagine solitamente più solenne e cerimoniale che si ha del più piccolo stato sovrano del pianeta.<br><br>
 Ripensa al percorso di oggi. Da un ponte romano di quasi duemila anni, attraverso una strada nata da una demolizione controversa, fino a una piazza pensata per abbracciare l'umanità intera. Una cupola che ha richiesto quasi un secolo per essere completata, un esercito rimasto identico da cinquecento anni, e un quartiere che ancora oggi conserva l'anima di un piccolo borgo dentro la grande città. Se un giorno vorrai tornare per scoprire cosa si nasconde oltre queste mura, i Musei Vaticani e la Cappella Sistina restano una delle esperienze artistiche più straordinarie al mondo. Richiedono però un giro tutto loro, con un ritmo e un tipo di visita molto diversi da quello di oggi, tra chilometri di corridoi e migliaia di opere d'arte.<br><br>
 Grazie per aver camminato con noi attorno a San Pietro.`,
-        deepen: []
+        deepen: [
+      { type: "link", title: "Porta Sant'Anna — Wikipedia", url: "https://it.wikipedia.org/wiki/Porta_Sant'Anna" }
+    ]
       },
       en: {
         name: "Porta Sant'Anna",
-        desc: "The world's smallest border, end of the tour",
+        desc: "The everyday border of the world's smallest state",
         audio: "audio/en/tappa8.mp3",
         photos: [
-      { time: 0, url: "img/t8_portasantanna1.jpg", caption: "Porta Sant'Anna", credit: "Wikimedia Commons" },
-      { time: 61, url: "img/t8_portasantanna2.jpg", caption: "Porta Sant'Anna, detail", credit: "Wikimedia Commons" }
+      { time: 0, url: "img/t8_portaanna1.jpg", caption: "Porta Sant'Anna", credit: "Wikimedia Commons" },
+      { time: 61, url: "img/t8_portaanna2.jpg", caption: "Porta Sant'Anna, detail", credit: "Wikimedia Commons" }
     ],
         fullText: `You've arrived at Porta Sant'Anna, and here we close our tour around Saint Peter's. This is today, in practice, the main entrance for anyone who needs to enter Vatican City for reasons other than simple tourism. Employees, residents, suppliers, and anyone needing access to the famous Vatican pharmacy.<br><br>
 The gate's name comes from the church of Sant'Anna dei Palafrenieri, facing right next to it, with its distinctive elliptical floor plan. It was designed starting in 1565 by Jacopo Barozzi da Vignola, one of the most important architects of the late sixteenth century in Rome. The name "Palafrenieri" recalls that the church was originally intended for the pope's mounted attendants, the stable hands who cared for the papal stables.<br><br>
@@ -462,7 +492,9 @@ This gate represents well the blurred, permeable character of the entire Vatican
 If you ever want to come back to discover what lies beyond these walls, the Vatican Museums and the Sistine Chapel remain one of the most extraordinary artistic experiences in the world. They require a tour of their own, though, with a pace and style of visit very different from today's, through kilometers of corridors and thousands of works of art.<br><br>
 Think back on today's route. From a nearly two-thousand-year-old Roman bridge, through a street born from a controversial demolition, to a square designed to embrace all of humanity. A dome that took nearly a century to complete, an army that has remained unchanged for five hundred years, and a neighborhood that still today keeps the soul of a small village inside the great city.<br><br>
 Thank you for walking with us around Saint Peter's.`,
-        deepen: []
+        deepen: [
+      { type: "link", title: "Vatican City — Wikipedia", url: "https://en.wikipedia.org/wiki/Vatican_City" }
+    ]
       }
     }
   }
