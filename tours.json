@@ -31,6 +31,37 @@
     "url": "https://fly98.github.io/FlyTour/roma/index.html"
   },
   {
+    "slug": "vaticano",
+    "country": "Italia",
+    "city": "Roma",
+    "audience": "guest",
+    "title": {
+      "it": "Musei Vaticani e Cappella Sistina",
+      "en": "Vatican Museums and Sistine Chapel",
+      "es": "Museos Vaticanos y Capilla Sixtina",
+      "fr": "Musées du Vatican et Chapelle Sixtine",
+      "de": "Vatikanische Museen und Sixtinische Kapelle",
+      "pt": "Museus do Vaticano e Capela Sistina",
+      "zh": "梵蒂冈博物馆与西斯廷教堂"
+    },
+    "desc": {
+      "it": "Le opere imperdibili in un paio d'ore: dalla Pinacoteca al Laocoonte, dalle Stanze di Raffaello fino alla Cappella Sistina. Percorso a tappe numerate, senza bisogno di GPS. 18 tappe, disponibile in italiano e inglese.",
+      "en": "The unmissable works in a couple of hours: from the Pinacoteca to the Laocoön, from the Raphael Rooms to the Sistine Chapel. Numbered stop-by-stop route, no GPS needed. 18 stops, available in Italian and English.",
+      "es": "Las obras imprescindibles en un par de horas: desde la Pinacoteca hasta el Laocoonte, desde las Estancias de Rafael hasta la Capilla Sixtina. Recorrido por paradas numeradas, sin necesidad de GPS. 18 paradas, disponible en italiano e inglés.",
+      "fr": "Les œuvres incontournables en quelques heures: de la Pinacothèque au Laocoon, des Chambres de Raphaël à la Chapelle Sixtine. Parcours par étapes numérotées, sans GPS. 18 étapes, disponible en italien et en anglais.",
+      "de": "Die unverzichtbaren Meisterwerke in ein paar Stunden: von der Pinakothek über den Laokoon bis zu den Raffael-Zimmern und der Sixtinischen Kapelle. Nummerierte Stationen, kein GPS nötig. 18 Stationen, verfügbar auf Italienisch und Englisch.",
+      "pt": "As obras imperdíveis em cerca de duas horas: da Pinacoteca ao Laocoonte, das Salas de Rafael à Capela Sistina. Percurso por paragens numeradas, sem necessidade de GPS. 18 paragens, disponível em italiano e inglês.",
+      "zh": "两小时内游览必看杰作：从画廊到拉奥孔，从拉斐尔房间到西斯廷教堂。编号站点路线，无需GPS。18个站点，提供意大利语和英语版本。"
+    },
+    "duration": "2-3 ore",
+    "distance": "Percorso interno (no GPS)",
+    "stops": 18,
+    "lat": 41.9065,
+    "lon": 12.4536,
+    "cover": "https://commons.wikimedia.org/wiki/Special:FilePath/Michelangelo%20-%20Creation%20of%20Adam%20(cropped).jpg?width=700",
+    "url": "https://fly98.github.io/FlyTour/vaticano/index.html"
+  },
+  {
     "slug": "trastevere",
     "country": "Italia",
     "city": "Roma",
