@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="FlyTour">
+<meta name="theme-color" content="#2a2622">
+<link rel="manifest" href="../manifest.json">
+<link rel="apple-touch-icon" href="../icons/icon-180.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../icons/icon-32.png">
+<title>Roma Esoterica — Audioguida</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet" href="../shared/app.css">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a href="../index.html" class="back-link">← Tutti i percorsi</a>
+    <div class="eyebrow">Passeggiata narrata · Misteri e leggende · Bilingue IT/EN</div>
+    <h1>Roma Esoterica</h1>
+    <p class="subtitle">Fantasmi imperiali, astrologia nascosta nelle chiese, ossari trasformati in arte, leggende di scimmie salvifiche e quartieri costruiti come enigmi di pietra. Nove tappe nella Roma segreta, in italiano e inglese.</p>
+  </header>
+
+  <div id="langToggle">
+    <button data-lang="it">Italiano</button>
+    <button data-lang="en">English</button>
+  </div>
+
+  <div class="trail" id="trail"></div>
+
+  <div class="map-wrap"><div id="map"></div></div>
+
+  <div class="toggle-row">
+    <div class="toggle-label"><b>Riproduzione automatica</b><br>Parte da sola quando arrivi a una tappa</div>
+    <label class="switch">
+      <input type="checkbox" id="autoplayToggle" checked>
+      <span class="slider"></span>
+    </label>
+  </div>
+
+  <div class="gps-status" id="gpsStatusRow" style="cursor:pointer;">
+    <div class="gps-dot" id="gpsDot"></div>
+    <span id="gpsText">Posizione non attiva — tocca "Attiva GPS" qui sotto</span>
+    <button class="reset-link" id="resetBtn">Ricomincia il giro</button>
+  </div>
+
+  <div id="gpsDebug" style="display:none; font-size:11px; opacity:0.6; padding:4px 20px 0; font-family:monospace; line-height:1.5;"></div>
+
+  <div class="stops" id="stops"></div>
+
+  <footer>Genera audio con Google Cloud TTS · fatto per camminarci sopra</footer>
+</div>
+
+<div class="arrival-overlay" id="arrivalOverlay">
+  <div class="arrival-card">
+    <div class="arrival-eyebrow">Sei arrivato</div>
+    <div class="arrival-title" id="arrivalTitle">—</div>
+    <div class="arrival-actions">
+      <button class="btn btn-ghost" id="laterBtn">Più tardi</button>
+      <button class="btn btn-primary" id="playNowBtn">▶ Riproduci</button>
+    </div>
+  </div>
+</div>
+
+<div class="text-modal-overlay" id="textModalOverlay">
+  <div class="text-modal">
+    <div class="text-modal-header">
+      <div class="text-modal-title" id="textModalTitle">—</div>
+      <button class="text-modal-close" id="textModalClose">✕</button>
+    </div>
+    <div class="text-modal-body" id="textModalBody"></div>
+    <div class="yt-links" id="ytLinks" style="display:none;">
+      <div class="yt-eyebrow">Approfondisci</div>
+      <div id="ytLinksList"></div>
+    </div>
+  </div>
+</div>
+
+<div class="arrival-overlay" id="endOverlay">
+  <div class="arrival-card">
+    <div class="arrival-eyebrow">Tappa completata</div>
+    <div class="arrival-title" id="endTitle">—</div>
+    <div class="yt-links" id="endYtLinks" style="display:none;">
+      <div class="yt-eyebrow">Approfondisci</div>
+      <div id="endYtLinksList"></div>
+    </div>
+    <div class="arrival-actions" style="margin-top:16px;">
+      <button class="btn btn-primary" id="endCloseBtn">Continua a camminare</button>
+    </div>
+  </div>
+</div>
+
+<div class="player" id="player">
+  <div class="photo-panel" id="photoPanel">
+    <img id="photoImg" src="" alt="">
+    <button class="player-close" id="playerCloseBtn">✕</button>
+    <div class="photo-caption" id="photoCaption"></div>
+  </div>
+  <div class="player-top">
+    <div class="player-name" id="playerName">—</div>
+  </div>
+  <div class="seek-row">
+    <span class="time-label" id="timeElapsed">0:00</span>
+    <input type="range" class="seek" id="seekBar" min="0" max="100" value="0" step="0.1">
+    <span class="time-label right" id="timeRemaining">-0:00</span>
+  </div>
+  <div class="transport">
+    <button class="skip-btn" id="backBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 19l-7-7 7-7M4 12h13a4 4 0 000-8"/></svg>
+      <span>15s</span>
+    </button>
+    <button class="play-btn" id="playPauseBtn" style="width:52px;height:52px;">
+      <svg viewBox="0 0 24 24" fill="#241a12" style="width:20px;height:20px;"><path id="playIcon" d="M8 5v14l11-7z"/></svg>
+    </button>
+    <button class="skip-btn" id="fwdBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 5l7 7-7 7M20 12H7a4 4 0 010-8"/></svg>
+      <span>15s</span>
+    </button>
+  </div>
+  <audio id="audioEl" style="display:none;"></audio>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+// ---- Dati tappe (pilota: 2 tappe) ----
+const STOPS = [
+  {
+    id: 1, ready: true,
+    lat: 41.9107038, lon: 12.4763579,
+    i18n: {
+      it: {
+        name: "Piazza del Popolo",
+        desc: "Il fantasma di Nerone e il noce esorcizzato",
+        audio: "audio/it/tappa1.mp3",
+        photos: [
+      { time: 0, url: "img/t1_popolo1.jpg", caption: "Piazza del Popolo", credit: "Wikimedia Commons" },
+      { time: 71, url: "img/t1_popolo2.jpg", caption: "Piazza del Popolo, dettaglio", credit: "Wikimedia Commons" }
+    ],
+        fullText: `Sei arrivato in Piazza del Popolo, e qui comincia il nostro giro nella Roma esoterica e misteriosa. Guarda l'obelisco al centro, alto venticinque metri, portato qui dall'Egitto duemila anni fa. Ma la vera storia di questa piazza è molto più cupa di quanto sembri.<br><br>
+Nel primo secolo dopo Cristo, secondo la leggenda medievale, l'imperatore Nerone fu sepolto proprio qui, sotto un boschetto di noci, accanto al mausoleo della sua famiglia. Il popolo romano, che pure lo aveva amato in vita, cominciò presto a temere quel luogo. Si diceva che corvi neri si radunassero intorno all'albero. Si diceva che streghe e demoni celebrassero riti notturni proprio sotto quelle fronde.<br><br>
+Nel Medioevo la situazione divenne insostenibile. I romani che abitavano nei dintorni giuravano di sentire urla strazianti provenire dalla tomba, ogni notte. Nel 1099 il popolo chiese aiuto al Papa. Pasquale Secondo si ritirò in preghiera per tre giorni interi. Durante una veglia gli apparve la Madonna in sogno. Gli indicò l'unico modo per liberare la piazza dal male: abbattere il noce maledetto, disseppellire le ossa di Nerone, bruciarle, e disperderne le ceneri nel Tevere.<br><br>
+Il Papa eseguì alla lettera. Sotto l'albero fu trovata davvero un'urna con delle ceneri. Vennero gettate nel fiume, come ordinato dalla visione. Al posto del noce, fece costruire una piccola cappella dedicata alla Vergine. Quella cappella, ampliata nei secoli, è diventata la basilica di Santa Maria del Popolo che vedi ancora oggi, proprio accanto alla porta della piazza.<br><br>
+Da allora, dicono i romani, il fantasma di Nerone non si è più visto. Ma la leggenda sopravvive ancora oggi in un piccolo dettaglio architettonico: l'altare maggiore della basilica sorge esattamente sulle radici di quell'antico noce maledetto. Alcuni raccontano che, nelle notti di nebbia più fitta, capiti ancora di incontrare per le vie della piazza le anime inquiete di Nerone e dei tanti condannati sepolti qui nei secoli, prima che il luogo fosse consacrato.<br><br>
+Guarda anche le due chiese gemelle che si aprono dall'altro lato della piazza, verso il Tridente. Santa Maria in Montesanto e Santa Maria dei Miracoli furono costruite apposta identiche nell'aspetto, per un preciso effetto scenografico, nonostante abbiano piante interne diverse. Sotto il Muro Torto, la strada tortuosa che costeggia la piazza verso il Pincio, i romani raccontano ancora un'altra storia inquietante. Qui venivano un tempo sepolti i condannati a morte e i suicidi, in terra sconsacrata. La tortuosità stessa della strada, che ha causato per secoli incidenti e disgrazie, viene ancora oggi associata da alcuni a quell'antica presenza di anime inquiete.<br><br>
+Quando sei pronto, entra nella basilica di Santa Maria del Popolo, proprio accanto a te.`,
+        deepen: []
+      },
+      en: {
+        name: "Piazza del Popolo",
+        desc: "Nero's ghost and the exorcised walnut tree",
+        audio: "audio/en/tappa1.mp3",
+        photos: [
+      { time: 0, url: "img/t1_popolo1.jpg", caption: "Piazza del Popolo", credit: "Wikimedia Commons" },
+      { time: 68, url: "img/t1_popolo2.jpg", caption: "Piazza del Popolo, detail", credit: "Wikimedia Commons" }
+    ],
+        fullText: `You've arrived at Piazza del Popolo, and here begins our tour through esoteric and mysterious Rome. Look at the obelisk in the center, twenty-five meters tall, brought here from Egypt two thousand years ago. But the real story of this square is much darker than it seems.<br><br>
+In the first century AD, according to medieval legend, Emperor Nero was buried right here, under a grove of walnut trees, next to his family's mausoleum. The Roman people, who had loved him in life, soon began to fear this place. It was said that black crows gathered around the tree. It was said that witches and demons held nighttime rituals right beneath those branches.<br><br>
+By the Middle Ages the situation became unbearable. Romans living nearby swore they heard agonizing screams coming from the tomb, every single night. In 1099 the people asked the Pope for help. Pope Paschal the Second withdrew into prayer for three full days. During a vigil, the Virgin Mary appeared to him in a dream. She showed him the only way to free the square from evil: cut down the cursed walnut tree, dig up Nero's bones, burn them, and scatter the ashes in the Tiber.<br><br>
+The Pope followed her instructions to the letter. Under the tree an urn with ashes was indeed found. They were thrown into the river, exactly as the vision had ordered. In place of the walnut tree, he had a small chapel built, dedicated to the Virgin. That chapel, expanded over the centuries, became the basilica of Santa Maria del Popolo you still see today, right next to the square's gate.<br><br>
+Since then, Romans say, Nero's ghost has never been seen again. But the legend survives today in one small architectural detail: the basilica's main altar stands exactly on the roots of that ancient cursed walnut tree. Some say that on the foggiest nights, you can still encounter, wandering the square, the restless souls of Nero and the many condemned buried here over the centuries, before the place was consecrated.<br><br>
+Look also at the two twin churches on the other side of the square, toward the Tridente: Santa Maria in Montesanto and Santa Maria dei Miracoli. They were built deliberately identical in appearance, for a precise scenic effect, even though their interior layouts differ. Beneath the Muro Torto, the winding road that skirts the square toward the Pincio hill, Romans still tell another unsettling story. Condemned criminals and suicides were once buried here, in unconsecrated ground. The road's own winding shape, which has caused accidents and misfortunes for centuries, is still associated by some with that ancient presence of restless souls.<br><br>
+When you're ready, enter the basilica of Santa Maria del Popolo, right next to you.`,
+        deepen: []
+      }
+    }
+  },
+  {
+    id: 2, ready: true,
+    lat: 41.9114632, lon: 12.4762433,
+    i18n: {
+      it: {
+        name: "Santa Maria del Popolo",
+        desc: "La Cappella Chigi, l'astrologia e lo scheletro di Bernini",
+        audio: "audio/it/tappa2.mp3",
+        photos: [
+      { time: 0, url: "img/t2_smpopolo1.jpg", caption: "Santa Maria del Popolo", credit: "Wikimedia Commons" },
+      { time: 63, url: "img/t2_smpopolo2.jpg", caption: "Santa Maria del Popolo, dettaglio", credit: "Wikimedia Commons" }
+    ],
+        fullText: `Sei entrato nella basilica di Santa Maria del Popolo, costruita per esorcizzare il fantasma di Nerone. Ma le sorprese esoteriche di questo edificio non finiscono con la leggenda che hai appena ascoltato.<br><br>
+Cerca la seconda cappella della navata sinistra: è la Cappella Chigi, commissionata nel Cinquecento dal banchiere Agostino Chigi a Raffaello Sanzio in persona. Guarda in alto, verso la cupola: un mosaico dorato raffigura Dio Padre circondato non da angeli qualunque, ma dalle allegorie del Sole, della Luna e dei pianeti allora conosciuti. Un tempio cristiano che celebra apertamente l'astrologia, mescolando senza timore la fede cattolica con simboli pagani antichissimi.<br><br>
+Guarda ora in basso, sul pavimento: un mosaico raffigura uno scheletro alato che solleva lo stemma della famiglia Chigi verso il cielo. Accanto, un'iscrizione latina: "Mors ad caelos", la morte come strada verso il cielo. Fu disegnato da Gian Lorenzo Bernini stesso, oltre un secolo dopo Raffaello, quando completò la cappella per un discendente della stessa famiglia, diventato nel frattempo Papa Alessandro Settimo.<br><br>
+Le tombe di Agostino Chigi e di suo fratello Sigismondo hanno una forma piramidale, ispirata deliberatamente all'antico Egitto. Un simbolo di eternità preso in prestito da una civiltà pagana, per decorare le tombe cristiane di due banchieri rinascimentali. Bernini aggiunse anche due statue straordinarie: Abacuc e l'angelo, e Daniele nella fossa dei leoni, entrambe cariche di simbolismo biblico e teatralità barocca.<br><br>
+Questa cappella racconta, in poche decine di metri quadri, tutta l'anima segreta di Roma. Una città che si è sempre professata profondamente cristiana, mescolando però senza sosta astrologia, simboli egizi, memento mori e superstizioni pagane. Spesso proprio dentro le sue chiese più importanti.<br><br>
+Nella stessa cappella, cerca anche la piccola apertura nel pavimento, oggi spesso chiusa da una grata. Un tempo permetteva di scorgere, nel sepolcro sottostante, un'ulteriore piramide in miniatura, parte dello stesso apparato funerario dedicato alla famiglia Chigi. Un doppio livello simbolico, in superficie e in profondità, entrambi costruiti sulla stessa ossessione per l'eternità e per i simboli di un antico Egitto reinterpretato in chiave cristiana.<br><br>
+Quando sei pronto, dirigiti verso Santa Maria della Vittoria. Ti conviene prendere la metro A da Flaminio fino a Repubblica: sono circa venti minuti.`,
+        deepen: []
+      },
+      en: {
+        name: "Santa Maria del Popolo",
+        desc: "The Chigi Chapel, astrology and Bernini's skeleton",
+        audio: "audio/en/tappa2.mp3",
+        photos: [
+      { time: 0, url: "img/t2_smpopolo1.jpg", caption: "Santa Maria del Popolo", credit: "Wikimedia Commons" },
+      { time: 60, url: "img/t2_smpopolo2.jpg", caption: "Santa Maria del Popolo, detail", credit: "Wikimedia Commons" }
+    ],
+        fullText: `You've entered the basilica of Santa Maria del Popolo, built to exorcise Nero's ghost. But this building's esoteric surprises don't end with the legend you just heard.<br><br>
+Look for the second chapel on the left aisle: it's the Chigi Chapel, commissioned in the sixteenth century by banker Agostino Chigi to Raphael himself. Look up toward the dome: a golden mosaic shows God the Father surrounded not by ordinary angels, but by allegories of the Sun, the Moon, and the planets known at the time. A Christian temple that openly celebrates astrology, fearlessly blending Catholic faith with ancient pagan symbols.<br><br>
+Now look down, at the floor: a mosaic depicts a winged skeleton lifting the Chigi family coat of arms toward the sky. Next to it, a Latin inscription: "Mors ad caelos", death as the road to heaven. It was designed by Gian Lorenzo Bernini himself, over a century after Raphael, when he completed the chapel for a descendant of the same family, who had in the meantime become Pope Alexander the Seventh.<br><br>
+The tombs of Agostino Chigi and his brother Sigismondo have a pyramidal shape, deliberately inspired by ancient Egypt. A symbol of eternity borrowed from a pagan civilization, to decorate the Christian tombs of two Renaissance bankers. Bernini also added two extraordinary statues: Habakkuk and the Angel, and Daniel in the lions' den, both charged with biblical symbolism and Baroque theatricality.<br><br>
+In the same chapel, look also for a small opening in the floor, today often closed by a grate. It once allowed a glimpse, in the crypt below, of yet another miniature pyramid, part of the same funerary complex dedicated to the Chigi family. A double symbolic level, above and below ground, both built on the same obsession with eternity and with symbols of an ancient Egypt reinterpreted in Christian terms.<br><br>
+This chapel tells, in just a few dozen square meters, the whole secret soul of Rome. A city that has always professed itself deeply Christian, while constantly blending astrology, Egyptian symbols, memento mori, and pagan superstitions. Often right inside its most important churches.<br><br>
+When you're ready, head toward Santa Maria della Vittoria. It's best to take metro line A from Flaminio to Repubblica: about twenty minutes.`,
+        deepen: []
+      }
+    }
+  },
+  {
+    id: 3, ready: true,
+    lat: 41.9046449, lon: 12.4942942,
+    i18n: {
+      it: {
+        name: "Santa Maria della Vittoria",
+        desc: "L'Estasi di Santa Teresa, tra sacro e profano",
+        audio: "audio/it/tappa3.mp3",
+        photos: [
+      { time: 0, url: "img/t3_teresa1.jpg", caption: "Santa Maria della Vittoria", credit: "Wikimedia Commons" },
+      { time: 63, url: "img/t3_teresa2.jpg", caption: "Santa Maria della Vittoria, dettaglio", credit: "Wikimedia Commons" }
+    ],
+        fullText: `Sei arrivato alla chiesa di Santa Maria della Vittoria, e qui dentro troverai una delle opere d'arte più controverse della storia italiana. Cerca la Cappella Cornaro, sulla sinistra: dentro c'è l'Estasi di Santa Teresa, capolavoro assoluto di Gian Lorenzo Bernini, completato nel 1652.<br><br>
+La scultura raffigura Santa Teresa d'Avila nel momento del cosiddetto transverberamento: un angelo le trafigge il cuore con una freccia dorata, simbolo dell'amore divino. Il volto della santa, con gli occhi socchiusi e le labbra dischiuse, ha generato dibattiti che durano da secoli. Un critico inglese la definì, con parole poco lusinghiere, come l'immagine di qualcosa di più terreno che divino. La stessa Santa Teresa, nella sua autobiografia, descrisse quell'esperienza mistica con parole che a un lettore moderno suonano sorprendentemente sensuali.<br><br>
+Bernini trasformò letteralmente la cappella in un piccolo teatro. Costruì palchi laterali dove sono raffigurati membri della famiglia Cornaro, il cardinale committente dell'opera, intenti a osservare la scena come se stessero assistendo a uno spettacolo dal vivo. Una finestra nascosta sopra il gruppo scultoreo lascia filtrare luce naturale su un fascio di raggi dorati, calcolato apposta per illuminare la scena nel momento di massima intensità emotiva.<br><br>
+Lo stesso Papa Urbano Ottavo, secondo alcune fonti, si rifiutò di ospitare quest'opera nella Basilica di San Pietro, relegandola in questa chiesa relativamente periferica rispetto al centro del potere vaticano. Un'opera considerata troppo audace, troppo ambigua tra sacro e profano, per il cuore della cristianità.<br><br>
+Questa chiesa custodisce quindi, sotto forma di marmo perfetto, uno dei più antichi dibattiti dell'umanità: dove finisce l'estasi mistica e dove comincia il piacere terreno? Bernini non ha mai voluto dare una risposta definitiva, lasciando che fosse lo spettatore a decidere cosa vedere in quel volto sospeso tra cielo e terra.<br><br>
+Questa chiesa fu costruita anche per celebrare una vittoria militare specifica, quella della battaglia della Montagna Bianca del 1620, durante la Guerra dei Trent'anni: da qui il nome "della Vittoria". Un'immagine della Madonna, portata in battaglia come stendardo protettivo dalle truppe cattoliche, fu poi collocata sull'altare maggiore proprio in memoria di quella giornata. Aggiunge un ulteriore livello di simbolismo militare e spirituale a un edificio già carico di tensioni tra fede, arte e mistero.<br><br>
+Quando sei pronto, dirigiti verso Piazza Barberini, a pochi minuti a piedi.`,
+        deepen: []
+      },
+      en: {
+        name: "Santa Maria della Vittoria",
+        desc: "The Ecstasy of Saint Teresa, between sacred and profane",
+        audio: "audio/en/tappa3.mp3",
+        photos: [
+      { time: 0, url: "img/t3_teresa1.jpg", caption: "Santa Maria della Vittoria", credit: "Wikimedia Commons" },
+      { time: 58, url: "img/t3_teresa2.jpg", caption: "Santa Maria della Vittoria, detail", credit: "Wikimedia Commons" }
+    ],
+        fullText: `You've arrived at the church of Santa Maria della Vittoria, and inside you'll find one of the most controversial works of art in Italian history. Look for the Cornaro Chapel, on the left: inside is the Ecstasy of Saint Teresa, an absolute masterpiece by Gian Lorenzo Bernini, completed in 1652.<br><br>
+The sculpture depicts Saint Teresa of Ávila at the moment of her so-called transverberation: an angel pierces her heart with a golden arrow, symbol of divine love. The saint's face, with half-closed eyes and parted lips, has sparked debates lasting centuries. One English critic described it, in less than flattering terms, as an image of something more earthly than divine. Saint Teresa herself, in her autobiography, described that mystical experience with words that sound surprisingly sensual to a modern reader.<br><br>
+Bernini literally turned the chapel into a small theater. He built side boxes where members of the Cornaro family are depicted, the cardinal who commissioned the work, watching the scene as if attending a live performance. A hidden window above the sculptural group lets in natural light onto a burst of gilded rays, calculated deliberately to illuminate the scene at its moment of highest emotional intensity.<br><br>
+Pope Urban the Eighth himself, according to some sources, refused to house this work in Saint Peter's Basilica, relegating it to this relatively peripheral church, far from the center of Vatican power. A work considered too bold, too ambiguous between sacred and profane, for the very heart of Christianity.<br><br>
+This church was also built to celebrate a specific military victory, the Battle of White Mountain in 1620, during the Thirty Years' War, hence the name "della Vittoria", of victory. An image of the Madonna, carried into battle as a protective banner by Catholic troops, was later placed on the main altar in memory of that day. It adds yet another layer of military and spiritual symbolism to a building already charged with tension between faith, art, and mystery.<br><br>
+This church holds, in polished marble, one of humanity's oldest debates: where does mystical ecstasy end and earthly pleasure begin? Bernini never wanted to give a definitive answer, letting the viewer decide what to see in that face suspended between heaven and earth.<br><br>
+When you're ready, head toward Piazza Barberini, a few minutes on foot.`,
+        deepen: []
+      }
+    }
+  },
+  {
+    id: 4, ready: true,
+    lat: 41.9042893, lon: 12.4887696,
+    i18n: {
+      it: {
+        name: "Fontana delle Api",
+        desc: "Il simbolismo alchemico nascosto dei Barberini",
+        audio: "audio/it/tappa4.mp3",
+        photos: [
+      { time: 0, url: "img/t4_api1.jpg", caption: "Fontana delle Api", credit: "Wikimedia Commons" },
+      { time: 64, url: "img/t4_api2.jpg", caption: "Fontana delle Api, dettaglio", credit: "Wikimedia Commons" }
+    ],
+        fullText: `Sei arrivato in Piazza Barberini, e qui troverai un piccolo capolavoro nascosto che quasi nessun turista nota: la Fontana delle Api. Cercala nell'angolo nordest della piazza, quasi mimetizzata contro il muro.<br><br>
+Fu realizzata da Gian Lorenzo Bernini nel 1644, per volere di Papa Urbano Ottavo, membro della potente famiglia Barberini. Guarda bene la vasca a forma di conchiglia: tre api scolpite sembrano bere l'acqua che sgorga dal marmo. Le api erano il simbolo araldico della famiglia Barberini, presente ovunque nei loro palazzi e nelle loro commissioni artistiche in tutta Roma.<br><br>
+Ma c'è un dettaglio meno noto, quasi dimenticato. Le api, in tutta la simbologia alchemica ed esoterica europea, rappresentavano da secoli l'operosità nascosta, la trasformazione segreta della materia. L'oro accumulato goccia dopo goccia, come il miele. Non è un caso che proprio la famiglia Barberini fosse appassionata di scienze occulte e alchemiche. Come del resto molte delle grandi casate rinascimentali e barocche italiane. Finanziavano segretamente ricerche alchemiche, parallelamente al mecenatismo artistico più ufficiale.<br><br>
+Un'iscrizione sulla fontana ricorda che fu costruita nel ventiduesimo anno di pontificato di Urbano Ottavo. Ma un errore di datazione nell'iscrizione originale, poi corretto, alimentò per secoli voci e leggende. Secondo alcuni studiosi di esoterismo, sarebbe un codice numerologico deliberato. Secondo gli storici, più prosaicamente, un semplice errore di un marmista distratto.<br><br>
+Poco distante, il Palazzo Barberini custodisce ancora oggi una biblioteca con centinaia di manoscritti alchemici ed esoterici raccolti dalla famiglia nei secoli, oggi in gran parte confluiti nella Biblioteca Vaticana. Un patrimonio nascosto che pochi turisti sospettano esista, proprio dietro la facciata barocca di uno dei palazzi più visitati di Roma.<br><br>
+Proprio in questa piazza si trova anche la ben più famosa Fontana del Tritone, sempre di Bernini, con il dio marino che soffia acqua verso il cielo da una conchiglia. Le due fontane, a pochi metri di distanza l'una dall'altra, raccontano insieme il doppio volto della committenza Barberini. Da un lato il potere ostentato ed esplicito del Tritone. Dall'altro il messaggio nascosto e quasi sussurrato delle api, visibile solo a chi si ferma davvero a osservare con attenzione.<br><br>
+Quando sei pronto, dirigiti verso la Cripta dei Cappuccini, a pochi passi lungo Via Veneto.`,
+        deepen: []
+      },
+      en: {
+        name: "Fountain of the Bees",
+        desc: "The Barberini family's hidden alchemical symbolism",
+        audio: "audio/en/tappa4.mp3",
+        photos: [
+      { time: 0, url: "img/t4_api1.jpg", caption: "Fountain of the Bees", credit: "Wikimedia Commons" },
+      { time: 59, url: "img/t4_api2.jpg", caption: "Fountain of the Bees, detail", credit: "Wikimedia Commons" }
+    ],
+        fullText: `You've arrived at Piazza Barberini, and here you'll find a small hidden masterpiece that almost no tourist notices: the Fontana delle Api, the Fountain of the Bees. Look for it in the northeast corner of the square, almost camouflaged against the wall.<br><br>
+It was created by Gian Lorenzo Bernini in 1644, commissioned by Pope Urban the Eighth, a member of the powerful Barberini family. Look closely at the shell-shaped basin: three carved bees seem to drink the water flowing from the marble. Bees were the heraldic symbol of the Barberini family, present everywhere in their palaces and their artistic commissions across all of Rome.<br><br>
+But there's a lesser-known, almost forgotten detail. Bees, in all of European alchemical and esoteric symbolism, had represented for centuries hidden industriousness, the secret transformation of matter, gold accumulated drop by drop like honey. It's no coincidence that the Barberini family itself was passionate about occult and alchemical sciences. As were many of the great Renaissance and Baroque Italian families. They secretly funded alchemical research alongside their more official artistic patronage.<br><br>
+An inscription on the fountain notes that it was built in the twenty-second year of Urban the Eighth's papacy. But a dating error in the original inscription, later corrected, fueled rumors and legends for centuries. Some esoteric scholars see a deliberate numerological code in those numbers. Historians, more prosaically, see a simple mistake by a distracted stonemason.<br><br>
+Right in this square stands also the much more famous Triton Fountain, also by Bernini, with the sea god blowing water toward the sky from a shell. The two fountains, just meters apart, together tell the double face of Barberini patronage. On one side, the openly displayed power of the Triton. On the other, the hidden, almost whispered message of the bees, visible only to those who truly stop to look closely.<br><br>
+Not far away, Palazzo Barberini still holds today a library with hundreds of alchemical and esoteric manuscripts collected by the family over the centuries, now largely absorbed into the Vatican Library. A hidden treasure that few tourists suspect exists, right behind the Baroque facade of one of Rome's most visited palaces.<br><br>
+When you're ready, head toward the Capuchin Crypt, just a few steps along Via Veneto.`,
+        deepen: []
+      }
+    }
+  },
+  {
+    id: 5, ready: true,
+    lat: 41.9049618, lon: 12.4885354,
+    i18n: {
+      it: {
+        name: "Cripta dei Cappuccini",
+        desc: "Quattromila scheletri trasformati in arte barocca",
+        audio: "audio/it/tappa5.mp3",
+        photos: [
+      { time: 0, url: "img/t5_cappuccini1.jpg", caption: "Cripta dei Cappuccini", credit: "Wikimedia Commons" },
+      { time: 71, url: "img/t5_cappuccini2.jpg", caption: "Cripta dei Cappuccini, dettaglio", credit: "Wikimedia Commons" }
+    ],
+        fullText: `Sei arrivato davanti alla chiesa di Santa Maria della Concezione dei Cappuccini, e qui sotto si trova probabilmente il luogo più macabro e insieme più artistico di tutta Roma: la Cripta dei Cappuccini.<br><br>
+Scendendo le scale, leggerai un'iscrizione che accoglie ogni visitatore senza mezzi termini: "Quello che voi siete noi eravamo, quello che noi siamo voi sarete". Un memento mori diretto, quasi brutale, che introduce quello che stai per vedere.<br><br>
+La cripta fu realizzata tra il 1732 e il 1735 per dare degna sepoltura ai frati cappuccini, le cui ossa furono traslate qui dal vecchio cimitero dell'ordine vicino a Fontana di Trevi. Ma invece di seppellirle semplicemente, un frate rimasto anonimo ebbe un'idea tanto geniale quanto inquietante: usarle per decorare interamente cinque piccole cappelle sotterranee.<br><br>
+Cammina lentamente tra questi ambienti. Circa quattromila scheletri di frati, vissuti tra il Cinquecento e l'Ottocento, compongono qui archi, rosoni, lampadari intrecciati. Persino clessidre e farfalle, simboli tradizionali del tempo che vola e della caducità della vita. Ogni cappella prende il nome dall'osso predominante nella sua decorazione: la cappella delle tibie, quella dei bacini, quella dei teschi.<br><br>
+In una nicchia, incorniciato da ossa umane, riposa persino lo scheletro di una principessa Barberini. È ritratta con una falce in una mano e una bilancia nell'altra: simboli della morte inesorabile e del giudizio finale. Anch'essi realizzati interamente con resti umani veri. Tre piccoli scheletri appartengono ai pronipoti dello stesso Papa Urbano Ottavo che hai incontrato alla Fontana delle Api poco fa. La stessa famiglia, celebrata in superficie con simboli di potere e ricchezza, riposa qui sotto ridotta a puro memento della morte.<br><br>
+L'effetto complessivo non vuole essere macabro fine a se stesso, ma un profondo esercizio spirituale sulla fragilità della vita terrena. Un'idea che i frati cappuccini portarono avanti con una coerenza artistica che ancora oggi lascia senza parole i visitatori di tutto il mondo.<br><br>
+Salendo dalla cripta, prima di uscire, guarda anche il dipinto di San Michele Arcangelo custodito nella chiesa soprastante, attribuito a Guido Reni. Secondo una leggenda mai confermata, il volto del demonio schiacciato sotto i piedi dell'arcangelo raffigurerebbe in realtà le fattezze di un cardinale nemico del pittore. Un piccolo dispetto artistico nascosto in piena vista, non troppo diverso nello spirito dallo scherzo che Bernini riservò ai domenicani con il suo elefantino, come scoprirai tra poco.<br><br>
+Quando sei pronto, prendi la metro A da Barberini fino a Piazza di Spagna, poi cammina verso Piazza della Minerva: circa quindici minuti a piedi.`,
+        deepen: []
+      },
+      en: {
+        name: "Capuchin Crypt",
+        desc: "Four thousand skeletons turned into Baroque art",
+        audio: "audio/en/tappa5.mp3",
+        photos: [
+      { time: 0, url: "img/t5_cappuccini1.jpg", caption: "Capuchin Crypt", credit: "Wikimedia Commons" },
+      { time: 64, url: "img/t5_cappuccini2.jpg", caption: "Capuchin Crypt, detail", credit: "Wikimedia Commons" }
+    ],
+        fullText: `You've arrived in front of the church of Santa Maria della Concezione dei Cappuccini, and beneath it lies probably the most macabre and, at the same time, most artistic place in all of Rome: the Capuchin Crypt.<br><br>
+Going down the stairs, you'll read an inscription that greets every visitor without mincing words: "What you are now, we used to be. What we are now, you will be." A direct, almost brutal memento mori, introducing what you're about to see.<br><br>
+The crypt was built between 1732 and 1735 to give proper burial to Capuchin friars, whose bones were moved here from the order's old cemetery near the Trevi Fountain. But instead of simply burying them, an anonymous friar had an idea as brilliant as it was unsettling: use them to entirely decorate five small underground chapels.<br><br>
+Walk slowly through these rooms. About four thousand friars' skeletons, who lived between the sixteenth and nineteenth centuries, form here arches, rosettes, intricate chandeliers. Even hourglasses and butterflies, traditional symbols of fleeting time and the fragility of life. Each chapel takes its name from the dominant bone in its decoration: the Chapel of the Shin Bones, the Chapel of the Pelvises, the Chapel of the Skulls.<br><br>
+In one niche, framed by human bones, rests even the skeleton of a Barberini princess, depicted holding a scythe in one hand and a scale in the other, symbols of inescapable death and final judgment, also made entirely from real human remains. Three small skeletons belong to the great-grandnephews of the same Pope Urban the Eighth you met at the Fountain of the Bees earlier. The same family, celebrated above ground with symbols of power and wealth, rests down here reduced to a pure memento of death.<br><br>
+The overall effect isn't meant to be macabre for its own sake, but a profound spiritual exercise on the fragility of earthly life. An idea the Capuchin friars pursued with an artistic consistency that still leaves visitors from around the world speechless today.<br><br>
+Climbing back up from the crypt, before you leave, look also at the painting of the Archangel Michael in the church above, attributed to Guido Reni. According to a never-confirmed legend, the demon's face crushed beneath the archangel's feet actually depicts a cardinal who was the painter's enemy. A small artistic prank hidden in plain sight, not so different in spirit from the joke Bernini played on the Dominicans with his little elephant, as you'll discover soon.<br><br>
+When you're ready, take metro line A from Barberini to Piazza di Spagna, then walk toward Piazza della Minerva: about fifteen minutes on foot.`,
+        deepen: []
+      }
+    }
+  },
+  {
+    id: 6, ready: true,
+    lat: 41.8977974, lon: 12.4777113,
+    i18n: {
+      it: {
+        name: "Piazza della Minerva",
+        desc: "L'elefantino dispettoso di Bernini e l'obelisco egizio",
+        audio: "audio/it/tappa6.mp3",
+        photos: [
+      { time: 0, url: "img/t6_elefante1.jpg", caption: "Piazza della Minerva", credit: "Wikimedia Commons" },
+      { time: 62, url: "img/t6_elefante2.jpg", caption: "Piazza della Minerva, dettaglio", credit: "Wikimedia Commons" }
+    ],
+        fullText: `Sei arrivato in Piazza della Minerva, proprio dietro il Pantheon. Al centro, un piccolo elefante di marmo regge sulla schiena un autentico obelisco egizio, alto oltre cinque metri. I romani lo chiamano affettuosamente "Pulcino della Minerva".<br><br>
+L'obelisco risale al quarto secolo avanti Cristo, portato dall'Egitto insieme ad altri simili per decorare un antico tempio dedicato a Iside, la grande dea egizia della magia. Fu ritrovato nel 1665 proprio nel giardino del convento che affaccia sulla piazza. Papa Alessandro Settimo, appartenente alla stessa famiglia Chigi che hai incontrato prima, commissionò a Gian Lorenzo Bernini il progetto per rialzarlo.<br><br>
+Bernini decise di farlo sostenere da un elefante marmoreo, ispirandosi a un romanzo esoterico del Quattrocento molto popolare all'epoca. Un'iscrizione latina sul basamento recita: chiunque veda questi simboli della sapienza egizia sostenuti dall'elefante, capisca che serve una mente robusta per portare una solida saggezza.<br><br>
+Ma dietro questa spiegazione ufficiale si nasconde un piccolo dispetto artistico. I frati domenicani del convento accanto criticarono duramente il progetto di Bernini, insistendo che l'elefante avesse bisogno di un blocco di sostegno sotto la pancia. Bernini, seccato dall'ingerenza, si vendicò a modo suo. Orientò l'elefante in modo che il posteriore dell'animale fosse rivolto esattamente verso l'ingresso del convento. La proboscide, sollevata all'indietro, fu interpretata subito dai romani come un insulto scherzoso ma inequivocabile.<br><br>
+Un'ultima curiosità: nel 1946, durante l'occupazione alleata di Roma, un furfante tentò di vendere l'intero monumento a un ufficiale americano, convincendolo che fosse in procinto di essere smontato e spedito negli Stati Uniti. Solo l'intervento di un portiere sorpreso, che vide arrivare un camion pronto al carico, sventò la truffa e salvò il monumento.<br><br>
+L'obelisco della Minerva è uno dei tredici obelischi egizi ancora presenti a Roma, e il più piccolo tra tutti quelli portati dall'antico Egitto. Fu dedicato originariamente alla dea Neith, considerata dagli antichi egizi l'equivalente della stessa Minerva romana. Un doppio filo simbolico, egizio e romano insieme, che si intreccia proprio in questa piazza dedicata alla sapienza. Sotto lo sguardo complice del piccolo elefante, che continua a sorridere ai passanti da oltre tre secoli e mezzo.<br><br>
+Quando sei pronto, entra nella basilica di Santa Maria sopra Minerva, proprio di fronte a te.`,
+        deepen: []
+      },
+      en: {
+        name: "Piazza della Minerva",
+        desc: "Bernini's mischievous little elephant and the Egyptian obelisk",
+        audio: "audio/en/tappa6.mp3",
+        photos: [
+      { time: 0, url: "img/t6_elefante1.jpg", caption: "Piazza della Minerva", credit: "Wikimedia Commons" },
+      { time: 60, url: "img/t6_elefante2.jpg", caption: "Piazza della Minerva, detail", credit: "Wikimedia Commons" }
+    ],
+        fullText: `You've arrived at Piazza della Minerva, right behind the Pantheon. At the center, a small marble elephant carries an authentic Egyptian obelisk on its back, over five meters tall. Romans affectionately call it "Pulcino della Minerva", the little chick of Minerva.<br><br>
+The obelisk dates back to the fourth century BC, brought from Egypt along with similar ones to decorate an ancient temple dedicated to Isis, the great Egyptian goddess of magic. It was found in 1665 in the garden of the convent facing the square. Pope Alexander the Seventh, from the same Chigi family you met earlier, commissioned Gian Lorenzo Bernini to design its new setting.<br><br>
+Bernini decided to have it supported by a marble elephant, inspired by a very popular esoteric novel from the fifteenth century. A Latin inscription on the base reads: whoever sees these symbols of Egyptian wisdom carried by the elephant, the strongest of beasts, should understand that a strong mind is needed to bear solid wisdom.<br><br>
+But behind this official explanation hides a small artistic prank. The Dominican friars from the neighboring convent harshly criticized Bernini's design, insisting the elephant needed a supporting block under its belly. Bernini, annoyed by the interference, took his revenge in his own way. He oriented the elephant so its rear end faced exactly toward the convent's entrance, with its trunk raised backward in a gesture Romans of the time immediately read as a cheeky but unmistakable insult.<br><br>
+One last curiosity: in 1946, during the Allied occupation of Rome, a con man tried to sell the entire monument to an American officer, convincing him it was about to be dismantled and shipped to the United States. Only the intervention of a surprised doorman, who saw a truck arriving ready for loading, foiled the scam and saved the monument.<br><br>
+The Minerva obelisk is one of thirteen Egyptian obelisks still standing in Rome, and the smallest of all those brought from ancient Egypt. It was originally dedicated to the goddess Neith, considered by the ancient Egyptians the equivalent of the Roman Minerva herself. A double symbolic thread, Egyptian and Roman together, intertwined right in this square dedicated to wisdom, under the knowing gaze of the little elephant that has kept smiling at passersby for over three and a half centuries.<br><br>
+When you're ready, enter the basilica of Santa Maria sopra Minerva, right in front of you.`,
+        deepen: []
+      }
+    }
+  },
+  {
+    id: 7, ready: true,
+    lat: 41.8977974, lon: 12.4777113,
+    i18n: {
+      it: {
+        name: "Santa Maria sopra Minerva",
+        desc: "Il processo a Galileo e la frase leggendaria sulla Terra",
+        audio: "audio/it/tappa7.mp3",
+        photos: [
+      { time: 0, url: "img/t7_minervaint1.jpg", caption: "Santa Maria sopra Minerva", credit: "Wikimedia Commons" }
+    ],
+        fullText: `Sei entrato nella basilica di Santa Maria sopra Minerva, l'unica chiesa gotica rimasta a Roma nella sua forma originale. Il nome stesso rivela una stratificazione tipicamente romana: fu costruita nel Medioevo direttamente sopra le rovine di un antico tempio dedicato alla dea Minerva, la sapienza pagana sepolta sotto la fede cristiana.<br><br>
+Ma la vicenda più inquietante legata a questa chiesa non riguarda l'antichità, bensì un processo del Seicento che cambiò per sempre la storia della scienza. Nel convento adiacente a questa basilica, il 22 giugno 1633, Galileo Galilei fu costretto a inginocchiarsi davanti al tribunale dell'Inquisizione romana. Fu costretto ad abiurare pubblicamente la teoria eliocentrica: l'idea che fosse la Terra a girare intorno al Sole, e non il contrario.<br><br>
+Secondo una leggenda diventata celebre in tutto il mondo, mentre si rialzava dopo l'abiura forzata, Galileo avrebbe mormorato sottovoce una frase: "Eppur si muove". Si riferiva proprio alla Terra, che continuava a orbitare attorno al Sole indipendentemente da quello che la Chiesa lo aveva costretto a dichiarare pubblicamente. Non esiste alcuna prova storica che Galileo abbia realmente pronunciato quella frase: la leggenda nacque solo un secolo dopo la sua morte, ma è diventata talmente potente da essere ormai inseparabile dalla sua figura storica.<br><br>
+Galileo trascorse il resto della sua vita agli arresti domiciliari, mai più libero di viaggiare, sorvegliato fino alla morte. La Chiesa cattolica attese fino al 1992, oltre tre secoli e mezzo dopo quel processo, per riabilitare ufficialmente la figura dello scienziato pisano, ammettendo formalmente l'errore commesso dal tribunale ecclesiastico.<br><br>
+Questa basilica custodisce quindi, sotto la sua facciata austera, uno degli episodi più drammatici dello scontro tra fede e scienza nella storia occidentale. Il luogo esatto dove il pensiero razionale fu costretto, almeno formalmente, a inginocchiarsi davanti al dogma.<br><br>
+Questa basilica custodisce anche un altro segreto meno noto: sotto il pavimento, in una cappella laterale, riposa il corpo di Santa Caterina da Siena, patrona d'Italia insieme a San Francesco. Il suo corpo, tenuto qui, fu separato in due parti, secondo un'usanza medievale non insolita per i santi più venerati. La testa fu invece portata a Siena, la sua città natale, dove è custodita separatamente in un reliquiario proprio nella basilica di San Domenico. Un'ulteriore stratificazione di sacro e macabro, degna di questo edificio che sembra collezionare misteri a ogni livello, dalle fondamenta pagane fino ai processi scientifici del Seicento.<br><br>
+Quando sei pronto, dirigiti verso la Torre della Scimmia: circa dieci minuti a piedi verso il fiume.`,
+        deepen: []
+      },
+      en: {
+        name: "Santa Maria sopra Minerva",
+        desc: "Galileo's trial and the legendary phrase about the Earth",
+        audio: "audio/en/tappa7.mp3",
+        photos: [
+      { time: 0, url: "img/t7_minervaint1.jpg", caption: "Santa Maria sopra Minerva", credit: "Wikimedia Commons" }
+    ],
+        fullText: `You've entered the basilica of Santa Maria sopra Minerva, the only Gothic church left in Rome in its original form. The name itself reveals a typically Roman layering: it was built in the Middle Ages directly over the ruins of an ancient temple dedicated to the goddess Minerva, pagan wisdom buried beneath Christian faith.<br><br>
+But the most unsettling episode tied to this church has nothing to do with antiquity. It concerns a seventeenth-century trial that changed the history of science forever. In the convent adjacent to this basilica, on June 22, 1633, Galileo Galilei was forced to kneel before the tribunal of the Roman Inquisition. He was forced to publicly abjure the heliocentric theory: the idea that the Earth revolves around the Sun, and not the other way around.<br><br>
+According to a legend now famous worldwide, as he rose after the forced abjuration, Galileo allegedly murmured under his breath a single phrase: "And yet it moves". He was referring to the Earth, which kept orbiting the Sun regardless of what the Church had just forced him to publicly declare. There's no historical proof Galileo ever actually said those words. The legend only appeared a century after his death, but it has become so powerful that it's now inseparable from his historical figure.<br><br>
+Galileo spent the rest of his life under house arrest, never free to travel again, watched until his death. The Catholic Church waited until 1992, over three and a half centuries after that trial, to formally rehabilitate the Pisan scientist, officially admitting the error committed by the ecclesiastical tribunal.<br><br>
+This basilica also holds another lesser-known secret. Beneath the floor, in a side chapel, rests the body of Saint Catherine of Siena, patron saint of Italy alongside Saint Francis. Her body, kept here, was split into two parts, following a not-unusual medieval custom for the most venerated saints. Her head, instead, was taken to Siena, her hometown, where it's kept separately in a reliquary inside the basilica of San Domenico.<br><br>
+This basilica holds, beneath its austere facade, one of the most dramatic episodes in the clash between faith and science in Western history. The exact spot where rational thought was forced, at least formally, to kneel before dogma.<br><br>
+When you're ready, head toward the Tower of the Monkey: about ten minutes on foot toward the river.`,
+        deepen: []
+      }
+    }
+  },
+  {
+    id: 8, ready: true,
+    lat: 41.9017011, lon: 12.4742752,
+    i18n: {
+      it: {
+        name: "Torre della Scimmia",
+        desc: "La scimmia, il neonato rapito e il voto alla Madonna",
+        audio: "audio/it/tappa8.mp3",
+        photos: [
+      { time: 0, url: "img/t8_scimmia1.jpg", caption: "Torre della Scimmia", credit: "Wikimedia Commons" },
+      { time: 67, url: "img/t8_scimmia2.jpg", caption: "Torre della Scimmia, dettaglio", credit: "Wikimedia Commons" }
+    ],
+        fullText: `Sei arrivato in Via dei Portoghesi. Sopra di te, incastonata in Palazzo Scapucci, si erge la Torre della Scimmia: una torre medievale merlata con una leggenda che ha affascinato scrittori di tutto il mondo. Incluso l'americano Nathaniel Hawthorne, che la raccontò nei suoi diari di viaggio italiani.<br><br>
+La torre fu costruita intorno al Duecento dalla potente famiglia Frangipane. Secoli dopo, secondo la leggenda popolare, in questo stesso palazzo abitava una famiglia nobile con una scimmia domestica di nome Hilda, tenuta come animale da compagnia. Quando alla famiglia nacque finalmente un bambino tanto atteso, la scimmia sviluppò verso il neonato un'attenzione quasi ossessiva, imitando in continuazione i gesti della balia che se ne prendeva cura.<br><br>
+Un giorno, lasciata sola per un momento con il bambino, la scimmia lo prese dalla culla e si arrampicò con lui fino in cima alla torre, mettendosi a sedere pericolosamente sul cornicione. Sotto, in strada, si radunò rapidamente una folla terrorizzata, mentre la scimmia continuava a fasciare e sfasciare il bambino come fosse una bambola, ignara del pericolo mortale a cui lo stava esponendo.<br><br>
+Il padre, disperato, ebbe un'idea. Richiamò la scimmia con il fischio che l'animale conosceva bene, promettendo contemporaneamente alla Madonna che, se il bambino fosse tornato sano e salvo, avrebbe fatto costruire una statua in suo onore, con una lampada sempre accesa giorno e notte. La scimmia, al fischio familiare, scese docilmente e restituì il bambino, deponendolo di nuovo nella culla.<br><br>
+Il padre mantenne la promessa: fece erigere sulla sommità della torre la statua della Madonna che ancora oggi puoi vedere, con la lampada perpetua accanto. Una clausola, tramandata di proprietario in proprietario per secoli, imporrebbe ancora oggi di mantenere quella luce sempre accesa, pena la perdita della proprietà stessa. Da oltre seicento anni, dicono i romani, quella fiamma non si è mai spenta.<br><br>
+Sulla sorte della scimmia stessa, invece, le versioni divergono in modo significativo. Alcuni raccontano che l'animale fu perdonato e visse ancora a lungo nella torre, coccolato più che mai dalla famiglia riconoscente. Altre versioni, più cupe, sostengono che fu uccisa subito dopo aver riconsegnato il bambino, per punizione o per prudenza. Nessuna fonte storica documentata conferma quale sia la versione più vicina alla verità, se mai un simile evento sia realmente accaduto: resta, come tante storie di questa Roma nascosta, sospesa per sempre tra fatto e leggenda.<br><br>
+Quando sei pronto, prendi la metro B da Termini fino a Bologna, poi cammina verso Piazza Mincio: ultima tappa del nostro giro, il Quartiere Coppedè.`,
+        deepen: []
+      },
+      en: {
+        name: "Tower of the Monkey",
+        desc: "The monkey, the kidnapped baby and the vow to the Madonna",
+        audio: "audio/en/tappa8.mp3",
+        photos: [
+      { time: 0, url: "img/t8_scimmia1.jpg", caption: "Tower of the Monkey", credit: "Wikimedia Commons" },
+      { time: 57, url: "img/t8_scimmia2.jpg", caption: "Tower of the Monkey, detail", credit: "Wikimedia Commons" }
+    ],
+        fullText: `You've arrived on Via dei Portoghesi. Above you, set into Palazzo Scapucci, stands the Torre della Scimmia, the Tower of the Monkey. It's a crenellated medieval tower with a legend that has fascinated writers worldwide. Including the American Nathaniel Hawthorne, who recounted it in his Italian travel diaries.<br><br>
+The tower was built around the thirteenth century by the powerful Frangipane family. Centuries later, according to popular legend, a noble family lived in this same building with a pet monkey named Hilda. When the family finally had a long-awaited baby, the monkey developed an almost obsessive fascination with the infant, constantly imitating the gestures of the nurse who cared for it.<br><br>
+One day, left alone with the baby for a moment, the monkey took it from its cradle and climbed with it all the way to the top of the tower, sitting precariously on the ledge. Below, in the street, a terrified crowd quickly gathered, while the monkey kept wrapping and unwrapping the baby like a doll, unaware of the mortal danger it was exposing it to.<br><br>
+The father, desperate, had an idea. He called the monkey with the whistle it knew well, while simultaneously promising the Virgin Mary that if the baby came back safe, he would have a statue built in her honor, with a lamp kept burning day and night forever. At the familiar whistle, the monkey climbed down obediently and returned the baby, placing it back in the cradle.<br><br>
+The father kept his promise: he had the statue of the Virgin Mary you can still see today built on top of the tower, with the eternal lamp beside it. A clause, passed down from owner to owner for centuries, is said to still require keeping that light always lit, on pain of losing the property itself. For over six hundred years, Romans say, that flame has never gone out.<br><br>
+As for the fate of the monkey itself, versions differ significantly. Some say the animal was forgiven and lived on in the tower, pampered more than ever by the grateful family. Other, darker versions claim it was killed right after returning the baby, out of punishment or caution. No documented historical source confirms which version comes closer to the truth, if such an event ever really happened at all. It remains, like so many stories of this hidden Rome, forever suspended between fact and legend.<br><br>
+When you're ready, take metro line B from Termini to Bologna, then walk toward Piazza Mincio: the last stop of our tour, the Coppedè district.`,
+        deepen: []
+      }
+    }
+  },
+  {
+    id: 9, ready: true,
+    lat: 41.9186776, lon: 12.5028247,
+    i18n: {
+      it: {
+        name: "Quartiere Coppedè",
+        desc: "Architettura esoterica e simboli massonici, chiusura del giro",
+        audio: "audio/it/tappa9.mp3",
+        photos: [
+      { time: 0, url: "img/t9_coppede1.jpg", caption: "Quartiere Coppedè", credit: "Wikimedia Commons" },
+      { time: 85, url: "img/t9_coppede2.jpg", caption: "Quartiere Coppedè, dettaglio", credit: "Wikimedia Commons" }
+    ],
+        fullText: `Sei arrivato al Quartiere Coppedè, e qui chiudiamo il nostro giro nella Roma esoterica. Guarda l'arco monumentale che collega due palazzi sopra di te: benvenuto in uno dei quartieri più bizzarri e affascinanti di tutta la città, un vero e proprio libro di simboli in pietra.<br><br>
+Fu progettato dall'architetto fiorentino Gino Coppedè tra il 1915 e il 1927, mescolando senza alcun pudore stile liberty, gotico, barocco e rinascimentale in un insieme volutamente eccentrico. Sotto l'arco d'ingresso, nota il gigantesco lampadario in ferro battuto: secondo molti studiosi di esoterismo, rappresenta un viaggio iniziatico verso la conoscenza, un tema centrale nella simbologia massonica.<br><br>
+Cammina verso Piazza Mincio, il cuore del quartiere: qui troverai la celebre Fontana delle Rane, chiaramente ispirata alla più famosa Fontana delle Tartarughe che hai forse già visto nel centro storico. Le rane, nel linguaggio simbolico esoterico, rappresentano da sempre la rinascita e la rigenerazione, per la loro capacità biologica di trasformarsi completamente nel corso della vita, dalla forma acquatica a quella terrestre.<br><br>
+Guarda anche il cosiddetto Palazzo del Ragno, con la sua decorazione a tema assiro-babilonese e la scritta latina che celebra il lavoro come valore supremo. Non esistono prove documentate che Coppedè fosse davvero un massone: nessun archivio ufficiale della massoneria italiana lo elenca tra i propri affiliati. Ma la fitta rete di simboli disseminati in ogni angolo del quartiere, dalle lucertole alle civette, dai mascheroni apotropaici alle torrette che richiamano la Torre di Babele, ha alimentato per un secolo intero questa suggestiva leggenda.<br><br>
+Proprio per la sua atmosfera sospesa tra sogno e inquietudine, questo quartiere fu scelto come location per scene di celebri film horror italiani. Incluso "Inferno" del regista Dario Argento, e la sequenza iniziale del film americano "Il Presagio" del 1976. Un'ambientazione perfetta, se ci pensi, per chiudere un giro che ha attraversato fantasmi imperiali, estasi mistiche, alchimia nascosta, ossari artistici e leggende di scimmie salvifiche.<br><br>
+Il cosiddetto "villino delle fate", poco distante, merita anch'esso uno sguardo. È composto da tre costruzioni distinte che rievocano Roma, Firenze e Venezia, decorato con marmi preziosi. Ha persino un orologio con figure zodiacali, oltre a una meridiana funzionante. Un'ulteriore prova di quanto Coppedè amasse disseminare simboli astrologici e alchemici anche nei dettagli più decorativi e apparentemente innocui del suo lavoro.<br><br>
+Prima di lasciarci, un'ultima riflessione su tutto il percorso di oggi. Abbiamo attraversato il fantasma di un imperatore esorcizzato da un Papa. Un affresco che celebra apertamente l'astrologia dentro una chiesa cristiana. Un'estasi mistica che sfida ancora oggi ogni interpretazione univoca, api alchemiche nascoste in piena vista, un ossario trasformato in capolavoro artistico. Un elefantino dispettoso, un processo che mise la scienza in ginocchio, una scimmia salvifica, e un intero quartiere costruito come un enigma di pietra. Roma, sotto la sua superficie di marmo e fede cattolica, ha sempre conservato un'anima segreta, esoterica, mai del tutto sopita.<br><br>
+Grazie per aver camminato con noi attraverso i misteri, le leggende e i segreti nascosti della Roma esoterica.`,
+        deepen: []
+      },
+      en: {
+        name: "Coppedè District",
+        desc: "Esoteric architecture and Masonic symbols, end of the tour",
+        audio: "audio/en/tappa9.mp3",
+        photos: [
+      { time: 0, url: "img/t9_coppede1.jpg", caption: "Coppedè District", credit: "Wikimedia Commons" },
+      { time: 74, url: "img/t9_coppede2.jpg", caption: "Coppedè District, detail", credit: "Wikimedia Commons" }
+    ],
+        fullText: `You've arrived at the Coppedè district, and here we close our tour of esoteric Rome. Look at the monumental arch connecting two buildings above you: welcome to one of the strangest and most fascinating neighborhoods in the whole city, a true book of symbols carved in stone.<br><br>
+It was designed by Florentine architect Gino Coppedè between 1915 and 1927, blending without any restraint Art Nouveau, Gothic, Baroque, and Renaissance styles into a deliberately eccentric whole. Under the entrance arch, notice the giant wrought-iron chandelier: according to many esoteric scholars, it represents an initiatory journey toward knowledge, a central theme in Masonic symbolism.<br><br>
+Walk toward Piazza Mincio, the heart of the district: here you'll find the famous Fontana delle Rane, the Fountain of the Frogs, clearly inspired by the more famous Turtle Fountain you may have already seen in the historic center. Frogs, in esoteric symbolic language, have always represented rebirth and regeneration, thanks to their biological ability to completely transform over their lifetime, from an aquatic to a terrestrial form.<br><br>
+Look also at the so-called Palazzo del Ragno, the Spider Palace, with its Assyro-Babylonian themed decoration and a Latin inscription celebrating labor as the supreme value. There's no documented proof Coppedè was actually a Freemason: no official archive of Italian Freemasonry lists him among its members. But the dense network of symbols scattered across every corner of the district, from lizards to owls, from apotropaic masks to towers echoing the Tower of Babel, has fueled this suggestive legend for an entire century.<br><br>
+Precisely because of its atmosphere suspended between dream and unease, this district was chosen as a filming location for scenes in famous Italian horror films. Including "Inferno" by director Dario Argento, and the opening sequence of the 1976 American film "The Omen".<br><br>
+Not far away, the so-called "Villino delle Fate", the Fairies' Little Villa, deserves a look too. It's made up of three distinct buildings evoking Rome, Florence, and Venice, decorated with precious marble. It even has a clock with zodiac figures, along with a working sundial.<br><br>
+Before we part, one last thought on today's whole route. We've crossed the ghost of an emperor exorcised by a Pope, a fresco openly celebrating astrology inside a Christian church, a mystical ecstasy that still defies any single interpretation today. Alchemical bees hidden in plain sight, an ossuary turned into an artistic masterpiece, a mischievous little elephant, a trial that brought science to its knees, a life-saving monkey, and an entire district built like a puzzle in stone. Beneath its surface of marble and Catholic faith, Rome has always kept a secret, esoteric soul, never quite put to rest.<br><br>
+Thank you for walking with us through the mysteries, legends, and hidden secrets of esoteric Rome.`,
+        deepen: []
+      }
+    }
+  }
+];
+const ROUTE_COORDS = [[41.910845, 12.4763], [41.910844, 12.476295], [41.911082, 12.476195], [41.911124, 12.476179], [41.911225, 12.476139], [41.911413, 12.476051], [41.911225, 12.476139], [41.911124, 12.476179], [41.911082, 12.476195], [41.910844, 12.476295], [41.91077, 12.475972], [41.910466, 12.476097], [41.910537, 12.476408], [41.910305, 12.476506], [41.910373, 12.47679], [41.910392, 12.476953], [41.910359, 12.476973], [41.91034, 12.476948], [41.91032, 12.47695], [41.910178, 12.477066], [41.910101, 12.477128], [41.910011, 12.477211], [41.909958, 12.477267], [41.909796, 12.477453], [41.909765, 12.47749], [41.909749, 12.47751], [41.909733, 12.477531], [41.909439, 12.477861], [41.909431, 12.477849], [41.909417, 12.477827], [41.909357, 12.477896], [41.909341, 12.477916], [41.908856, 12.478491], [41.908807, 12.478546], [41.908654, 12.478726], [41.908456, 12.47896], [41.908051, 12.479436], [41.90803, 12.479461], [41.907731, 12.479817], [41.907101, 12.480568], [41.907027, 12.480644], [41.906627, 12.481115], [41.906576, 12.481174], [41.906544, 12.481208], [41.906513, 12.481242], [41.906064, 12.481753], [41.905876, 12.481984], [41.905955, 12.48227], [41.905937, 12.482323], [41.905944, 12.482447], [41.905986, 12.482584], [41.905992, 12.48259], [41.905996, 12.482594], [41.906067, 12.482639], [41.906127, 12.482725], [41.906117, 12.482798], [41.906114, 12.482885], [41.906132, 12.483028], [41.906136, 12.483065], [41.906107, 12.483076], [41.906083, 12.483091], [41.906067, 12.483101], [41.906002, 12.483166], [41.905949, 12.483296], [41.90595, 12.48333], [41.905999, 12.483394], [41.90591, 12.483547], [41.90599, 12.483645], [41.905866, 12.483867], [41.905267, 12.48495], [41.904791, 12.485773], [41.904801, 12.485819], [41.90479, 12.485822], [41.904743, 12.485815], [41.904706, 12.48581], [41.904696, 12.485811], [41.904666, 12.485855], [41.90466, 12.485867], [41.904647, 12.485889], [41.904606, 12.485958], [41.904603, 12.485963], [41.904571, 12.486053], [41.904413, 12.486323], [41.904348, 12.486436], [41.904329, 12.486472], [41.904297, 12.48653], [41.904188, 12.486735], [41.904164, 12.486777], [41.90403, 12.487011], [41.903541, 12.48785], [41.903504, 12.487842], [41.903483, 12.487845], [41.90346, 12.487855], [41.903372, 12.487896], [41.903416, 12.488099], [41.903304, 12.488324], [41.903327, 12.488349], [41.903353, 12.488379], [41.903382, 12.488371], [41.903601, 12.488866], [41.903609, 12.48891], [41.903611, 12.48893], [41.903636, 12.489006], [41.903658, 12.489071], [41.903683, 12.489148], [41.903665, 12.489192], [41.903696, 12.489287], [41.904016, 12.490239], [41.90418, 12.490698], [41.904251, 12.490898], [41.904444, 12.491458], [41.904466, 12.491516], [41.904481, 12.491556], [41.904491, 12.491586], [41.904522, 12.491673], [41.904651, 12.492083], [41.904707, 12.49236], [41.904736, 12.492625], [41.904735, 12.492951], [41.904708, 12.493248], [41.904655, 12.493494], [41.904556, 12.493714], [41.904321, 12.494001], [41.904337, 12.494011], [41.904346, 12.494036], [41.904366, 12.494079], [41.904397, 12.494127], [41.904425, 12.494163], [41.904448, 12.494192], [41.904469, 12.494219], [41.904523, 12.494289], [41.904534, 12.494306], [41.904549, 12.494331], [41.904582, 12.494377], [41.904549, 12.494331], [41.904534, 12.494306], [41.904523, 12.494289], [41.904469, 12.494219], [41.904448, 12.494192], [41.904425, 12.494163], [41.904397, 12.494127], [41.904366, 12.494079], [41.904346, 12.494036], [41.904337, 12.494011], [41.904321, 12.494001], [41.904556, 12.493714], [41.904655, 12.493494], [41.904708, 12.493248], [41.904735, 12.492951], [41.904736, 12.492625], [41.904707, 12.49236], [41.904651, 12.492083], [41.904522, 12.491673], [41.904491, 12.491586], [41.904548, 12.491516], [41.904605, 12.491446], [41.904597, 12.491417], [41.904594, 12.491394], [41.904315, 12.490609], [41.904274, 12.490483], [41.90383, 12.489216], [41.904024, 12.489068], [41.90405, 12.489045], [41.904072, 12.489027], [41.904143, 12.488957], [41.904184, 12.488865], [41.904199, 12.488849], [41.904235, 12.488814], [41.904261, 12.488788], [41.904265, 12.488768], [41.904274, 12.48876], [41.904284, 12.488775], [41.904274, 12.48876], [41.904661, 12.488418], [41.904838, 12.48827], [41.904661, 12.488418], [41.904274, 12.48876], [41.904265, 12.488768], [41.904267, 12.488758], [41.904207, 12.488664], [41.904147, 12.488569], [41.904116, 12.488545], [41.904095, 12.488543], [41.904039, 12.488539], [41.903843, 12.488296], [41.903841, 12.488294], [41.903827, 12.488276], [41.903809, 12.488253], [41.903591, 12.487977], [41.903588, 12.487955], [41.903587, 12.48794], [41.903568, 12.487892], [41.90355, 12.487849], [41.903541, 12.48785], [41.903504, 12.487842], [41.903483, 12.487845], [41.90346, 12.487855], [41.903372, 12.487896], [41.903139, 12.487018], [41.903109, 12.486901], [41.903052, 12.486705], [41.90298, 12.486423], [41.902969, 12.486383], [41.902794, 12.486307], [41.902498, 12.486177], [41.902386, 12.486144], [41.902354, 12.486093], [41.902324, 12.486046], [41.902287, 12.486084], [41.902115, 12.485865], [41.901866, 12.485516], [41.901542, 12.485138], [41.901346, 12.48483], [41.90126, 12.484662], [41.901075, 12.48429], [41.901011, 12.484159], [41.900812, 12.48371], [41.900799, 12.483615], [41.90078, 12.48331], [41.900724, 12.483129], [41.900567, 12.482722], [41.900509, 12.482481], [41.900481, 12.48245], [41.900433, 12.482309], [41.900327, 12.481816], [41.900131, 12.480896], [41.900084, 12.480918], [41.900064, 12.480791], [41.900013, 12.48048], [41.899996, 12.48021], [41.899699, 12.480054], [41.899668, 12.480028], [41.899573, 12.480023], [41.899491, 12.479916], [41.899461, 12.479858], [41.899338, 12.479862], [41.899219, 12.479824], [41.899192, 12.479596], [41.899162, 12.479447], [41.899145, 12.479453], [41.899123, 12.479427], [41.89885, 12.479485], [41.898848, 12.479457], [41.898401, 12.479545], [41.898313, 12.479562], [41.898068, 12.479617], [41.897806, 12.479694], [41.897795, 12.479656], [41.897713, 12.479673], [41.897659, 12.479396], [41.897535, 12.478954], [41.897509, 12.4788], [41.897513, 12.478663], [41.897567, 12.478515], [41.897685, 12.47835], [41.897747, 12.478089], [41.897771, 12.477776], [41.897772, 12.477711], [41.897777, 12.477347], [41.898188, 12.477327], [41.898877, 12.47723], [41.899006, 12.477196], [41.899026, 12.477185], [41.899154, 12.477036], [41.899149, 12.47692], [41.899458, 12.476871], [41.899581, 12.476879], [41.899846, 12.476784], [41.899985, 12.476713], [41.900003, 12.476703], [41.900196, 12.476601], [41.900489, 12.476556], [41.900984, 12.476595], [41.90117, 12.47658], [41.901207, 12.476451], [41.901282, 12.476354], [41.90139, 12.47628], [41.901396, 12.476232], [41.901446, 12.476118], [41.901508, 12.476111], [41.901582, 12.475806], [41.901625, 12.475423], [41.901667, 12.474966], [41.90171, 12.474344], [41.90168, 12.474316], [41.90171, 12.474344], [41.901667, 12.474966], [41.901869, 12.474998], [41.902239, 12.475829], [41.902255, 12.475865], [41.902298, 12.476023], [41.902366, 12.476277], [41.902465, 12.476826], [41.90251, 12.477193], [41.902528, 12.477687], [41.902504, 12.477749], [41.902482, 12.477791], [41.902462, 12.477835], [41.902453, 12.477869], [41.902448, 12.4779], [41.902438, 12.477973], [41.902429, 12.478104], [41.902427, 12.47814], [41.902426, 12.478179], [41.902397, 12.478694], [41.902383, 12.479228], [41.902373, 12.479255], [41.90236, 12.479298], [41.902361, 12.47935], [41.902465, 12.479718], [41.902479, 12.479783], [41.902512, 12.479893], [41.902762, 12.480623], [41.902744, 12.480725], [41.90277, 12.480803], [41.902792, 12.480871], [41.90285, 12.480903], [41.902995, 12.481339], [41.903, 12.481354], [41.903293, 12.482167], [41.903465, 12.482659], [41.903664, 12.483309], [41.903689, 12.483392], [41.903834, 12.484149], [41.903821, 12.484226], [41.903837, 12.48433], [41.90385, 12.484415], [41.903856, 12.484467], [41.903885, 12.484658], [41.903938, 12.484645], [41.904043, 12.485366], [41.904046, 12.48538], [41.90405, 12.485395], [41.904063, 12.485442], [41.904065, 12.485451], [41.904056, 12.485478], [41.904083, 12.485635], [41.904107, 12.48564], [41.904666, 12.485855], [41.904696, 12.485811], [41.904706, 12.48581], [41.904743, 12.485815], [41.90479, 12.485822], [41.904801, 12.485819], [41.90618, 12.485779], [41.906306, 12.485773], [41.906376, 12.485732], [41.906719, 12.485831], [41.907541, 12.486319], [41.907716, 12.486441], [41.907934, 12.486594], [41.908414, 12.487041], [41.909114, 12.487833], [41.909184, 12.487952], [41.909167, 12.487988], [41.909148, 12.488028], [41.909201, 12.48805], [41.909286, 12.488053], [41.909373, 12.488021], [41.909421, 12.487978], [41.909441, 12.488127], [41.909471, 12.488125], [41.90949, 12.488123], [41.909701, 12.487909], [41.909743, 12.487878], [41.909775, 12.487853], [41.909807, 12.487815], [41.909829, 12.48779], [41.909866, 12.487885], [41.909876, 12.487926], [41.909975, 12.487876], [41.910025, 12.487916], [41.910063, 12.487948], [41.910176, 12.488064], [41.910328, 12.488238], [41.910526, 12.488422], [41.91077, 12.488613], [41.911068, 12.488896], [41.911298, 12.489136], [41.911755, 12.489612], [41.912393, 12.490277], [41.912461, 12.490348], [41.912526, 12.490416], [41.912568, 12.490462], [41.912933, 12.490846], [41.913358, 12.491294], [41.913769, 12.491728], [41.914038, 12.492016], [41.913861, 12.492323], [41.913985, 12.492463], [41.914124, 12.492621], [41.914148, 12.492648], [41.914232, 12.492511], [41.91436, 12.492653], [41.914426, 12.492548], [41.91448, 12.492568], [41.914522, 12.492537], [41.914572, 12.492587], [41.91464, 12.492651], [41.914917, 12.492934], [41.915594, 12.493676], [41.915642, 12.49373], [41.915634, 12.493742], [41.915472, 12.49401], [41.915485, 12.494014], [41.915524, 12.494026], [41.915468, 12.49413], [41.915396, 12.494262], [41.915153, 12.494667], [41.915209, 12.494714], [41.915474, 12.494936], [41.916275, 12.495553], [41.916435, 12.495692], [41.916929, 12.496056], [41.917193, 12.496171], [41.916975, 12.496735], [41.916987, 12.496828], [41.917612, 12.497726], [41.918258, 12.498692], [41.918282, 12.498729], [41.918323, 12.498788], [41.918672, 12.499299], [41.918651, 12.499327], [41.918635, 12.499349], [41.918649, 12.499376], [41.918669, 12.499406], [41.918736, 12.499507], [41.91874, 12.499511], [41.918743, 12.499517], [41.918633, 12.499677], [41.918403, 12.500015], [41.918399, 12.500242], [41.918397, 12.500456], [41.918436, 12.500505], [41.918671, 12.500831], [41.91866, 12.500846], [41.918614, 12.500904], [41.918566, 12.500966], [41.918557, 12.500978], [41.918569, 12.500995], [41.918593, 12.501029], [41.918643, 12.501099], [41.918609, 12.501195], [41.918608, 12.501353], [41.918616, 12.50148], [41.918663, 12.50205], [41.918686, 12.502282], [41.918633, 12.502305], [41.918631, 12.502475], [41.918615, 12.502529], [41.918537, 12.502635]];
+</script>
+<script src="../shared/app.js"></script>
+</body>
+</html>
