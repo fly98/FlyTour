@@ -18,9 +18,9 @@
 <div class="wrap">
   <header>
     <a href="../index.html" class="back-link">← Tutti i percorsi</a>
-    <div class="eyebrow">Passeggiata narrata · ~2h30 · 4-5 km</div>
-    <h1>Trastevere Nascosta</h1>
-    <p class="subtitle">Il lato del rione che i turisti non vedono. Cammina, e ti racconto io.</p>
+    <div class="eyebrow" id="txtEyebrow">Passeggiata narrata · ~2h30 · 4-5 km</div>
+    <h1 id="txtH1">Trastevere Nascosta</h1>
+    <p class="subtitle" id="txtSubtitle">Il lato del rione che i turisti non vedono. Cammina, e ti racconto io.</p>
   </header>
 
   <div id="langToggle">
@@ -125,6 +125,15 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 // ---- Dati tappe (pilota: 2 tappe) ----
+const PAGE_I18N = {
+  it: { eyebrow: "Passeggiata narrata · ~2h30 · 4-5 km", h1: "Trastevere Nascosta", subtitle: "Il lato del rione che i turisti non vedono. Cammina, e ti racconto io." },
+  en: { eyebrow: "Narrated walk · ~2h30 · 4-5 km", h1: "Hidden Trastevere", subtitle: "The side of the neighborhood tourists don't see. Walk, and I'll tell you the story." },
+  es: { eyebrow: "Paseo narrado · ~2h30 · 4-5 km", h1: "Trastevere Escondida", subtitle: "El lado del barrio que los turistas no ven. Camina, y yo te cuento la historia." },
+  fr: { eyebrow: "Promenade racontée · ~2h30 · 4-5 km", h1: "Trastevere Caché", subtitle: "Le côté du quartier que les touristes ne voient pas. Marchez, et je vous raconte." },
+  de: { eyebrow: "Erzählter Spaziergang · ~2h30 · 4-5 km", h1: "Verstecktes Trastevere", subtitle: "Die Seite des Viertels, die Touristen nicht sehen. Geh, und ich erzähle dir die Geschichte." },
+  pt: { eyebrow: "Passeio narrado · ~2h30 · 4-5 km", h1: "Trastevere Escondida", subtitle: "O lado do bairro que os turistas não veem. Caminha, e eu conto-te a história." },
+  zh: { eyebrow: "讲解漫步 · 约2.5小时 · 4-5公里", h1: "隐秘的特拉斯提弗列", subtitle: "游客看不到的街区另一面。边走边听我讲述。" }
+};
 const STOPS = [
   {
     id: 1, ready: true,
@@ -281,7 +290,7 @@ Quando estiveres pronto, segue em direção à Piazza della Scala.`,
     ]
       },
       zh: {
-        name: "特里卢萨广场",
+        name: "Piazza Trilussa",
         desc: "西斯托桥、迁移的喷泉、特拉斯提弗列的入口",
         audio: "audio/en/tappa1.mp3",
         photos: [
@@ -352,7 +361,7 @@ When you're ready, we move on to the next stop.`,
     ]
       },
       es: {
-        name: "Antigua Farmacia S. Maria della Scala",
+        name: "Antica Farmacia S. Maria della Scala",
         desc: "La farmacia de los Papas, la triaca y los frailes boticarios",
         audio: "audio/en/tappa2.mp3",
         photos: [
@@ -372,7 +381,7 @@ Cuando estés listo, nos movemos hacia la próxima parada.`,
     ]
       },
       fr: {
-        name: "Ancienne Pharmacie S. Maria della Scala",
+        name: "Antica Farmacia S. Maria della Scala",
         desc: "La pharmacie des papes, la thériaque et les frères apothicaires",
         audio: "audio/en/tappa2.mp3",
         photos: [
@@ -392,7 +401,7 @@ Quand vous êtes prêt, nous nous dirigeons vers la prochaine étape.`,
     ]
       },
       de: {
-        name: "Alte Apotheke S. Maria della Scala",
+        name: "Antica Farmacia S. Maria della Scala",
         desc: "Die Papstapotheke, der Theriak und die Apothekermönche",
         audio: "audio/en/tappa2.mp3",
         photos: [
@@ -412,7 +421,7 @@ Wenn du bereit bist, geht es weiter zur nächsten Station.`,
     ]
       },
       pt: {
-        name: "Antiga Farmácia S. Maria della Scala",
+        name: "Antica Farmacia S. Maria della Scala",
         desc: "A farmácia dos Papas, a triaga e os frades boticários",
         audio: "audio/en/tappa2.mp3",
         photos: [
@@ -432,7 +441,7 @@ Quando estiveres pronto, seguimos em direção à próxima paragem.`,
     ]
       },
       zh: {
-        name: "圣玛利亚德拉斯卡拉老药房",
+        name: "Antica Farmacia S. Maria della Scala",
         desc: "教皇的药房、万应解毒剂与药剂师修士",
         audio: "audio/en/tappa2.mp3",
         photos: [
@@ -578,7 +587,7 @@ Se tiveres tempo, entra: o acesso ao claustro é livre. Depois segue em direçã
     ]
       },
       zh: {
-        name: "圣科西马托广场",
+        name: "Piazza di San Cosimato",
         desc: "隐藏在医院内的中世纪回廊",
         audio: "audio/en/tappa3.mp3",
         photos: [
@@ -700,7 +709,7 @@ Quando estiveres pronto, segue em direção ao vicolo dell'Atleta.`,
     ]
       },
       zh: {
-        name: "圣卡利斯托拱门街",
+        name: "Via dell'Arco di San Calisto",
         desc: "罗马最小的房子",
         audio: "audio/en/tappa4.mp3",
         photos: [],
@@ -848,7 +857,7 @@ Quando estiveres pronto, segue em direção à piazza in Piscinula.`,
     ]
       },
       zh: {
-        name: "运动员小巷",
+        name: "Vicolo dell'Atleta",
         desc: "刮汗者雕像与中世纪犹太会堂",
         audio: "audio/en/tappa5.mp3",
         photos: [
@@ -995,7 +1004,7 @@ Quando estiveres pronto, segue em direção à via dei Genovesi.`,
     ]
       },
       zh: {
-        name: "皮西努拉广场",
+        name: "Piazza in Piscinula",
         desc: "古罗马浴场、马太家族、最小的钟楼",
         audio: "audio/en/tappa6.mp3",
         photos: [
@@ -1135,7 +1144,7 @@ Quando estiveres pronto, segue em direção à piazza de' Renzi, a última parag
     ]
       },
       zh: {
-        name: "热那亚人街",
+        name: "Via dei Genovesi",
         desc: "码头工人的街区",
         audio: "audio/en/tappa7.mp3",
         photos: [
@@ -1256,7 +1265,7 @@ Obrigado por caminhares connosco hoje.`,
     ]
       },
       zh: {
-        name: "德伦齐广场",
+        name: "Piazza de' Renzi",
         desc: "行程终点，开胃酒时间",
         audio: "audio/en/tappa8.mp3",
         photos: [],
