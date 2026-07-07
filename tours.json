@@ -59,7 +59,8 @@
     "lat": 41.9065,
     "lon": 12.4536,
     "cover": "https://commons.wikimedia.org/wiki/Special:FilePath/Michelangelo%20-%20Creation%20of%20Adam%20(cropped).jpg?width=700",
-    "url": "https://fly98.github.io/FlyTour/vaticano/index.html"
+    "url": "https://fly98.github.io/FlyTour/vaticano/index.html",
+    "gps": false
   },
   {
     "slug": "trastevere",
