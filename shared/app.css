@@ -88,10 +88,10 @@
   .museum-map-link{display:block; margin-top:10px; font-size:11.5px; color:var(--limestone-dim);
     text-decoration:underline;}
 
-  #langToggle{display:none; gap:4px; margin:0 20px 10px; background:var(--stone-2);
-    border-radius:10px; padding:3px; border:1px solid var(--line); width:fit-content;}
+  #langToggle{display:none; gap:4px; flex-wrap:wrap; margin:0 20px 10px; background:var(--stone-2);
+    border-radius:10px; padding:3px; border:1px solid var(--line); width:fit-content; max-width:calc(100% - 40px);}
   #langToggle button{background:none; border:none; color:var(--limestone-dim); font-family:'Inter',sans-serif;
-    font-size:12.5px; font-weight:600; padding:6px 14px; border-radius:8px; cursor:pointer; transition:.15s;}
+    font-size:12px; font-weight:600; padding:6px 10px; border-radius:8px; cursor:pointer; transition:.15s;}
   #langToggle button.active{background:var(--patina); color:#1a231d;}
   .gps-dot.live{background:var(--patina); box-shadow:0 0 0 3px rgba(124,154,130,0.25);}
 
