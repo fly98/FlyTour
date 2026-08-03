@@ -122,6 +122,33 @@
 </div>
 
 <script>
+// ---- Tracciamento utilizzo (stesso sistema dei tour e di InternoUno Experience) ----
+const TRACK_WORKER = 'https://wb-worker.f-castiglioni.workers.dev';
+function getOrCreateSid(){
+  let sid = localStorage.getItem('wb_sid');
+  if(!sid){
+    sid = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : (Date.now()+'-'+Math.random().toString(36).slice(2));
+    localStorage.setItem('wb_sid', sid);
+  }
+  return sid;
+}
+(function(){
+  const p = new URLSearchParams(location.search).get('notrack');
+  if(p === '1') localStorage.setItem('wb_notrack', '1');
+  if(p === '0') localStorage.removeItem('wb_notrack');
+})();
+function trackEvent(event, section, lang){
+  if(localStorage.getItem('wb_notrack') === '1') return;
+  try{
+    fetch(`${TRACK_WORKER}/wb/flytour/track`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ event, section: section || 'home', lang: lang || '', sid: getOrCreateSid() }),
+      keepalive: true
+    }).catch(()=>{});
+  }catch(e){ /* mai bloccare la pagina per un ping di analytics */ }
+}
+
 const AUDIENCE = "guest"; // questa pagina (root) è la vetrina per gli ospiti del B&B
 let TOURS = [];
 let userPos = null;
@@ -155,6 +182,7 @@ function detectDefaultLang(){
   return LANGS.some(l => l.code === browserLang) ? browserLang : "en";
 }
 let currentLang = detectDefaultLang();
+trackEvent('home_view', 'home', currentLang);
 
 function applyStaticTexts(){
   document.getElementById('txtEyebrow').textContent = UI.eyebrow[currentLang];
@@ -176,6 +204,7 @@ langSelect.value = currentLang;
 langSelect.addEventListener('change', () => {
   currentLang = langSelect.value;
   localStorage.setItem(LANG_STORAGE_KEY, currentLang);
+  trackEvent('lang', 'home', currentLang);
   applyStaticTexts();
   render();
 });
@@ -207,7 +236,7 @@ function filterTours(query){
 
 function cardHtml(t, isNearest){
   return `
-    <a class="tour-card" href="${t.url}">
+    <a class="tour-card" href="${t.url}" onclick="trackEvent('tour_click', '${t.slug}', currentLang)">
       <div class="tour-cover">
         <img src="${t.cover}" alt="" loading="lazy">
         <div class="tour-cover-overlay">
