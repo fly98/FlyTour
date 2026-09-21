@@ -174,6 +174,8 @@
     border:1px solid var(--line); position:relative; z-index:1;}
   #map{height:220px; width:100%; background:var(--stone-2);}
   .leaflet-control-attribution{font-size:9px !important;}
+  .maplibregl-ctrl-attrib{font-size:9px !important;}
+  .maplibregl-ctrl-attrib a{color:inherit;}
   .stop-marker{width:26px;height:26px;border-radius:50% 50% 50% 0; background:var(--ochre);
     transform:rotate(-45deg); display:flex; align-items:center; justify-content:center;
     border:2px solid var(--stone); box-shadow:0 2px 6px rgba(0,0,0,0.4);}
