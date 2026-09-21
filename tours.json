@@ -438,7 +438,7 @@
     "slug": "romacapitale",
     "country": "Italia",
     "city": "Roma",
-    "audience": "personal",
+    "audience": "guest",
     "title": {
       "it": "Roma Capitale",
       "en": "Roma Capitale",
