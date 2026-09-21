@@ -433,5 +433,26 @@
     "lon": 12.4763579,
     "cover": "https://commons.wikimedia.org/wiki/Special:FilePath/Flaminio%20Obelisk%20on%20the%20Piazza%20del%20Popolo.jpg?width=700",
     "url": "https://fly98.github.io/FlyTour/esoterica/index.html"
+  },
+  {
+    "slug": "romacapitale",
+    "country": "Italia",
+    "city": "Roma",
+    "audience": "personal",
+    "title": {
+      "it": "Roma Capitale",
+      "en": "Roma Capitale"
+    },
+    "desc": {
+      "it": "Come la città del papa diventò la capitale d'Italia nel 1870: demolizioni, spostamenti di interi palazzi, l'alluvione che cambiò il Tevere, e qualche leggenda da sfatare. Da Trastevere al Ghetto fino al Vittoriano, anello di ~4,5 km.",
+      "en": "How the pope's city became the capital of Italy in 1870: demolitions, entire palazzi moved brick by brick, the flood that changed the Tiber, and a few legends to debunk. From Trastevere to the Ghetto to the Vittoriano, a ~4.5 km loop."
+    },
+    "duration": "2h30-3h",
+    "distance": "~4,5 km (anello)",
+    "stops": 13,
+    "lat": 41.8895411,
+    "lon": 12.474504,
+    "cover": "https://commons.wikimedia.org/wiki/Special:FilePath/Torre_degli_Anguillara_Roma.jpg?width=700",
+    "url": "https://fly98.github.io/FlyTour/romacapitale/index.html"
   }
 ]
