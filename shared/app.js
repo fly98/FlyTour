@@ -30,47 +30,77 @@ function trackEvent(event, section, lang){
 }
 trackEvent('tour_view', TOUR_SLUG);
 
-// ---- Mappa ----
-const map = L.map('map', {zoomControl:false, attributionControl:true}).setView(
-  [STOPS[0].lat, STOPS[0].lon], 16
-);
-L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-  attribution: '&copy; OpenStreetMap &copy; CARTO',
-  maxZoom: 20
-}).addTo(map);
+// ---- Mappa (MapLibre GL JS + OpenFreeMap — vettoriale, gratis, senza chiave.
+//      Carto ha messo le tile raster dietro API key: senza chiave non dà errore,
+//      restituisce un'immagine con su scritto "API KEY REQUIRED" al posto della mappa) ----
 
-const routeLatLngs = STOPS.map(s => [s.lat, s.lon]);
-L.polyline(ROUTE_COORDS, {color:'#7c9a82', weight:4, opacity:0.85, lineJoin:'round'}).addTo(map);
+// Se manca ROUTE_COORDS (pagina non ancora rifinita con il tracciato reale da
+// OpenRouteService), il percorso si disegna comunque collegando le tappe in ordine:
+// meglio una linea dritta visibile che nessuna linea o uno script che si blocca.
+const ROUTE_LINE = (typeof ROUTE_COORDS !== 'undefined' && ROUTE_COORDS.length)
+  ? ROUTE_COORDS
+  : STOPS.map(s => [s.lat, s.lon]);
+
+const map = new maplibregl.Map({
+  container: 'map',
+  style: 'https://tiles.openfreemap.org/styles/liberty',
+  center: [STOPS[0].lon, STOPS[0].lat], // attenzione: MapLibre vuole [lon, lat], Leaflet voleva [lat, lon]
+  zoom: 16,
+  pitch: 45, // "liberty" ha già i palazzi in 3D (building-3d, da zoom 14): con pitch si vedono
+  attributionControl: { compact: true }
+});
+map.dragRotate.disable();
+map.touchZoomRotate.disableRotation();
+
+function boundsFromCoords(coordsLatLon){
+  const b = new maplibregl.LngLatBounds();
+  coordsLatLon.forEach(([lat, lon]) => b.extend([lon, lat]));
+  return b;
+}
+
+map.on('load', () => {
+  map.addSource('route', {
+    type: 'geojson',
+    data: { type: 'Feature', geometry: { type: 'LineString',
+      coordinates: ROUTE_LINE.map(([lat, lon]) => [lon, lat]) } }
+  });
+  map.addLayer({
+    id: 'route-line', type: 'line', source: 'route',
+    layout: { 'line-join': 'round', 'line-cap': 'round' },
+    paint: { 'line-color': '#7c9a82', 'line-width': 4, 'line-opacity': 0.85 }
+  });
+  map.fitBounds(boundsFromCoords(ROUTE_LINE), {padding: 40, duration: 0});
+  setTimeout(() => {
+    map.resize();
+    map.fitBounds(boundsFromCoords(ROUTE_LINE), {padding: 24, duration: 0});
+  }, 300);
+});
 
 const stopMarkers = {};
 STOPS.forEach(s => {
-  const icon = L.divIcon({
-    className: '', html: `<div class="stop-marker${s.ready ? '' : ' pending'}" id="marker-${s.id}"><span>${s.id}</span></div>`,
-    iconSize:[26,26], iconAnchor:[13,26]
-  });
-  const m = L.marker([s.lat, s.lon], {icon}).addTo(map);
+  const el = document.createElement('div');
+  el.innerHTML = `<div class="stop-marker${s.ready ? '' : ' pending'}" id="marker-${s.id}"><span>${s.id}</span></div>`;
+  const m = new maplibregl.Marker({element: el.firstElementChild, anchor: 'bottom'})
+    .setLngLat([s.lon, s.lat]).addTo(map);
   stopMarkers[s.id] = m;
 });
-map.fitBounds(ROUTE_COORDS, {padding:[40,40]});
-setTimeout(() => {
-  map.invalidateSize();
-  map.fitBounds(ROUTE_COORDS, {padding:[24,24]});
-}, 300);
 
 function zoomToStop(stop){
-  map.flyTo([stop.lat, stop.lon], 18, {duration: 0.6});
+  map.flyTo({center: [stop.lon, stop.lat], zoom: 18, duration: 600});
 }
 function zoomToOverview(){
-  map.flyToBounds(ROUTE_COORDS, {padding:[24,24], duration: 0.6});
+  map.fitBounds(boundsFromCoords(ROUTE_LINE), {padding: 24, duration: 600});
 }
 
 let meMarker = null;
 function updateMeMarker(lat, lon){
   if(!meMarker){
-    const icon = L.divIcon({className:'', html:'<div class="me-marker"></div>', iconSize:[16,16], iconAnchor:[8,8]});
-    meMarker = L.marker([lat, lon], {icon, zIndexOffset:1000}).addTo(map);
+    const el = document.createElement('div');
+    el.innerHTML = '<div class="me-marker"></div>';
+    meMarker = new maplibregl.Marker({element: el.firstElementChild, anchor: 'center'})
+      .setLngLat([lon, lat]).addTo(map);
   } else {
-    meMarker.setLatLng([lat, lon]);
+    meMarker.setLngLat([lon, lat]);
   }
 }
 function refreshStopMarkers(){
