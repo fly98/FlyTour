@@ -136,14 +136,28 @@ function getOrCreateSid(){
   const p = new URLSearchParams(location.search).get('notrack');
   if(p === '1') localStorage.setItem('wb_notrack', '1');
   if(p === '0') localStorage.removeItem('wb_notrack');
+  if(p === '1' || p === '0'){
+    try{ fetch(`${TRACK_WORKER}/wb/flytour/escludimi`, {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({sid: getOrCreateSid(), on: p === '1'}), keepalive:true}).catch(()=>{}); }catch(e){}
+  }
 })();
+// tipo di dispositivo e modo di apertura (serve solo a riconoscere i propri dispositivi nelle statistiche)
+function tipoDispositivo(){
+  try{
+    const ua = navigator.userAgent;
+    const t = /iPhone/.test(ua) ? 'iPhone' : (/iPad/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1)) ? 'iPad'
+      : /Android/.test(ua) ? 'Android' : /Macintosh|Mac OS X/.test(ua) ? 'Mac' : /Windows/.test(ua) ? 'Windows' : 'Altro';
+    const app = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
+    return t + ' · ' + (app ? 'app Home' : 'browser');
+  }catch(e){ return ''; }
+}
 function trackEvent(event, section, lang){
   if(localStorage.getItem('wb_notrack') === '1') return;
   try{
     fetch(`${TRACK_WORKER}/wb/flytour/track`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ event, section: section || 'home', lang: lang || '', sid: getOrCreateSid() }),
+      body: JSON.stringify({ event, section: section || 'home', lang: lang || '', sid: getOrCreateSid(), h: location.hostname, wd: navigator.webdriver === true, dv: tipoDispositivo() }),
       keepalive: true
     }).catch(()=>{});
   }catch(e){ /* mai bloccare la pagina per un ping di analytics */ }
