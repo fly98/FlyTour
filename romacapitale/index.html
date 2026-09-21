@@ -124,10 +124,15 @@
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-// ---- Dati tappe: Roma Capitale (7 tappe + 6 intermezzi, anello) ----
+// ---- Dati tappe: Roma Capitale (7 tappe + 6 intermezzi, anello, 7 lingue) ----
 const PAGE_I18N = {
   it: { eyebrow: "Passeggiata narrata · ~2h30-3h · ~4,5 km, anello", h1: "Roma Capitale", subtitle: "Come la città del papa diventò la capitale d'Italia: demolizioni, spostamenti, leggende da sfatare." },
-  en: { eyebrow: "Narrated walk · ~2h30-3h · ~4.5 km, loop", h1: "Roma Capitale", subtitle: "How the pope's city became the capital of Italy: demolitions, relocations, legends to debunk." }
+  en: { eyebrow: "Narrated walk · ~2h30-3h · ~4.5 km, loop", h1: "Roma Capitale", subtitle: "How the pope's city became the capital of Italy: demolitions, relocations, legends to debunk." },
+  es: { eyebrow: "Paseo narrado · ~2h30-3h · ~4,5 km, anillo", h1: "Roma Capitale", subtitle: "Cómo la ciudad del papa se convirtió en la capital de Italia: demoliciones, traslados, leyendas por desmentir." },
+  fr: { eyebrow: "Promenade racontée · ~2h30-3h · ~4,5 km, boucle", h1: "Roma Capitale", subtitle: "Comment la ville du pape est devenue la capitale de l'Italie : démolitions, déplacements, légendes à démentir." },
+  de: { eyebrow: "Erzählter Spaziergang · ~2,5-3 Std · ~4,5 km, Rundweg", h1: "Roma Capitale", subtitle: "Wie die Stadt des Papstes zur Hauptstadt Italiens wurde: Abrisse, Versetzungen, Legenden zum Entlarven." },
+  pt: { eyebrow: "Passeio narrado · ~2h30-3h · ~4,5 km, anel", h1: "Roma Capitale", subtitle: "Como a cidade do papa se tornou a capital de Itália: demolições, deslocações, lendas para desmontar." },
+  zh: { eyebrow: "讲解漫步 · 约2.5-3小时 · 约4.5公里环线", h1: "Roma Capitale", subtitle: "教皇之城如何成为意大利首都：拆除、迁移，以及几个需要澄清的传说。" }
 };
 const STOPS = [
   {
@@ -182,6 +187,126 @@ So, in this one tower you can already read the whole story we'll be telling on t
           { type: "link", title: "Torre degli Anguillara — Wikipedia", url: "https://en.wikipedia.org/wiki/Torre_degli_Anguillara" },
         ]
       },
+      es: {
+        name: "Piazza Sonnino e Torre degli Anguillara",
+        desc: "La torre medieval, la leyenda de Dante, la amenaza de demolición de 1870",
+        audio: "audio/en/tappa1.mp3",
+        photos: [
+          { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Torre_degli_Anguillara_Roma.jpg?width=900",
+            caption: "Torre degli Anguillara, Piazza Sonnino", credit: "Wikimedia Commons" },
+          { time: 91, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Ponte_Garibaldi_-_Roma_italiana,_1870-1895_(page_221_crop).jpg?width=900",
+            caption: "Ponte Garibaldi, 1870s-1890s", credit: "Wikimedia Commons" },
+          { time: 154, url: "https://commons.wikimedia.org/wiki/Special:FilePath/TowerAnguilla.jpg?width=900",
+            caption: "The tower after Fallani's restoration", credit: "Wikimedia Commons" },
+        ],
+        fullText: `Bienvenidos al inicio de nuestro recorrido por la Roma que en 1870 se convierte en capital de Italia — y a partir de ahí ya no volverá a ser la misma. Estamos en Piazza Sidney Sonnino, en la entrada de Viale Trastevere, y lo primero que llama la atención es esta torre almenada de color ladrillo que parece sacada de una película de época: la Torre degli Anguillara.<br><br>
+El nombre viene de una de las familias más poderosas de la Roma medieval, los Anguillara — tomaron el apellido de su feudo en el lago Bracciano, Anguillara Sabazia. Controlaban una parte enorme de la ciudad: tenían también una villa fortificada más al norte, entre las vías Cassia y Clodia, desde donde vigilaban a los peregrinos que bajaban hacia Roma desde el norte. El primer núcleo de este complejo lo mandó construir en el siglo XIII un tal Petrasso degli Anguillara: torre, palacete, todo rodeado por murallas almenadas, con establos y almacenes dentro — una auténtica ciudadela lista para resistir un asedio, no una simple residencia familiar.<br><br>
+Pero las familias nobles, ya se sabe, tienen altibajos. En 1542 un terremoto daña gravemente el complejo, y desde entonces empieza un lento declive: se convierte en matadero, establo, bodega. Los trasteverinos, nada tiernos, empiezan a llamarlo "Palazzaccio" y "Carbognano". Lejos ya de ser la fortaleza de los señores.<br><br>
+En el siglo XIX la torre pasa a la familia Forti, burguesía trasteverina, que instala aquí una fábrica de esmaltes y vidrios de colores — y la hace famosa en todo el barrio por un belén artístico que cada Navidad atraía a medio Trastevere para verlo.<br><br>
+Luego llega 1870, Roma se convierte en capital, y la torre corre serio peligro: los planes urbanísticos de 1873 y 1883 prevén derribarla para abrir paso al nuevo Viale del Re — lo que hoy llamamos Viale Trastevere. Por suerte, en 1892 un grupo de apasionados de la historia — se hacían llamar los Cultori di Roma — se interponen y logran salvar la torre de la demolición. Estudiándola de cerca, descubren incluso una segunda torre medieval que nadie sabía que existía, todavía hoy oculta bajo el revoque de Via della Lungaretta, justo a la vuelta de la esquina.<br><br>
+El Ayuntamiento expropia el complejo en 1887 y lo hace restaurar entre 1898 y 1902 por el arquitecto Augusto Fallani. Y aquí viene lo curioso: Fallani eleva la torre un metro y medio y le añade almenas — pero "de estilo", es decir inventadas, no las originales medievales. Así que lo que veis hoy no es exactamente como era en el siglo XIII: es en parte una restauración romántica, como gustaba en el siglo XIX.<br><br>
+Y ahora la parte que os hará parecer más expertos que vuestros amigos: desde 1921 el edificio alberga la "Casa di Dante", una asociación dedicada a los estudios dantescos — y de ese nombre nació la leyenda de que Dante Alighieri durmió aquí durante una estancia en Roma. Bonita historia. Lástima que sea falsa: no existe ningún documento que lo demuestre. Es solo un malentendido nacido del nombre de la asociación que ocupa el edificio, convertido con los años en una pequeña "verdad" turística que todavía se cuenta por ahí.<br><br>
+En definitiva, en esta única torre ya se lee toda la historia que contaremos a lo largo del recorrido: una Roma medieval casi borrada por los grandes proyectos de la nueva capital, salvada por los pelos por quienes de verdad la apreciaban, y luego un poco reinventada para parecer más sugerente. Sigamos por Via della Lungaretta, la calle que llevaba directa al corazón de Trastevere.`,
+        deepen: [
+          { type: "link", title: "Torre degli Anguillara — Wikipedia", url: "https://es.wikipedia.org/wiki/Torre_degli_Anguillara" },
+        ]
+      },
+      fr: {
+        name: "Piazza Sonnino e Torre degli Anguillara",
+        desc: "La tour médiévale, la légende de Dante, la menace de démolition de 1870",
+        audio: "audio/en/tappa1.mp3",
+        photos: [
+          { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Torre_degli_Anguillara_Roma.jpg?width=900",
+            caption: "Torre degli Anguillara, Piazza Sonnino", credit: "Wikimedia Commons" },
+          { time: 91, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Ponte_Garibaldi_-_Roma_italiana,_1870-1895_(page_221_crop).jpg?width=900",
+            caption: "Ponte Garibaldi, 1870s-1890s", credit: "Wikimedia Commons" },
+          { time: 154, url: "https://commons.wikimedia.org/wiki/Special:FilePath/TowerAnguilla.jpg?width=900",
+            caption: "The tower after Fallani's restoration", credit: "Wikimedia Commons" },
+        ],
+        fullText: `Bienvenue au début de notre parcours dans la Rome qui, en 1870, devient la capitale de l'Italie — et qui ne sera plus jamais la même après cela. Nous sommes Piazza Sidney Sonnino, à l'entrée de Viale Trastevere, et la première chose qui saute aux yeux est cette tour crénelée couleur brique qui semble sortie d'un film en costumes : la Torre degli Anguillara.<br><br>
+Le nom vient de l'une des familles les plus puissantes de la Rome médiévale, les Anguillara — ils tiraient leur nom de leur fief sur le lac de Bracciano, Anguillara Sabazia. Ils contrôlaient une part énorme de la ville : ils possédaient aussi une villa fortifiée plus au nord, entre les voies Cassia et Clodia, d'où ils surveillaient les pèlerins descendant vers Rome par le nord. Le premier noyau de ce complexe fut construit au XIIIe siècle par un certain Petrasso degli Anguillara : tour, petit palais, le tout ceint de murailles crénelées, avec écuries et entrepôts à l'intérieur — une véritable citadelle prête à soutenir un siège, bien loin d'une simple résidence familiale.<br><br>
+Mais les familles nobles, comme on sait, connaissent des hauts et des bas. En 1542, un tremblement de terre endommage gravement le complexe, et c'est le début d'un lent déclin : il devient abattoir, écurie, cave. Les habitants du Trastevere, peu tendres, se mettent à l'appeler "Palazzaccio" et "Carbognano". Bien loin de la forteresse seigneuriale.<br><br>
+Au XIXe siècle, la tour passe à la famille Forti, bourgeoisie du Trastevere, qui y installe une fabrique d'émaux et de verres colorés — et la rend célèbre dans tout le quartier pour une crèche artistique qui, chaque Noël, attirait la moitié du Trastevere venue l'admirer.<br><br>
+Puis arrive 1870, Rome devient capitale, et la tour risque gros : les plans d'urbanisme de 1873 et 1883 prévoient de la démolir pour laisser place au nouveau Viale del Re — ce que nous appelons aujourd'hui Viale Trastevere. Heureusement, en 1892, un groupe de passionnés d'histoire — les Cultori di Roma — s'y opposent et parviennent à sauver la tour de la démolition. En l'étudiant de près, ils découvrent même une seconde tour médiévale dont personne ne soupçonnait l'existence, encore cachée aujourd'hui sous le crépi de Via della Lungaretta, juste au coin de la rue.<br><br>
+La Ville de Rome exproprie le complexe en 1887 et le fait restaurer entre 1898 et 1902 par l'architecte Augusto Fallani. Et c'est là que ça devient intéressant : Fallani rehausse la tour d'un mètre cinquante et y ajoute des créneaux — mais "de style", c'est-à-dire inventés, pas les créneaux médiévaux d'origine. Ce que vous voyez aujourd'hui n'est donc pas exactement ce qu'elle était au XIIIe siècle : c'est plutôt une restauration romantique, comme on les aimait au XIXe siècle.<br><br>
+Et voici maintenant la partie qui vous fera passer pour plus savants que vos amis : depuis 1921, le bâtiment abrite la "Casa di Dante", une association vouée aux études dantesques — et de ce nom est née la légende selon laquelle Dante Alighieri aurait dormi ici même lors d'un séjour romain. Belle histoire. Dommage qu'elle soit fausse : aucun document ne le prouve. Ce n'est qu'un malentendu né du nom de l'association qui occupe les lieux, devenu au fil des ans une petite "vérité" touristique encore racontée aujourd'hui.<br><br>
+Bref, dans cette seule tour se lit déjà toute l'histoire que nous raconterons tout au long du parcours : une Rome médiévale presque effacée par les grands projets de la nouvelle capitale, sauvée de justesse par ceux qui y tenaient vraiment, puis un peu réinventée pour paraître plus pittoresque. Continuons le long de Via della Lungaretta, la rue qui menait tout droit au cœur du Trastevere.`,
+        deepen: [
+          { type: "link", title: "Torre degli Anguillara — Wikipedia", url: "https://fr.wikipedia.org/wiki/Torre_degli_Anguillara" },
+        ]
+      },
+      de: {
+        name: "Piazza Sonnino e Torre degli Anguillara",
+        desc: "Der mittelalterliche Turm, die Dante-Legende, die Abrissdrohung von 1870",
+        audio: "audio/en/tappa1.mp3",
+        photos: [
+          { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Torre_degli_Anguillara_Roma.jpg?width=900",
+            caption: "Torre degli Anguillara, Piazza Sonnino", credit: "Wikimedia Commons" },
+          { time: 91, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Ponte_Garibaldi_-_Roma_italiana,_1870-1895_(page_221_crop).jpg?width=900",
+            caption: "Ponte Garibaldi, 1870s-1890s", credit: "Wikimedia Commons" },
+          { time: 154, url: "https://commons.wikimedia.org/wiki/Special:FilePath/TowerAnguilla.jpg?width=900",
+            caption: "The tower after Fallani's restoration", credit: "Wikimedia Commons" },
+        ],
+        fullText: `Willkommen am Beginn unseres Spaziergangs durch das Rom, das 1870 Hauptstadt Italiens wird — und von da an nie mehr dasselbe sein wird. Wir stehen auf der Piazza Sidney Sonnino, am Anfang der Viale Trastevere, und das Erste, was ins Auge fällt, ist dieser ziegelrote, zinnenbekrönte Turm, der wie aus einem Kostümfilm entsprungen wirkt: die Torre degli Anguillara.<br><br>
+Der Name stammt von einer der mächtigsten Familien des mittelalterlichen Rom, den Anguillara — sie trugen ihren Namen nach ihrem Lehen am Bracciano-See, Anguillara Sabazia. Sie kontrollierten einen riesigen Teil der Stadt: Sie besaßen auch eine befestigte Villa weiter nördlich, zwischen Via Cassia und Via Clodia, von wo aus sie die von Norden nach Rom ziehenden Pilger im Auge behielten. Den ersten Kern dieses Komplexes ließ im 13. Jahrhundert ein gewisser Petrasso degli Anguillara errichten: Turm, kleiner Palast, alles von zinnenbewehrten Mauern umschlossen, mit Ställen und Lagerräumen im Inneren — eine regelrechte Festung, bereit, einer Belagerung standzuhalten, alles andere als ein einfacher Familiensitz.<br><br>
+Aber Adelsfamilien haben, wie man weiß, ihre Höhen und Tiefen. 1542 beschädigt ein Erdbeben den Komplex schwer, und von da an beginnt ein langsamer Niedergang: Er wird zu Schlachthaus, Stall, Weinkeller. Die Trasteveriner, wenig zimperlich, nennen ihn fortan "Palazzaccio" und "Carbognano". Von einer herrschaftlichen Festung keine Spur mehr.<br><br>
+Im 19. Jahrhundert geht der Turm an die Familie Forti über, Trasteveriner Bürgertum, die dort eine Emaille- und Buntglasmanufaktur einrichtet — und ihn im ganzen Viertel berühmt macht für eine kunstvolle Weihnachtskrippe, die jedes Jahr halb Trastevere anlockte.<br><br>
+Dann kommt 1870, Rom wird Hauptstadt, und der Turm ist in ernster Gefahr: Die Bebauungspläne von 1873 und 1883 sehen seinen Abriss vor, um Platz für den neuen Viale del Re zu schaffen — das, was wir heute Viale Trastevere nennen. Zum Glück stellt sich 1892 eine Gruppe von Geschichtsbegeisterten — sie nannten sich die Cultori di Roma — dagegen und rettet den Turm vor dem Abriss. Bei genauerer Untersuchung entdecken sie sogar einen zweiten mittelalterlichen Turm, von dessen Existenz niemand wusste, heute noch verborgen unter dem Putz der Via della Lungaretta, gleich um die Ecke.<br><br>
+Die Stadt Rom enteignet den Komplex 1887 und lässt ihn zwischen 1898 und 1902 vom Architekten Augusto Fallani restaurieren. Und hier kommt der amüsante Teil: Fallani erhöht den Turm um anderthalb Meter und fügt Zinnen hinzu — aber "stilecht", also erfunden, nicht die originalen mittelalterlichen. Was Sie heute sehen, ist also nicht genau das, wie es im 13. Jahrhundert aussah: Es ist eher eine romantische Restaurierung, wie man sie im 19. Jahrhundert liebte.<br><br>
+Und jetzt der Teil, der Sie klüger erscheinen lässt als Ihre Freunde: Seit 1921 beherbergt das Gebäude die "Casa di Dante", einen Verein für Dante-Studien — und daraus entstand die Legende, Dante Alighieri habe während eines Romaufenthalts genau hier geschlafen. Schöne Geschichte. Schade, dass sie falsch ist: Es gibt kein einziges Dokument, das dies belegt. Es ist nur ein Missverständnis, entstanden aus dem Namen des dort ansässigen Vereins, das sich im Laufe der Jahre zu einer kleinen touristischen "Wahrheit" verfestigt hat, die bis heute erzählt wird.<br><br>
+Kurz gesagt: In diesem einen Turm lässt sich bereits die ganze Geschichte ablesen, die wir auf diesem Spaziergang erzählen werden: ein mittelalterliches Rom, fast ausgelöscht von den großen Projekten der neuen Hauptstadt, in letzter Minute gerettet von denen, denen es wirklich am Herzen lag, und dann ein wenig neu erfunden, um pittoresker zu wirken. Weiter geht es entlang der Via della Lungaretta, der Straße, die geradewegs ins Herz von Trastevere führte.`,
+        deepen: [
+          { type: "link", title: "Torre degli Anguillara — Wikipedia", url: "https://de.wikipedia.org/wiki/Torre_degli_Anguillara" },
+        ]
+      },
+      pt: {
+        name: "Piazza Sonnino e Torre degli Anguillara",
+        desc: "A torre medieval, a lenda de Dante, a ameaça de demolição de 1870",
+        audio: "audio/en/tappa1.mp3",
+        photos: [
+          { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Torre_degli_Anguillara_Roma.jpg?width=900",
+            caption: "Torre degli Anguillara, Piazza Sonnino", credit: "Wikimedia Commons" },
+          { time: 91, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Ponte_Garibaldi_-_Roma_italiana,_1870-1895_(page_221_crop).jpg?width=900",
+            caption: "Ponte Garibaldi, 1870s-1890s", credit: "Wikimedia Commons" },
+          { time: 154, url: "https://commons.wikimedia.org/wiki/Special:FilePath/TowerAnguilla.jpg?width=900",
+            caption: "The tower after Fallani's restoration", credit: "Wikimedia Commons" },
+        ],
+        fullText: `Bem-vindos ao início do nosso passeio pela Roma que em 1870 se torna capital da Itália — e a partir daí nunca mais será a mesma. Estamos na Piazza Sidney Sonnino, na entrada da Viale Trastevere, e a primeira coisa que salta à vista é esta torre ameada cor de tijolo que parece saída de um filme de época: a Torre degli Anguillara.<br><br>
+O nome vem de uma das famílias mais poderosas da Roma medieval, os Anguillara — tomaram o sobrenome do seu feudo no lago de Bracciano, Anguillara Sabazia. Controlavam uma parte enorme da cidade: tinham também uma vila fortificada mais a norte, entre as vias Cassia e Clodia, de onde vigiavam os peregrinos que desciam para Roma vindos do norte. O primeiro núcleo deste complexo foi mandado construir no século XIII por um tal Petrasso degli Anguillara: torre, pequeno palácio, tudo cercado por muralhas ameadas, com estábulos e armazéns no interior — uma verdadeira cidadela pronta a resistir a um cerco, longe de ser uma simples residência familiar.<br><br>
+Mas as famílias nobres, como se sabe, têm altos e baixos. Em 1542 um terramoto danifica gravemente o complexo, e daí começa um lento declínio: torna-se matadouro, estábulo, adega. Os habitantes de Trastevere, nada meigos, passam a chamar-lhe "Palazzaccio" e "Carbognano". Longe já da fortaleza dos senhores.<br><br>
+No século XIX a torre passa para a família Forti, burguesia trasteverina, que instala ali uma fábrica de esmaltes e vidros coloridos — e a torna famosa em todo o bairro por um presépio artístico que todos os Natais atraía meia Trastevere para o ver.<br><br>
+Depois chega 1870, Roma torna-se capital, e a torre corre sério perigo: os planos urbanísticos de 1873 e 1883 preveem demoli-la para dar lugar à nova Viale del Re — o que hoje chamamos Viale Trastevere. Felizmente, em 1892 um grupo de apaixonados pela história — autodenominados Cultori di Roma — opõe-se e consegue salvar a torre da demolição. Estudando-a de perto, descobrem até uma segunda torre medieval cuja existência ninguém suspeitava, ainda hoje escondida sob o reboco da Via della Lungaretta, mesmo ali ao virar da esquina.<br><br>
+A Câmara Municipal de Roma expropria o complexo em 1887 e manda-o restaurar entre 1898 e 1902 pelo arquiteto Augusto Fallani. E é aqui que vem a parte curiosa: Fallani eleva a torre um metro e meio e acrescenta-lhe ameias — mas "de estilo", ou seja, inventadas, não as originais medievais. Portanto, o que vemos hoje não é exatamente como era no século XIII: é um pouco uma restauração romântica, como se gostava no século XIX.<br><br>
+E agora a parte que vos fará parecer mais entendidos do que os vossos amigos: desde 1921 o edifício acolhe a "Casa di Dante", uma associação dedicada aos estudos dantescos — e daí nasceu a lenda de que Dante Alighieri teria dormido precisamente aqui durante uma estadia em Roma. Bonita história. Pena que seja falsa: não existe nenhum documento que o prove. É apenas um equívoco nascido do nome da associação que ali reside, transformado ao longo dos anos numa pequena "verdade" turística que ainda hoje se conta por aí.<br><br>
+Em suma, nesta única torre já se lê toda a história que contaremos ao longo do passeio: uma Roma medieval quase apagada pelos grandes projetos da nova capital, salva por pouco por quem realmente se importava com ela, e depois um pouco reinventada para parecer mais sugestiva. Continuemos ao longo da Via della Lungaretta, a rua que levava diretamente ao coração de Trastevere.`,
+        deepen: [
+          { type: "link", title: "Torre degli Anguillara — Wikipedia", url: "https://pt.wikipedia.org/wiki/Torre_degli_Anguillara" },
+        ]
+      },
+      zh: {
+        name: "Piazza Sonnino e Torre degli Anguillara",
+        desc: "中世纪塔楼、但丁传说与1870年的拆除危机",
+        audio: "audio/en/tappa1.mp3",
+        photos: [
+          { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Torre_degli_Anguillara_Roma.jpg?width=900",
+            caption: "Torre degli Anguillara, Piazza Sonnino", credit: "Wikimedia Commons" },
+          { time: 91, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Ponte_Garibaldi_-_Roma_italiana,_1870-1895_(page_221_crop).jpg?width=900",
+            caption: "Ponte Garibaldi, 1870s-1890s", credit: "Wikimedia Commons" },
+          { time: 154, url: "https://commons.wikimedia.org/wiki/Special:FilePath/TowerAnguilla.jpg?width=900",
+            caption: "The tower after Fallani's restoration", credit: "Wikimedia Commons" },
+        ],
+        fullText: `欢迎来到我们这次漫步的起点——1870年成为意大利首都的罗马，从那一刻起，这座城市再也不一样了。我们现在站在Piazza Sidney Sonnino，Viale Trastevere的入口处，第一眼就能看到这座砖红色、带城垛的塔楼，仿佛从古装电影里走出来一样：Torre degli Anguillara。<br><br>
+这个名字来自中世纪罗马最有权势的家族之一——Anguillara家族，他们的姓氏源自布拉恰诺湖畔的封地Anguillara Sabazia。他们控制着城市的很大一部分：在更北边，Cassia大道和Clodia大道之间，他们还拥有一座设防别墅，用来监视从北方南下罗马的朝圣者。这座建筑群最早的核心部分由一位名叫Petrasso degli Anguillara的人在13世纪建造：塔楼、小宫殿，四周环绕着带城垛的城墙，内有马厩和仓库——这完全是一座随时准备抵御围攻的要塞，远非简单的家族住宅。<br><br>
+但贵族家庭，正如人们所知，总有起有落。1542年一场地震严重损毁了这座建筑群，从此开始缓慢衰落：先后变成屠宰场、马厩、酒窖。特拉斯提弗列的居民毫不留情，开始称它为"Palazzaccio"（丑陋的宫殿）和"Carbognano"。早已不复往日领主城堡的模样。<br><br>
+19世纪，塔楼归了Forti家族，特拉斯提弗列的中产阶级，他们在这里开设了一家珐琅和彩色玻璃作坊——并因一座精美的圣诞马槽而闻名整个街区，每年圣诞节都吸引半个特拉斯提弗列的人前来观赏。<br><br>
+随后1870年到来，罗马成为首都，塔楼面临严重威胁：1873年和1883年的城市规划打算将其拆除，为新建的Viale del Re让路——也就是我们今天所称的Viale Trastevere。幸运的是，1892年一群历史爱好者——他们自称Cultori di Roma——挺身而出，成功挽救了这座塔楼免于拆除。他们仔细研究后，甚至发现了一座无人知晓的第二座中世纪塔楼，至今仍隐藏在Via della Lungaretta的灰泥墙面之下，就在拐角处。<br><br>
+罗马市政府于1887年征用了这座建筑群，并于1898年至1902年间委托建筑师Augusto Fallani进行修复。有趣的部分来了：Fallani将塔楼加高了一米半，并添加了城垛——但这些是"风格化"的，也就是虚构出来的，并非中世纪原本的样式。所以你们今天看到的并不完全是13世纪时的原貌：这在某种程度上是一次浪漫主义式的修复，正合19世纪人的口味。<br><br>
+现在是能让你在朋友面前显得更懂行的部分：自1921年起，这座建筑成为"Casa di Dante"（但丁之家）的所在地，一个致力于但丁研究的协会——由此产生了一个传说，说但丁·阿利吉耶里曾在罗马逗留期间在此过夜。很美的故事。可惜是假的：没有任何文献能证明这一点。这只是源于入驻该建筑的协会名称的一个误会，多年来演变成了一个仍在流传的小小"旅游真相"。<br><br>
+总之，在这座塔楼里，我们已经能读出这次漫步将要讲述的整个故事：一个几乎被新首都宏伟规划抹去的中世纪罗马，被真正在乎它的人们千钧一发之际拯救下来，又被稍加重塑以显得更加迷人。让我们沿着Via della Lungaretta继续前行，这条路直通特拉斯提弗列的心脏地带。`,
+        deepen: [
+          { type: "link", title: "Torre degli Anguillara — Wikipedia", url: "https://zh.wikipedia.org/wiki/Torre_degli_Anguillara" },
+        ]
+      },
     }
   },
   {
@@ -222,6 +347,96 @@ There are more skeptical types who've tried to explain it with the Aqua Alsietin
 The octagonal fountain in the middle of the square has an equally long history: it's said to have been Rome's very first fountain, commissioned by Augustus, moved here in 1450 for the Jubilee. Today it's Trastevere's open-air living room, steps included. Let's head on towards Porta Settimiana.`,
         deepen: [
           { type: "link", title: "Santa Maria in Trastevere — Wikipedia", url: "https://en.wikipedia.org/wiki/Santa_Maria_in_Trastevere" },
+        ]
+      },
+      es: {
+        name: "Piazza di Santa Maria in Trastevere",
+        desc: "La leyenda de la fons olei",
+        audio: "audio/en/int1.mp3",
+        photos: [
+          { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Santa_Maria_in_Trastevere_front.jpg?width=900",
+            caption: "Basilica di Santa Maria in Trastevere", credit: "Wikimedia Commons" },
+          { time: 42, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Fontana_di_piazza_Santa_Maria_in_Trastevere_(1).jpg?width=900",
+            caption: "The square's octagonal fountain", credit: "Wikimedia Commons" },
+        ],
+        fullText: `Al salir de Via della Lungaretta se abre ante nosotros una de las plazas más queridas de Roma, dominada por la Basilica di Santa Maria in Trastevere — probablemente la primera iglesia de Roma dedicada oficialmente a la Virgen, con una leyenda nada desdeñable a sus espaldas.<br><br>
+Se cuenta que en el año 38 a.C., justo aquí, brotó de repente del suelo una fuente de aceite mineral — la "fons olei". Los romanos paganos no le dieron demasiada importancia, pero los cristianos lo interpretaron como una señal: la llegada del Ungido del Señor, es decir, Cristo. De ese presagio nació un pequeño oratorio, convertido después en basílica. Hoy el punto exacto de la fons olei está marcado por un escalón en el presbiterio, y la inscripción "FONS OLEI" todavía puede leerse en el portal de entrada.<br><br>
+También hay quien, más escéptico, ha intentado explicarlo con el acueducto Alsietino que pasaba por aquí — pero los rastros de emisiones de gas y petróleo encontrados durante las excavaciones para la basílica y para los muraglioni del Tíber dan más la razón a la leyenda que a la tubería rota.<br><br>
+La fuente octagonal en el centro de la plaza tiene una historia igual de larga: se dice que fue la primera fuente de Roma, encargada por Augusto, trasladada aquí en 1450 para el Jubileo. Hoy es el salón al aire libre de Trastevere, escalones incluidos. Sigamos hacia Porta Settimiana.`,
+        deepen: [
+          { type: "link", title: "Basílica de Santa María in Trastevere — Wikipedia", url: "https://es.wikipedia.org/wiki/Basílica_de_Santa_María_in_Trastevere" },
+        ]
+      },
+      fr: {
+        name: "Piazza di Santa Maria in Trastevere",
+        desc: "La légende de la fons olei",
+        audio: "audio/en/int1.mp3",
+        photos: [
+          { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Santa_Maria_in_Trastevere_front.jpg?width=900",
+            caption: "Basilica di Santa Maria in Trastevere", credit: "Wikimedia Commons" },
+          { time: 42, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Fontana_di_piazza_Santa_Maria_in_Trastevere_(1).jpg?width=900",
+            caption: "The square's octagonal fountain", credit: "Wikimedia Commons" },
+        ],
+        fullText: `En débouchant de Via della Lungaretta s'ouvre devant nous l'une des places les plus aimées de Rome, dominée par la Basilica di Santa Maria in Trastevere — probablement la première église de Rome officiellement dédiée à la Madone, avec une légende qui ne manque pas de sel.<br><br>
+On raconte qu'en 38 av. J.-C., juste ici, une source d'huile minérale jaillit soudainement du sol — la "fons olei". Les Romains païens n'y prêtèrent guère attention, mais les chrétiens y virent un signe : l'arrivée de l'Oint du Seigneur, c'est-à-dire le Christ. De ce présage naquit un petit oratoire, devenu ensuite basilique. Aujourd'hui, l'emplacement exact de la fons olei est marqué par une marche dans le presbytère, et l'inscription "FONS OLEI" se lit encore sur le portail d'entrée.<br><br>
+Certains, plus sceptiques, ont tenté d'expliquer le phénomène par l'aqueduc Alsietina qui passait par ici — mais les traces d'émanations de gaz et de pétrole trouvées lors des fouilles pour la basilique et pour les muraglioni du Tibre donnent davantage raison à la légende qu'à la canalisation percée.<br><br>
+La fontaine octogonale au centre de la place a une histoire tout aussi longue : on dit qu'elle fut la toute première fontaine de Rome, voulue par Auguste, déplacée ici en 1450 pour le Jubilé. Aujourd'hui, c'est le salon à ciel ouvert du Trastevere, marches comprises. Continuons vers Porta Settimiana.`,
+        deepen: [
+          { type: "link", title: "Santa Maria in Trastevere — Wikipedia", url: "https://fr.wikipedia.org/wiki/Santa_Maria_in_Trastevere" },
+        ]
+      },
+      de: {
+        name: "Piazza di Santa Maria in Trastevere",
+        desc: "Die Legende der fons olei",
+        audio: "audio/en/int1.mp3",
+        photos: [
+          { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Santa_Maria_in_Trastevere_front.jpg?width=900",
+            caption: "Basilica di Santa Maria in Trastevere", credit: "Wikimedia Commons" },
+          { time: 42, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Fontana_di_piazza_Santa_Maria_in_Trastevere_(1).jpg?width=900",
+            caption: "The square's octagonal fountain", credit: "Wikimedia Commons" },
+        ],
+        fullText: `Kommt man aus der Via della Lungaretta heraus, öffnet sich vor uns einer der beliebtesten Plätze Roms, beherrscht von der Basilica di Santa Maria in Trastevere — vermutlich die erste Kirche Roms, die offiziell der Madonna geweiht wurde, mit einer nicht ganz unspannenden Legende im Gepäck.<br><br>
+Der Legende nach sprudelte hier im Jahr 38 v. Chr. plötzlich eine Quelle mit mineralischem Öl aus dem Boden — die "fons olei". Die heidnischen Römer maßen dem wenig Bedeutung bei, doch die Christen deuteten es als Zeichen: die Ankunft des Gesalbten des Herrn, also Christus. Aus diesem Vorzeichen entstand ein kleines Oratorium, später zur Basilika ausgebaut. Heute markiert eine Stufe im Presbyterium den genauen Ort der fons olei, und die Inschrift "FONS OLEI" ist noch immer am Eingangsportal zu lesen.<br><br>
+Es gibt auch Skeptiker, die das Phänomen mit dem hier verlaufenden Alsietina-Aquädukt erklären wollten — doch die bei den Ausgrabungen für die Basilika und später für die Muraglioni am Tiber gefundenen Spuren von Gas- und Erdölaustritten geben eher der Legende recht als der defekten Wasserleitung.<br><br>
+Der achteckige Brunnen in der Mitte des Platzes hat eine ebenso lange Geschichte: Man sagt, er sei der allererste Brunnen Roms gewesen, von Augustus in Auftrag gegeben und 1450 zum Jubiläum hierher versetzt. Heute ist er das Freiluft-Wohnzimmer von Trastevere, Treppenstufen inklusive. Weiter geht's zur Porta Settimiana.`,
+        deepen: [
+          { type: "link", title: "Santa Maria in Trastevere — Wikipedia", url: "https://de.wikipedia.org/wiki/Santa_Maria_in_Trastevere" },
+        ]
+      },
+      pt: {
+        name: "Piazza di Santa Maria in Trastevere",
+        desc: "A lenda da fons olei",
+        audio: "audio/en/int1.mp3",
+        photos: [
+          { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Santa_Maria_in_Trastevere_front.jpg?width=900",
+            caption: "Basilica di Santa Maria in Trastevere", credit: "Wikimedia Commons" },
+          { time: 42, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Fontana_di_piazza_Santa_Maria_in_Trastevere_(1).jpg?width=900",
+            caption: "The square's octagonal fountain", credit: "Wikimedia Commons" },
+        ],
+        fullText: `Ao sair da Via della Lungaretta abre-se diante de nós uma das praças mais amadas de Roma, dominada pela Basilica di Santa Maria in Trastevere — provavelmente a primeira igreja de Roma oficialmente dedicada à Virgem Maria, com uma lenda nada má pelas costas.<br><br>
+Conta-se que em 38 a.C., precisamente aqui, jorrou subitamente do solo uma fonte de óleo mineral — a "fons olei". Os romanos pagãos não lhe deram grande importância, mas os cristãos interpretaram-no como um sinal: a chegada do Ungido do Senhor, ou seja, Cristo. Desse presságio nasceu um pequeno oratório, depois transformado em basílica. Hoje o ponto exato da fons olei está assinalado por um degrau no presbitério, e a inscrição "FONS OLEI" ainda se lê no portal de entrada.<br><br>
+Há também quem, mais cético, tenha tentado explicá-lo com o aqueduto Alsietino que passava por aqui — mas os vestígios de emissões de gás e petróleo encontrados durante as escavações para a basílica e para os muraglioni do Tibre dão mais razão à lenda do que à tubagem rota.<br><br>
+A fonte octogonal no centro da praça tem uma história igualmente longa: diz-se que foi a primeira fonte de Roma, mandada construir por Augusto, deslocada para aqui em 1450 para o Jubileu. Hoje é a sala de estar ao ar livre de Trastevere, degraus incluídos. Sigamos em direção à Porta Settimiana.`,
+        deepen: [
+          { type: "link", title: "Basílica de Santa Maria in Trastevere — Wikipedia", url: "https://pt.wikipedia.org/wiki/Basílica_de_Santa_Maria_in_Trastevere" },
+        ]
+      },
+      zh: {
+        name: "Piazza di Santa Maria in Trastevere",
+        desc: "fons olei（油之泉）的传说",
+        audio: "audio/en/int1.mp3",
+        photos: [
+          { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Santa_Maria_in_Trastevere_front.jpg?width=900",
+            caption: "Basilica di Santa Maria in Trastevere", credit: "Wikimedia Commons" },
+          { time: 42, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Fontana_di_piazza_Santa_Maria_in_Trastevere_(1).jpg?width=900",
+            caption: "The square's octagonal fountain", credit: "Wikimedia Commons" },
+        ],
+        fullText: `从Via della Lungaretta走出来，眼前豁然展开的是罗马最受喜爱的广场之一，由Basilica di Santa Maria in Trastevere主导——这可能是罗马第一座正式献给圣母的教堂，背后还有一段相当精彩的传说。<br><br>
+据传说，公元前38年，就在此地，地面突然涌出一股矿物油泉——即"fons olei"（油之泉）。异教徒罗马人对此不以为意，但基督徒却将其解读为一个征兆：主的受膏者，即基督降临的预兆。这个预兆催生了一座小祈祷堂，后来发展成一座大教堂。如今，fons olei的确切位置由圣坛内的一级台阶标记，"FONS OLEI"的字样至今仍可在入口门廊上看到。<br><br>
+也有较为怀疑的人试图用经过此地的Alsietina引水渠来解释这一现象——但在为教堂以及后来为台伯河muraglioni（防洪堤）挖掘时发现的天然气和石油渗出痕迹，更支持传说的说法，而非破裂管道的解释。<br><br>
+广场中央的八角形喷泉同样有着悠久的历史：据说这是罗马的第一座喷泉，由奥古斯都下令建造，1450年为大禧年迁至此处。如今它是特拉斯提弗列的露天客厅，连台阶也是。让我们继续前往Porta Settimiana。`,
+        deepen: [
+          { type: "link", title: "特拉斯提弗列圣母大殿 — Wikipedia", url: "https://zh.wikipedia.org/wiki/特拉斯提弗列圣母大殿" },
         ]
       },
     }
@@ -272,6 +487,111 @@ Let's continue along the Lungara, towards the point where the street opens onto 
           { type: "link", title: "Porta Settimiana — Wikipedia", url: "https://en.wikipedia.org/wiki/Porta_Settimiana" },
         ]
       },
+      es: {
+        name: "Porta Settimiana e Via della Lungara",
+        desc: "El camino de los peregrinos y el convento convertido en cárcel",
+        audio: "audio/en/tappa2.mp3",
+        photos: [
+          { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Porta_Settimiana_-_outside_view.jpg?width=900",
+            caption: "Porta Settimiana", credit: "Wikimedia Commons" },
+          { time: 100, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Trastevere_-_Regina_Coeli_alla_Lungara_1040154.JPG?width=900",
+            caption: "Regina Coeli prison", credit: "Wikimedia Commons" },
+        ],
+        fullText: `Via della Lungara se abre ante nosotros recta como una flecha, y no es casualidad: en el Renacimiento también la llamaban "via santa", porque era una de las principales rutas de los peregrinos hacia San Pedro. Marcando su entrada desde el lado de Trastevere está Porta Settimiana, la puerta que tenemos aquí delante.<br><br>
+El nombre engaña: uno tendería a relacionarla con el emperador Septimio Severo, que efectivamente hizo pasar por aquí las Murallas Aurelianas. Pero la puerta que vemos hoy es otra cosa muy distinta: fue reconstruida desde cero en 1498 por orden del papa Alejandro VI Borgia, que borró todo rastro del original antiguo. Lo que veis — las almenas en cola de golondrina, los escudos papales superpuestos (Nicolás V, el propio Alejandro VI, Pío VI) — es todo renacentista, un collage de cuatro siglos de papas que dejaron aquí su huella.<br><br>
+Continuando por Via della Lungara, a la derecha se asoma un edificio que los romanos conocen sobradamente: Regina Coeli. Hoy es una cárcel, una de las más conocidas de Italia — pero no nació como tal. Era un convento, dedicado precisamente a Regina Coeli, "Reina del Cielo". Con Roma convertida en capital en 1870, el Estado italiano inició una ola de confiscaciones de propiedades eclesiásticas: conventos y monasterios, a menudo ya en crisis de vocaciones, fueron requisados y reconvertidos a los usos más dispares del nuevo Estado — cuarteles, ministerios, y precisamente cárceles. Regina Coeli se convirtió en prisión justamente en este contexto, y lo sigue siendo hoy: aquí han estado, entre otros, varios protagonistas de la historia italiana del siglo XX, desde presos políticos del fascismo hasta nombres destacados de la crónica más reciente.<br><br>
+Es un vuelco perfecto para contar lo que significó Roma Capital a escala urbana: no solo calles nuevas y palacios que derribar, sino todo un patrimonio inmobiliario de la Iglesia que cambió de uso en pocos años, conservando a menudo el edificio pero trastocando por completo su función y, hay que decirlo, también su atmósfera.<br><br>
+Y no es un caso aislado: toda Via della Lungara nació ya, en realidad, como un ambicioso proyecto urbanístico. Fue trazada a principios del siglo XVI por orden del papa Julio II, en paralelo a la más conocida Via Giulia en la otra orilla del río — la idea era crear dos grandes ejes rectos que enmarcaran Roma en ambos lados del Tíber, en pleno estilo renacentista. Un proyecto urbanístico "a la romana" con tres siglos y medio de adelanto sobre el rettifilo decimonónico que veremos más adelante en nuestro recorrido: Roma, se diría, siempre ha tenido la costumbre de cortar calles rectas en su tejido medieval, ya fuera un papa del siglo XVI o un alcalde del XIX.<br><br>
+Todavía hoy la calle conserva un aire recogido, casi extraurbano, gracias a la larga extensión verde del Orto Botanico que bordearemos dentro de poco. Y es precisamente en este contraste — una vía pensada para los grandes proyectos de los papas renacentistas, luego requisada y reconvertida por los funcionarios de la nueva capital laica — donde se cuenta bien la doble capa de historia que atravesamos en esta parte del recorrido.<br><br>
+Sigamos por la Lungara, hacia el punto donde la calle se abre al jardín de Villa Farnesina.`,
+        deepen: [
+          { type: "link", title: "Porta Settimiana — Wikipedia", url: "https://es.wikipedia.org/wiki/Porta_Settimiana" },
+        ]
+      },
+      fr: {
+        name: "Porta Settimiana e Via della Lungara",
+        desc: "Le chemin des pèlerins et le couvent devenu prison",
+        audio: "audio/en/tappa2.mp3",
+        photos: [
+          { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Porta_Settimiana_-_outside_view.jpg?width=900",
+            caption: "Porta Settimiana", credit: "Wikimedia Commons" },
+          { time: 100, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Trastevere_-_Regina_Coeli_alla_Lungara_1040154.JPG?width=900",
+            caption: "Regina Coeli prison", credit: "Wikimedia Commons" },
+        ],
+        fullText: `Via della Lungara s'ouvre devant nous, droite comme un fil, et ce n'est pas un hasard : à la Renaissance, on l'appelait aussi la "via santa", car c'était l'une des principales routes des pèlerins se rendant à Saint-Pierre. Marquant son entrée côté Trastevere se trouve Porta Settimiana, la porte que nous avons devant nous.<br><br>
+Le nom est trompeur : on serait tenté de la relier à l'empereur Septime Sévère, qui fit effectivement passer par ici les Murs Aurélien. Mais la porte que nous voyons aujourd'hui est tout autre chose : elle fut entièrement reconstruite en 1498 sur ordre du pape Alexandre VI Borgia, qui effaça toute trace de l'originale antique. Ce que vous regardez — les créneaux en queue d'aronde, les blasons pontificaux superposés (Nicolas V, Alexandre VI lui-même, Pie VI) — est entièrement Renaissance, un collage de quatre siècles de papes qui y ont laissé leur empreinte.<br><br>
+En poursuivant le long de Via della Lungara, à droite se dresse un bâtiment que les Romains connaissent que trop bien : Regina Coeli. Aujourd'hui c'est une prison, l'une des plus célèbres d'Italie — mais elle n'est pas née ainsi. C'était un couvent, dédié précisément à Regina Coeli, "Reine du Ciel". Avec Rome devenue capitale en 1870, l'État italien lança une vague de confiscations de biens ecclésiastiques : couvents et monastères, souvent déjà en crise de vocations, furent réquisitionnés et reconvertis aux usages les plus divers du nouvel État — casernes, ministères, et donc prisons. Regina Coeli devint prison justement dans ce contexte, et l'est restée jusqu'à aujourd'hui : y ont séjourné, entre autres, plusieurs figures de l'histoire italienne du XXe siècle, des prisonniers politiques du fascisme à certains noms bien connus de l'actualité récente.<br><br>
+C'est un renversement parfait pour illustrer ce que signifia Roma Capitale à l'échelle urbaine : pas seulement de nouvelles rues et des palais à démolir, mais tout un patrimoine immobilier de l'Église qui changea d'usage en l'espace de quelques années, conservant souvent le bâtiment mais bouleversant complètement sa fonction et, il faut le dire, son atmosphère aussi.<br><br>
+Et ce n'est pas un cas isolé : toute la Via della Lungara est en réalité née d'un projet urbanistique déjà ambitieux. Elle fut tracée au début du XVIe siècle sur ordre du pape Jules II, en parallèle de la plus connue Via Giulia sur l'autre rive du fleuve — l'idée était de créer deux grands axes rectilignes encadrant Rome des deux côtés du Tibre, en plein style Renaissance. Un projet urbanistique "à la romaine" avec trois siècles et demi d'avance sur le rettifilo du XIXe siècle que nous verrons plus loin dans notre parcours : Rome, dirait-on, a toujours eu ce vice de tracer des rues droites dans son tissu médiéval, que ce soit un pape du XVIe siècle ou un maire du XIXe.<br><br>
+Aujourd'hui encore, la rue conserve un caractère retiré, presque hors de la ville, grâce à la longue étendue verte de l'Orto Botanico que nous longerons bientôt. Et c'est précisément dans ce contraste — une voie pensée pour les grands projets des papes de la Renaissance, puis réquisitionnée et reconvertie par les fonctionnaires de la nouvelle capitale laïque — que se raconte bien la double couche d'histoire que nous traversons dans cette partie du parcours.<br><br>
+Continuons le long de la Lungara, vers l'endroit où la rue s'ouvre sur le jardin de la Villa Farnesina.`,
+        deepen: [
+          { type: "link", title: "Porta Settimiana — Wikipedia", url: "https://fr.wikipedia.org/wiki/Porta_Settimiana" },
+        ]
+      },
+      de: {
+        name: "Porta Settimiana e Via della Lungara",
+        desc: "Der Pilgerweg und das zum Gefängnis gewordene Kloster",
+        audio: "audio/en/tappa2.mp3",
+        photos: [
+          { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Porta_Settimiana_-_outside_view.jpg?width=900",
+            caption: "Porta Settimiana", credit: "Wikimedia Commons" },
+          { time: 100, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Trastevere_-_Regina_Coeli_alla_Lungara_1040154.JPG?width=900",
+            caption: "Regina Coeli prison", credit: "Wikimedia Commons" },
+        ],
+        fullText: `Die Via della Lungara öffnet sich schnurgerade vor uns, und das ist kein Zufall: In der Renaissance wurde sie auch "via santa", heilige Straße, genannt, weil sie einer der Hauptwege der Pilger nach St. Peter war. Ihren Eingang von der Trastevere-Seite markiert die Porta Settimiana, das Tor, das wir hier vor uns sehen.<br><br>
+Der Name führt in die Irre: Man wäre versucht, ihn mit Kaiser Septimius Severus in Verbindung zu bringen, der hier tatsächlich die Aurelianische Mauer verlaufen ließ. Doch das Tor, das wir heute sehen, ist etwas völlig anderes: Es wurde 1498 im Auftrag von Papst Alexander VI. Borgia komplett neu errichtet, der jede Spur des antiken Originals tilgte. Was Sie sehen — die schwalbenschwanzförmigen Zinnen, die übereinandergelegten päpstlichen Wappen (Nikolaus V., Alexander VI. selbst, Pius VI.) — ist alles Renaissance, eine Collage aus vier Jahrhunderten von Päpsten, die hier ihre Spuren hinterließen.<br><br>
+Geht man weiter die Via della Lungara entlang, erblickt man rechts ein Gebäude, das die Römer nur zu gut kennen: Regina Coeli. Heute ist es ein Gefängnis, eines der bekanntesten Italiens — doch so ist es nicht entstanden. Es war ein Kloster, eben Regina Coeli, "Königin des Himmels", geweiht. Als Rom 1870 Hauptstadt wurde, begann der italienische Staat eine Welle von Enteignungen kirchlichen Eigentums: Klöster und Ordenshäuser, oft schon von einer Berufungskrise geplagt, wurden beschlagnahmt und für die unterschiedlichsten Zwecke des neuen Staates umgewidmet — Kasernen, Ministerien, und eben Gefängnisse. Regina Coeli wurde genau in diesem Kontext zum Gefängnis und ist es bis heute geblieben: Hier saßen unter anderem zahlreiche Protagonisten der italienischen Geschichte des 20. Jahrhunderts ein, von politischen Häftlingen des Faschismus bis zu bekannten Namen aus jüngeren Schlagzeilen.<br><br>
+Es ist eine perfekte Kehrtwende, um zu erzählen, was Roma Capitale auf städtischer Ebene bedeutete: nicht nur neue Straßen und abzureißende Paläste, sondern ein gesamtes kirchliches Immobilienvermögen, das binnen weniger Jahre seine Nutzung änderte, wobei oft das Gebäude erhalten blieb, seine Funktion — und, man muss es sagen, auch seine Atmosphäre — aber völlig auf den Kopf gestellt wurde.<br><br>
+Und das ist kein Einzelfall: Die gesamte Via della Lungara entstand ursprünglich als ehrgeiziges städtebauliches Projekt. Sie wurde Anfang des 16. Jahrhunderts im Auftrag von Papst Julius II. angelegt, parallel zur bekannteren Via Giulia am anderen Flussufer — die Idee war, zwei große gerade Achsen zu schaffen, die Rom von beiden Seiten des Tibers einrahmen sollten, ganz im Stil der Renaissance. Ein städtebauliches Projekt "nach römischer Art", dreieinhalb Jahrhunderte vor dem Rettifilo des 19. Jahrhunderts, den wir später auf diesem Spaziergang sehen werden: Rom, so könnte man sagen, hatte schon immer die Angewohnheit, gerade Straßen durch sein mittelalterliches Gefüge zu schneiden, ob nun ein Papst des 16. oder ein Bürgermeister des 19. Jahrhunderts die Hand im Spiel hatte.<br><br>
+Noch heute bewahrt die Straße etwas Zurückgezogenes, fast Außerstädtisches, begünstigt durch die lange grüne Fläche des Orto Botanico, die wir gleich streifen werden. Und genau in diesem Kontrast — eine für die großen Projekte der Renaissance-Päpste gedachte Straße, später von den Beamten der neuen weltlichen Hauptstadt requiriert und umgenutzt — erzählt sich die doppelte Geschichtsschicht, die wir in diesem Teil des Spaziergangs durchqueren, besonders gut.<br><br>
+Weiter geht es entlang der Lungara, bis zu dem Punkt, an dem sich die Straße zum Garten der Villa Farnesina öffnet.`,
+        deepen: [
+          { type: "link", title: "Porta Settimiana — Wikipedia", url: "https://de.wikipedia.org/wiki/Porta_Settimiana" },
+        ]
+      },
+      pt: {
+        name: "Porta Settimiana e Via della Lungara",
+        desc: "A via dos peregrinos e o convento transformado em prisão",
+        audio: "audio/en/tappa2.mp3",
+        photos: [
+          { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Porta_Settimiana_-_outside_view.jpg?width=900",
+            caption: "Porta Settimiana", credit: "Wikimedia Commons" },
+          { time: 100, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Trastevere_-_Regina_Coeli_alla_Lungara_1040154.JPG?width=900",
+            caption: "Regina Coeli prison", credit: "Wikimedia Commons" },
+        ],
+        fullText: `A Via della Lungara abre-se diante de nós reta como um fio, e não é por acaso: no Renascimento também era chamada "via santa", porque era uma das principais estradas dos peregrinos rumo a São Pedro. Marcando a sua entrada do lado de Trastevere está a Porta Settimiana, o portão que temos aqui à nossa frente.<br><br>
+O nome engana: seria tentador associá-lo ao imperador Septímio Severo, que de facto fez passar por aqui as Muralhas Aurelianas. Mas o portão que vemos hoje é outra coisa completamente diferente: foi reconstruído do zero em 1498 por ordem do papa Alexandre VI Bórgia, que apagou todo o vestígio do original antigo. O que vedes — as ameias em cauda de andorinha, os brasões papais sobrepostos (Nicolau V, o próprio Alexandre VI, Pio VI) — é tudo renascentista, uma colagem de quatro séculos de papas que aqui deixaram a sua marca.<br><br>
+Continuando pela Via della Lungara, à direita ergue-se um edifício que os romanos conhecem demasiado bem: Regina Coeli. Hoje é uma prisão, uma das mais conhecidas de Itália — mas não nasceu assim. Era um convento, dedicado precisamente a Regina Coeli, "Rainha do Céu". Com Roma tornada capital em 1870, o Estado italiano iniciou uma onda de confiscos de propriedades eclesiásticas: conventos e mosteiros, muitas vezes já em crise de vocações, foram requisitados e reconvertidos para os usos mais variados do novo Estado — quartéis, ministérios, e precisamente prisões. Regina Coeli tornou-se prisão exatamente neste contexto, e assim permaneceu até hoje: por ali passaram, entre outros, vários protagonistas da história italiana do século XX, desde presos políticos do fascismo até nomes de destaque da atualidade mais recente.<br><br>
+É uma inversão perfeita para contar o que significou Roma Capitale à escala urbana: não apenas ruas novas e palácios a demolir, mas todo um património imobiliário da Igreja que mudou de uso em poucos anos, conservando muitas vezes o edifício mas transformando completamente a sua função e, é preciso dizê-lo, também a sua atmosfera.<br><br>
+E não é um caso isolado: toda a Via della Lungara nasceu, na verdade, como um ambicioso projeto urbanístico. Foi traçada no início do século XVI por ordem do papa Júlio II, em paralelo com a mais conhecida Via Giulia na outra margem do rio — a ideia era criar dois grandes eixos retos que enquadrassem Roma dos dois lados do Tibre, em pleno estilo renascentista. Um projeto urbanístico "à romana" com três séculos e meio de antecedência sobre o rettifilo oitocentista que veremos mais adiante no nosso passeio: Roma, dir-se-ia, sempre teve o vício de cortar ruas retas no seu tecido medieval, fosse um papa do século XVI ou um presidente de câmara do século XIX.<br><br>
+Ainda hoje a rua conserva um ar recatado, quase fora da cidade, favorecido pela longa extensão verde do Orto Botanico que iremos costear em breve. E é precisamente neste contraste — uma via pensada para os grandes projetos dos papas renascentistas, depois requisitada e reconvertida pelos funcionários da nova capital laica — que se conta bem a dupla camada de história que atravessamos nesta parte do passeio.<br><br>
+Continuemos pela Lungara, até ao ponto onde a rua se abre para o jardim da Villa Farnesina.`,
+        deepen: [
+          { type: "link", title: "Porta Settimiana — Wikipedia", url: "https://pt.wikipedia.org/wiki/Porta_Settimiana" },
+        ]
+      },
+      zh: {
+        name: "Porta Settimiana e Via della Lungara",
+        desc: "朝圣之路与变成监狱的修道院",
+        audio: "audio/en/tappa2.mp3",
+        photos: [
+          { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Porta_Settimiana_-_outside_view.jpg?width=900",
+            caption: "Porta Settimiana", credit: "Wikimedia Commons" },
+          { time: 100, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Trastevere_-_Regina_Coeli_alla_Lungara_1040154.JPG?width=900",
+            caption: "Regina Coeli prison", credit: "Wikimedia Commons" },
+        ],
+        fullText: `Via della Lungara笔直地展现在我们面前，这并非偶然：文艺复兴时期，这条路也被称为"via santa"（圣路），因为它是前往圣彼得大教堂的朝圣者的主要路线之一。标志着特拉斯提弗列一侧入口的，正是我们眼前的这座城门——Porta Settimiana。<br><br>
+这个名字有些误导人：人们很容易将它与塞普蒂米乌斯·塞维鲁皇帝联系起来，他确实曾让奥勒良城墙经过此地。但我们今天看到的城门完全是另一回事：它于1498年由教皇亚历山大六世·博尔吉亚下令彻底重建，抹去了古代原貌的所有痕迹。你们所看到的——燕尾形城垛、层层叠叠的教皇纹章（尼古拉五世、亚历山大六世本人、庇护六世）——全都是文艺复兴时期的产物，是四个世纪以来历代教皇留下印记的拼贴画。<br><br>
+沿着Via della Lungara继续前行，右侧矗立着一座罗马人再熟悉不过的建筑：Regina Coeli。如今它是一座监狱，意大利最著名的监狱之一——但它最初并非如此。它曾是一座修道院，正是献给"天堂之后"Regina Coeli的。随着1870年罗马成为首都，意大利政府发起了一波没收教会财产的浪潮：修道院往往已面临修道人数锐减的危机，被征用并改作新国家各种用途——军营、部委，以及监狱。Regina Coeli正是在这样的背景下变成了监狱，并一直延续至今：这里曾关押过众多20世纪意大利历史上的重要人物，从法西斯时期的政治犯到近期新闻中的知名人物。<br><br>
+这是一个绝佳的反转，用来说明Roma Capitale在城市层面意味着什么：不仅仅是新建道路、拆除宫殿，更是整个教会不动产在短短几年内改变了用途，常常保留建筑本身，却彻底颠覆了它的功能——也必须说，还有它的氛围。<br><br>
+这并非孤立事件：整条Via della Lungara实际上诞生于一个早已雄心勃勃的城市规划项目。它在16世纪初由教皇尤利乌斯二世下令开辟，与河对岸更著名的Via Giulia平行——设想是在台伯河两岸各建一条笔直的大道，完全体现文艺复兴风格。这是一个"罗马式"的城市规划项目，比我们稍后会在行程中看到的19世纪rettifilo早了三个半世纪：可以说，罗马一直有在其中世纪肌理中开辟笔直道路的"癖好"，无论是16世纪的教皇还是19世纪的市长。<br><br>
+直到今天，这条街道依然保留着一种略显僻静、近乎郊外的气息，多亏了我们即将经过的Orto Botanico植物园那片绵延的绿意。正是在这种反差中——一条为文艺复兴教皇宏大计划而设计的道路，后来又被新世俗首都的官员征用改造——我们在这段行程中所穿越的双重历史层次得到了很好的诠释。<br><br>
+让我们继续沿着Lungara前行，走到这条街道向Villa Farnesina花园敞开的地方。`,
+        deepen: [
+          { type: "link", title: "塞蒂米亚纳城门 — Wikipedia", url: "https://zh.wikipedia.org/wiki/塞蒂米亚纳城门" },
+        ]
+      },
     }
   },
   {
@@ -320,6 +640,111 @@ Let's carry on towards Ponte Sisto.`,
           { type: "link", title: "Villa Farnesina — Wikipedia", url: "https://en.wikipedia.org/wiki/Villa_Farnesina" },
         ]
       },
+      es: {
+        name: "Villa Farnesina e Lungotevere",
+        desc: "El banquero Chigi, los platos de oro, el jardín cortado",
+        audio: "audio/en/tappa3.mp3",
+        photos: [
+          { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Villa_Farnesina,_Rome.jpg?width=900",
+            caption: "Villa Farnesina", credit: "Wikimedia Commons" },
+          { time: 80, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Villa_farnesina_01.JPG?width=900",
+            caption: "The garden facade", credit: "Wikimedia Commons" },
+        ],
+        fullText: `Nos encontramos frente a uno de los jardines más contados del Renacimiento romano, hoy lamentablemente reducido a la mitad: el de Villa Farnesina. La villa, a vuestra izquierda, fue construida entre 1506 y 1510 para Agostino Chigi, banquero sienés conocido en Roma como "el Magnífico" — el hombre más rico de su época, acreedor de papas y príncipes.<br><br>
+Chigi la usaba sobre todo para impresionar. Sus banquetes son legendarios: en una de las ocasiones más célebres, durante un almuerzo en honor del papa León X, los invitados encontraron platos de oro y plata grabados con sus propios escudos heráldicos — y al final de la comida, para demostrar lo poco que le importaba la riqueza, Chigi los hacía arrojar directamente al Tíber. ¿Locura? Ni mucho menos: había hecho tender redes ocultas en el fondo del río, y esa misma noche sus hombres lo recuperaban todo. Un truco de auténtico banquero, no de derrochador.<br><br>
+Curiosidad sobre el nombre: la villa no se llama "Farnesina" porque la construyera un Farnese. Fue Agostino Chigi quien la encargó al arquitecto Baldassarre Peruzzi, y el propio Rafael — junto con Sebastiano del Piombo, Giulio Romano y el Sodoma — quien pintó sus interiores. Solo en 1579, cuando los herederos de Chigi cayeron en dificultades económicas, la villa fue vendida al cardenal Alessandro Farnese: de ahí el nombre que ha llegado hasta hoy.<br><br>
+No toda la historia de la villa ha sido tan brillante como sus banquetes. En 1527, durante el tristemente célebre Saco de Roma, los lansquenetes de Carlos V la ocuparon y acamparon allí durante semanas: durante restauraciones recientes reapareció, grabada entre las columnas, una inscripción burlona en alemán y letra gótica que recuerda precisamente su paso — un recuerdo de guerra dejado por soldados que probablemente nunca imaginaron que sobreviviría quinientos años.<br><br>
+Pero el verdadero motivo por el que esta parada forma parte de nuestro recorrido sobre Roma Capital es lo que veis — o mejor dicho, lo que ya no veis — hacia el río. El jardín original de Villa Farnesina llegaba hasta la orilla del Tíber, con una logia sobre el agua dedicada precisamente a los banquetes. Con la construcción de los muraglioni, entre 1884 y 1886, esa parte del jardín quedó cortada para siempre, y la villa se encontró de espaldas al río que antaño había sido su escenario. Precisamente durante esas mismas excavaciones para el encauzamiento, en 1879, salieron a la luz, justo por aquí, los restos de una antigua villa romana de época augusta con frescos extraordinarios, hoy conservados en el Palazzo Massimo alle Terme — otra "Farnesina", esta vez dos mil años más antigua, desenterrada precisamente gracias a las obras de la nueva capital que aquí, literalmente, cortaron la historia en dos.<br><br>
+Dentro, si algún día decidís pagar la entrada, encontraríais la Loggia di Psiche pintada por Rafael y sus discípulos, y la Sala de Galatea con las célebres constelaciones pintadas al fresco por Peruzzi en el techo — obras maestras que cuentan hasta dónde podía llegar el gusto de un banquero con suficiente dinero para permitirse al pintor más solicitado de Roma. Pero para nuestro recorrido, que sigue la transformación urbana de la ciudad más que sus colecciones de arte, Villa Farnesina sigue siendo sobre todo esto: un símbolo de cómo incluso la Roma más refinada y renacentista tuvo que enfrentarse, tres siglos y medio después de su construcción, con las excavadoras y los proyectos de la nueva capital.<br><br>
+Sigamos hacia Ponte Sisto.`,
+        deepen: [
+          { type: "link", title: "Villa Farnesina — Wikipedia", url: "https://es.wikipedia.org/wiki/Villa_Farnesina" },
+        ]
+      },
+      fr: {
+        name: "Villa Farnesina e Lungotevere",
+        desc: "Le banquier Chigi, les assiettes d'or, le jardin coupé en deux",
+        audio: "audio/en/tappa3.mp3",
+        photos: [
+          { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Villa_Farnesina,_Rome.jpg?width=900",
+            caption: "Villa Farnesina", credit: "Wikimedia Commons" },
+          { time: 80, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Villa_farnesina_01.JPG?width=900",
+            caption: "The garden facade", credit: "Wikimedia Commons" },
+        ],
+        fullText: `Nous voici devant l'un des jardins les plus racontés de la Renaissance romaine, aujourd'hui hélas amputé de moitié : celui de la Villa Farnesina. La villa, sur votre gauche, fut construite entre 1506 et 1510 pour Agostino Chigi, banquier siennois connu à Rome sous le nom du "Magnifique" — l'homme le plus riche de son époque, créancier de papes et de princes.<br><br>
+Chigi s'en servait surtout pour impressionner. Ses banquets sont légendaires : lors de l'une des occasions les plus célèbres, un déjeuner en l'honneur du pape Léon X, les invités trouvèrent des assiettes d'or et d'argent gravées de leurs propres armoiries — et à la fin du repas, pour montrer combien peu la richesse lui importait, Chigi les faisait jeter directement dans le Tibre. Folie ? Pas du tout : il avait fait tendre des filets cachés au fond du fleuve, et ses hommes récupéraient le tout dès la nuit venue. Un véritable tour de banquier, tout sauf un gaspilleur.<br><br>
+Petite curiosité sur le nom : la villa ne s'appelle pas "Farnesina" parce qu'un Farnèse l'aurait fait construire. C'est Agostino Chigi qui la commanda à l'architecte Baldassarre Peruzzi, et Raphaël en personne — avec Sebastiano del Piombo, Giulio Romano et le Sodoma — qui en peignit les intérieurs. Ce n'est qu'en 1579, lorsque les héritiers Chigi connurent des difficultés financières, que la villa fut vendue au cardinal Alessandro Farnese : d'où le nom resté jusqu'à aujourd'hui.<br><br>
+Toute l'histoire de la villa n'a pas été aussi éclatante que ses banquets. En 1527, lors du tristement célèbre Sac de Rome, les lansquenets de Charles Quint l'occupèrent et y campèrent pendant des semaines : lors de restaurations récentes a resurgi, gravée entre les colonnes, une inscription moqueuse en allemand et en caractères gothiques rappelant précisément leur passage — un souvenir de guerre laissé par des soldats qui n'imaginaient probablement pas qu'il survivrait cinq cents ans.<br><br>
+Mais la véritable raison pour laquelle cette étape fait partie de notre parcours sur Roma Capitale, c'est ce que vous voyez — ou plutôt, ce que vous ne voyez plus — vers le fleuve. Le jardin d'origine de la Villa Farnesina s'étendait jusqu'à la rive du Tibre, avec une loggia sur l'eau dédiée précisément aux banquets. Avec la construction des muraglioni, entre 1884 et 1886, cette partie du jardin fut coupée pour toujours, et la villa se retrouva dos tourné au fleuve qui avait été jadis sa scène. C'est justement lors de ces mêmes fouilles pour l'endiguement, en 1879, que furent mis au jour, juste dans ces parages, les vestiges d'une ancienne villa romaine d'époque augustéenne aux fresques extraordinaires, aujourd'hui conservées au Palazzo Massimo alle Terme — une autre "Farnesina", cette fois vieille de deux mille ans, mise au jour précisément grâce aux travaux de la nouvelle capitale qui, ici, coupèrent littéralement l'histoire en deux.<br><br>
+À l'intérieur — si un jour vous décidez de payer le billet et d'entrer — vous trouveriez la Loggia de Psyché peinte par Raphaël et ses élèves, et la Salle de Galatée avec ses célèbres constellations peintes au plafond par Peruzzi — des chefs-d'œuvre qui montrent jusqu'où pouvait aller le goût d'un banquier ayant assez d'argent pour s'offrir le peintre le plus demandé de Rome. Mais pour notre parcours, qui suit la transformation urbaine de la ville plus que ses collections d'art, la Villa Farnesina reste avant tout ceci : le symbole de la façon dont même la Rome la plus raffinée et Renaissance a dû composer, trois siècles et demi après sa construction, avec les bulldozers et les projets de la nouvelle capitale.<br><br>
+Continuons vers Ponte Sisto.`,
+        deepen: [
+          { type: "link", title: "Villa Farnesina — Wikipedia", url: "https://fr.wikipedia.org/wiki/Villa_Farnesina" },
+        ]
+      },
+      de: {
+        name: "Villa Farnesina e Lungotevere",
+        desc: "Bankier Chigi, die goldenen Teller, der zerschnittene Garten",
+        audio: "audio/en/tappa3.mp3",
+        photos: [
+          { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Villa_Farnesina,_Rome.jpg?width=900",
+            caption: "Villa Farnesina", credit: "Wikimedia Commons" },
+          { time: 80, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Villa_farnesina_01.JPG?width=900",
+            caption: "The garden facade", credit: "Wikimedia Commons" },
+        ],
+        fullText: `Wir stehen vor einem der meisterzählten Gärten der römischen Renaissance, heute leider halbiert: dem der Villa Farnesina. Die Villa, zu Ihrer Linken, wurde zwischen 1506 und 1510 für Agostino Chigi erbaut, einen sienesischen Bankier, der in Rom als "il Magnifico" bekannt war — der reichste Mann seiner Zeit, Gläubiger von Päpsten und Fürsten.<br><br>
+Chigi nutzte sie vor allem, um zu beeindrucken. Seine Bankette sind legendär: Bei einer der berühmtesten Gelegenheiten, einem Essen zu Ehren von Papst Leo X., fanden die Gäste gold- und silberne Teller mit ihren eigenen Wappen graviert vor — und am Ende des Mahls ließ Chigi sie, um zu zeigen, wie wenig ihm Reichtum bedeutete, direkt in den Tiber werfen. Wahnsinn? Keineswegs: Er hatte heimlich Netze am Flussboden auspannen lassen, und noch in derselben Nacht holten seine Männer alles wieder heraus. Ein echter Bankiertrick, alles andere als Verschwendung.<br><br>
+Eine Kuriosität zum Namen: Die Villa heißt nicht "Farnesina", weil ein Farnese sie erbauen ließ. Es war Agostino Chigi, der sie beim Architekten Baldassarre Peruzzi in Auftrag gab, und Raffael persönlich — zusammen mit Sebastiano del Piombo, Giulio Romano und Il Sodoma — malte die Innenräume aus. Erst 1579, als die Erben Chigis in finanzielle Schwierigkeiten gerieten, wurde die Villa an Kardinal Alessandro Farnese verkauft: daher der Name, der bis heute geblieben ist.<br><br>
+Nicht die gesamte Geschichte der Villa war so glanzvoll wie ihre Bankette. 1527, während des berüchtigten Sacco di Roma, besetzten Landsknechte Karls V. sie und lagerten dort wochenlang: Bei jüngsten Restaurierungsarbeiten kam, zwischen den Säulen eingeritzt, eine spöttische Inschrift in deutscher Sprache und gotischen Buchstaben zum Vorschein, die genau an ihren Durchzug erinnert — ein Kriegssouvenir, hinterlassen von Soldaten, die wohl kaum ahnten, dass es fünfhundert Jahre überdauern würde.<br><br>
+Doch der eigentliche Grund, warum diese Station Teil unseres Rundgangs über Roma Capitale ist, ist das, was Sie sehen — oder vielmehr nicht mehr sehen — zum Fluss hin. Der ursprüngliche Garten der Villa Farnesina reichte bis ans Tiberufer, mit einer Loggia über dem Wasser, eigens für Bankette gedacht. Mit dem Bau der Muraglioni, zwischen 1884 und 1886, wurde dieser Teil des Gartens für immer abgeschnitten, und die Villa fand sich mit dem Rücken zum Fluss wieder, der einst ihre Bühne gewesen war. Genau bei denselben Ausgrabungen für die Uferbefestigung kamen 1879, genau hier in der Nähe, die Überreste einer antiken römischen Villa aus augusteischer Zeit mit außergewöhnlichen Fresken ans Licht, heute im Palazzo Massimo alle Terme aufbewahrt — eine weitere "Farnesina", diesmal zweitausend Jahre älter, ausgegraben eben dank der Arbeiten der neuen Hauptstadt, die hier buchstäblich die Geschichte in zwei Teile schnitten.<br><br>
+Drinnen — sollten Sie eines Tages beschließen, das Ticket zu bezahlen und einzutreten — würden Sie die von Raffael und seinen Schülern gemalte Loggia di Psiche finden sowie den Saal der Galatea mit den berühmten, von Peruzzi an die Decke gemalten Sternbildern — Meisterwerke, die zeigen, wie weit der Geschmack eines Bankiers reichen konnte, der genug Geld hatte, sich den gefragtesten Maler Roms zu leisten. Für unseren Spaziergang jedoch, der eher der städtebaulichen Verwandlung der Stadt folgt als ihren Kunstsammlungen, bleibt die Villa Farnesina vor allem dies: ein Symbol dafür, wie selbst das raffinierteste, Renaissance-geprägte Rom dreieinhalb Jahrhunderte nach seiner Erbauung mit den Baggern und Projekten der neuen Hauptstadt zurechtkommen musste.<br><br>
+Weiter geht es zur Ponte Sisto.`,
+        deepen: [
+          { type: "link", title: "Villa Farnesina — Wikipedia", url: "https://de.wikipedia.org/wiki/Villa_Farnesina" },
+        ]
+      },
+      pt: {
+        name: "Villa Farnesina e Lungotevere",
+        desc: "O banqueiro Chigi, os pratos de ouro, o jardim cortado",
+        audio: "audio/en/tappa3.mp3",
+        photos: [
+          { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Villa_Farnesina,_Rome.jpg?width=900",
+            caption: "Villa Farnesina", credit: "Wikimedia Commons" },
+          { time: 80, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Villa_farnesina_01.JPG?width=900",
+            caption: "The garden facade", credit: "Wikimedia Commons" },
+        ],
+        fullText: `Encontramo-nos diante de um dos jardins mais contados do Renascimento romano, hoje infelizmente reduzido a metade: o da Villa Farnesina. A vila, à vossa esquerda, foi construída entre 1506 e 1510 para Agostino Chigi, banqueiro sienês conhecido em Roma como "o Magnífico" — o homem mais rico da sua época, credor de papas e príncipes.<br><br>
+Chigi usava-a sobretudo para impressionar. Os seus banquetes são lendários: numa das ocasiões mais célebres, durante um almoço em honra do Papa Leão X, os convidados encontraram pratos de ouro e prata gravados com os seus próprios brasões — e no final da refeição, para mostrar como pouco lhe importava a riqueza, Chigi mandava-os atirar diretamente ao Tibre. Loucura? Nem por sombras: tinha mandado estender redes escondidas no fundo do rio, e nessa mesma noite os seus homens recuperavam tudo. Um verdadeiro truque de banqueiro, longe de ser um esbanjador.<br><br>
+Curiosidade sobre o nome: a vila não se chama "Farnesina" porque a tenha construído um Farnese. Foi Agostino Chigi quem a encomendou ao arquiteto Baldassarre Peruzzi, e o próprio Rafael — juntamente com Sebastiano del Piombo, Giulio Romano e o Sodoma — quem pintou os seus interiores. Só em 1579, quando os herdeiros Chigi caíram em dificuldades financeiras, a vila foi vendida ao cardeal Alessandro Farnese: daí o nome que chegou até hoje.<br><br>
+Nem toda a história da vila foi tão brilhante como os seus banquetes. Em 1527, durante o tristemente célebre Saque de Roma, os lansquenetes de Carlos V ocuparam-na e ali acamparam durante semanas: durante restauros recentes reapareceu, gravada entre as colunas, uma inscrição trocista em alemão e caracteres góticos que recorda precisamente a sua passagem — uma recordação de guerra deixada por soldados que provavelmente nunca imaginaram que sobreviveria quinhentos anos.<br><br>
+Mas o verdadeiro motivo pelo qual esta paragem faz parte do nosso passeio sobre Roma Capitale é o que vedes — ou melhor, o que já não vedes — em direção ao rio. O jardim original da Villa Farnesina chegava até à margem do Tibre, com uma loggia sobre a água dedicada precisamente aos banquetes. Com a construção dos muraglioni, entre 1884 e 1886, essa parte do jardim foi cortada para sempre, e a vila ficou de costas voltadas para o rio que outrora tinha sido o seu palco. Precisamente durante essas mesmas escavações para o encanamento, em 1879, vieram à luz, mesmo por aqui perto, os vestígios de uma antiga vila romana de época augustana com afrescos extraordinários, hoje conservados no Palazzo Massimo alle Terme — outra "Farnesina", desta vez com dois mil anos a mais, desenterrada precisamente graças às obras da nova capital que aqui, literalmente, cortaram a história em dois.<br><br>
+Lá dentro, se um dia decidirem pagar o bilhete e entrar, encontrariam a Loggia di Psiche pintada por Rafael e pelos seus discípulos, e a Sala de Galateia com as célebres constelações pintadas ao teto por Peruzzi — obras-primas que contam até onde podia chegar o gosto de um banqueiro com dinheiro suficiente para se dar ao luxo do pintor mais requisitado de Roma. Mas para o nosso passeio, que segue a transformação urbana da cidade mais do que as suas coleções de arte, a Villa Farnesina continua a ser sobretudo isto: um símbolo de como até a Roma mais refinada e renascentista teve de se haver, três séculos e meio depois da sua construção, com as escavadoras e os projetos da nova capital.<br><br>
+Sigamos em direção a Ponte Sisto.`,
+        deepen: [
+          { type: "link", title: "Villa Farnesina — Wikipedia", url: "https://pt.wikipedia.org/wiki/Villa_Farnesina" },
+        ]
+      },
+      zh: {
+        name: "Villa Farnesina e Lungotevere",
+        desc: "银行家基吉、金盘子与被切断的花园",
+        audio: "audio/en/tappa3.mp3",
+        photos: [
+          { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Villa_Farnesina,_Rome.jpg?width=900",
+            caption: "Villa Farnesina", credit: "Wikimedia Commons" },
+          { time: 80, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Villa_farnesina_01.JPG?width=900",
+            caption: "The garden facade", credit: "Wikimedia Commons" },
+        ],
+        fullText: `我们现在站在罗马文艺复兴时期最常被提起的花园之一面前，可惜如今只剩下一半：这就是Villa Farnesina的花园。这座别墅，在你们左手边，建于1506年至1510年间，为西耶纳银行家Agostino Chigi所建，在罗马人称他为"华丽者"（il Magnifico）——他是那个时代最富有的人，教皇和王公贵族的债权人。<br><br>
+Chigi建造它主要是为了炫耀。他的宴会堪称传奇：在最著名的一次场合中，一场为教宗利奥十世举办的宴会上，宾客们发现自己面前的金银餐盘上都刻有各自的家族纹章——宴席结束后，为了显示财富对他来说多么无足轻重，Chigi命人直接将这些餐盘扔进台伯河。疯狂吗？一点也不：他早已在河底秘密张开渔网，当晚他的手下就把一切都打捞了上来。这是一个真正银行家的把戏，绝非挥霍无度。<br><br>
+关于名字的一个趣闻：这座别墅之所以被称为"Farnesina"，并不是因为它是由法尔内塞家族所建。而是Agostino Chigi委托建筑师Baldassarre Peruzzi建造，并由拉斐尔本人——连同Sebastiano del Piombo、Giulio Romano和Il Sodoma——为其绘制了内部壁画。直到1579年，当Chigi的继承人陷入财务困境时，这座别墅才被卖给了红衣主教Alessandro Farnese：由此得名，并沿用至今。<br><br>
+这座别墅的历史并非全都如宴会般光鲜。1527年，在臭名昭著的罗马之劫期间，查理五世的兰茨克内希特雇佣兵占领了这里，并在此扎营数周：近期的修复工作发现，柱子之间刻有一段用德语和哥特字体写成的嘲讽铭文，正是记录了他们经过此地——这是士兵们留下的战争纪念品，他们大概从未想到它会流传五百年之久。<br><br>
+但这一站之所以成为我们"Roma Capitale"行程的一部分，真正的原因在于你们所看到的——更确切地说，是你们已经看不到的——朝向河流的那一部分。Villa Farnesina原本的花园一直延伸到台伯河岸边，河上还有一座专为宴会而建的凉廊。随着1884年至1886年间muraglioni防洪堤的修建，这部分花园被永远切断了，别墅从此背对着曾经是它舞台的那条河流。正是在为河岸加固而进行的同一批挖掘工程中，1879年，就在附近，出土了一座奥古斯都时代的古罗马别墅遗址，其中的壁画令人叹为观止，如今收藏于Palazzo Massimo alle Terme博物馆——这是另一座"Farnesina"，这一次要古老两千年，恰恰是靠着新首都的建设工程才重见天日，这里，历史被真真切切地一分为二。<br><br>
+如果有一天你们决定买票进去参观，里面会看到拉斐尔及其弟子绘制的Loggia di Psiche，以及Peruzzi在天花板上绘制的著名星座壁画所在的Sala di Galatea——这些杰作展现了一位有足够财力聘请罗马最炙手可热画家的银行家，其品味能够达到怎样的高度。但对于我们这次更关注城市变迁而非艺术收藏的行程来说，Villa Farnesina首先意味着这个：它象征着即便是最精致、最文艺复兴的罗马，在建成三个半世纪后，也不得不面对新首都的推土机和规划项目。<br><br>
+让我们继续前往Ponte Sisto。`,
+        deepen: [
+          { type: "link", title: "法尔内西纳别墅 — Wikipedia", url: "https://zh.wikipedia.org/wiki/法尔内西纳别墅" },
+        ]
+      },
     }
   },
   {
@@ -366,6 +791,106 @@ The muraglioni are perhaps the quietest yet most far-reaching project of the who
           { type: "link", title: "Tiber flood control — Wikipedia", url: "https://en.wikipedia.org/wiki/Tiber_flood_control" },
         ]
       },
+      es: {
+        name: "Ponte Sisto e i muraglioni",
+        desc: "La inundación de 1870 que cambió Roma",
+        audio: "audio/en/tappa4.mp3",
+        photos: [
+          { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Ponte_Sisto_Roma.jpg?width=900",
+            caption: "Ponte Sisto", credit: "Wikimedia Commons" },
+          { time: 67, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Lungotevere,_Rome,_Italy.jpg?width=900",
+            caption: "The Tiber's flood walls (muraglioni)", credit: "Wikimedia Commons" },
+        ],
+        fullText: `Aquí estamos en Ponte Sisto, uno de los puentes más fotografiados de Roma — pero la verdadera protagonista de esta parada no es solo el puente renacentista bajo vuestros pies, sino ese largo borde de travertino que corre a lo largo del río en ambas orillas: los muraglioni.<br><br>
+Antes, sin embargo, una palabra sobre el propio puente, porque también él tiene detrás una historia de inundaciones. Aquí ya existía en época romana un puente, quizá construido por Agripa, yerno de Augusto, reconstruido después bajo Antonino Pío con el nombre de Pons Aurelius. En el año 792, una crecida del Tíber lo arrasó: durante casi setecientos años los romanos lo llamaron simplemente "Ponte Rotto", dejándolo en ruinas. Fue el papa Sixto IV quien lo reconstruyó desde cero entre 1473 y 1479, de cara al Jubileo — y de él tomó el nombre que aún lleva hoy. Fijaos, en el centro, en ese gran hueco circular sobre el pilar: se llama "occhialone", y es un recurso técnico pensado precisamente para aliviar la presión del agua durante las crecidas. Un puente que lleva escrito en su propia arquitectura el miedo ancestral de los romanos al río — el mismo miedo que, cuatro siglos después, produciría los muraglioni.<br><br>
+Para entender por qué existen, hay que remontarse al 28 de diciembre de 1870, pocos meses después de que Roma se convirtiera en capital del Reino de Italia. El Tíber se desborda en una de las crecidas más devastadoras de su historia, alcanzando más de 17 metros sobre el nivel normal en Ripetta. Prati se convierte en un lago, Trastevere y piazza del Popolo quedan bajo el agua. Tres días después, el 31 de diciembre, el rey Vittorio Emanuele II entra en Roma para celebrar la anexión al Reino — y lo hace atravesando una ciudad todavía completamente inundada. Una entrada triunfal arruinada por el agua hasta los tobillos: no exactamente la bienvenida que esperaba la nueva capital.<br><br>
+El rey queda profundamente impresionado, y a partir de ahí se abre un debate de cinco años sobre cómo resolver el problema de una vez por todas. Garibaldi, entonces diputado, llega a proponer desviar todo el curso del Tíber fuera de la ciudad. Al final, en 1875, se impone el proyecto del ingeniero Raffaele Canevari: altos muros de contención en travertino, un cauce ensanchado hasta cien metros, y sobre los muros las nuevas calles que hoy llamamos Lungotevere.<br><br>
+Las obras durarán casi medio siglo, hasta 1926, y cambiarán para siempre el rostro de Roma: adiós a las orillas naturales, a los pequeños embarcaderos, a las escalinatas que bajaban directamente al agua y que durante siglos habían sido el escenario de la vida ciudadana — esas mismas orillas que veis retratadas en las acuarelas de Ettore Roesler Franz, que las pintó justo en esos años antes de que desaparecieran para siempre, en una serie que no por casualidad se llama "Roma sparita", la Roma desaparecida. A cambio, eso sí, Roma deja casi por completo de inundarse: cuando en 1937 llega una crecida comparable a la de 1870, los daños son mínimos.<br><br>
+Los muraglioni son quizá el proyecto más silencioso pero más decisivo de toda la transformación posterior a 1870: no un monumento, no un palacio, sino una infraestructura que rediseñó para siempre la relación entre Roma y su río.`,
+        deepen: [
+          { type: "link", title: "Muraglioni del Tevere — Wikipedia", url: "https://es.wikipedia.org/wiki/Muraglioni_del_Tevere" },
+        ]
+      },
+      fr: {
+        name: "Ponte Sisto e i muraglioni",
+        desc: "L'inondation de 1870 qui a changé Rome",
+        audio: "audio/en/tappa4.mp3",
+        photos: [
+          { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Ponte_Sisto_Roma.jpg?width=900",
+            caption: "Ponte Sisto", credit: "Wikimedia Commons" },
+          { time: 67, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Lungotevere,_Rome,_Italy.jpg?width=900",
+            caption: "The Tiber's flood walls (muraglioni)", credit: "Wikimedia Commons" },
+        ],
+        fullText: `Nous voici sur Ponte Sisto, l'un des ponts les plus photographiés de Rome — mais la véritable protagoniste de cette étape n'est pas seulement le pont Renaissance sous vos pieds, c'est ce long bandeau de travertin qui court le long du fleuve sur les deux rives : les muraglioni.<br><br>
+Mais d'abord, un mot sur le pont lui-même, car lui aussi a derrière lui une histoire d'inondations. Un pont existait déjà ici à l'époque romaine, peut-être construit par Agrippa, gendre d'Auguste, puis reconstruit sous Antonin le Pieux sous le nom de Pons Aurelius. En 792, une crue du Tibre l'emporta : pendant près de sept cents ans, les Romains l'appelèrent simplement "Ponte Rotto", le pont cassé, le laissant en ruines. C'est le pape Sixte IV qui le reconstruisit entièrement entre 1473 et 1479, en vue du Jubilé — et c'est de lui qu'il tire le nom qu'il porte encore aujourd'hui. Remarquez, au centre, ce grand orifice circulaire au-dessus de la pile : on l'appelle l'"occhialone", et c'est un dispositif technique conçu précisément pour alléger la pression de l'eau lors des crues. Un pont qui porte inscrite dans sa propre architecture la peur ancestrale des Romains pour le fleuve — la même peur qui, quatre siècles plus tard, produirait les muraglioni.<br><br>
+Pour comprendre pourquoi ils existent, il faut remonter au 28 décembre 1870, quelques mois seulement après que Rome soit devenue la capitale du Royaume d'Italie. Le Tibre déborde lors de l'une des crues les plus dévastatrices de son histoire, atteignant plus de 17 mètres au-dessus du niveau normal à Ripetta. Prati devient un lac, Trastevere et la piazza del Popolo se retrouvent sous l'eau. Trois jours plus tard, le 31 décembre, le roi Vittorio Emanuele II entre dans Rome pour célébrer l'annexion au Royaume — et le fait en traversant une ville encore entièrement inondée. Une entrée triomphale gâchée par l'eau jusqu'aux chevilles : pas exactement l'accueil qu'espérait la nouvelle capitale.<br><br>
+Le roi en reste profondément marqué, et s'ouvre alors un débat de cinq ans sur la façon de résoudre le problème une fois pour toutes. Garibaldi, alors député, propose même de détourner tout le cours du Tibre hors de la ville. Finalement, en 1875, c'est le projet de l'ingénieur Raffaele Canevari qui l'emporte : de hauts murs de soutènement en travertin, un lit élargi jusqu'à cent mètres, et au-dessus des murs les nouvelles rues que nous appelons aujourd'hui les Lungotevere.<br><br>
+Les travaux dureront près d'un demi-siècle, jusqu'en 1926, et changeront à jamais le visage de Rome : adieu les rives naturelles, les petits ports, les escaliers descendant directement vers l'eau qui, pendant des siècles, avaient servi de décor à la vie citadine — ces mêmes rives que vous voyez représentées dans les aquarelles d'Ettore Roesler Franz, qui les peignit précisément durant ces années avant qu'elles ne disparaissent pour toujours, dans une série qui, ce n'est pas un hasard, s'appelle "Roma sparita", la Rome disparue. En échange, cependant, Rome cesse presque totalement d'être inondée : lorsqu'en 1937 survient une crue comparable à celle de 1870, les dégâts sont minimes.<br><br>
+Les muraglioni sont peut-être le projet le plus silencieux mais le plus déterminant de toute la transformation postérieure à 1870 : non pas un monument, non pas un palais, mais une infrastructure qui a redessiné pour toujours la relation entre Rome et son fleuve.`,
+        deepen: [
+          { type: "link", title: "Murs du Tibre — Wikipedia", url: "https://fr.wikipedia.org/wiki/Murs_du_Tibre" },
+        ]
+      },
+      de: {
+        name: "Ponte Sisto e i muraglioni",
+        desc: "Die Flut von 1870, die Rom veränderte",
+        audio: "audio/en/tappa4.mp3",
+        photos: [
+          { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Ponte_Sisto_Roma.jpg?width=900",
+            caption: "Ponte Sisto", credit: "Wikimedia Commons" },
+          { time: 67, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Lungotevere,_Rome,_Italy.jpg?width=900",
+            caption: "The Tiber's flood walls (muraglioni)", credit: "Wikimedia Commons" },
+        ],
+        fullText: `Hier stehen wir auf der Ponte Sisto, einer der meistfotografierten Brücken Roms — doch die eigentliche Hauptfigur dieser Station ist nicht nur die Renaissance-Brücke unter Ihren Füßen, sondern jener lange Travertinsaum, der auf beiden Ufern am Fluss entlangläuft: die Muraglioni.<br><br>
+Zuvor jedoch ein Wort zur Brücke selbst, denn auch sie hat eine Geschichte voller Überschwemmungen hinter sich. Hier stand schon in römischer Zeit eine Brücke, vielleicht von Agrippa, dem Schwiegersohn des Augustus, erbaut, später unter Antoninus Pius unter dem Namen Pons Aurelius wiederaufgebaut. Im Jahr 792 riss eine Tiberflut sie fort: fast siebenhundert Jahre lang nannten die Römer sie schlicht "Ponte Rotto", die kaputte Brücke, und ließen sie verfallen. Erst Papst Sixtus IV. baute sie zwischen 1473 und 1479 anlässlich des Jubiläums von Grund auf neu — und von ihm trägt sie bis heute ihren Namen. Beachten Sie in der Mitte jene große kreisrunde Öffnung über dem Pfeiler: Sie heißt "occhialone" und ist eine technische Vorrichtung, eigens dafür gedacht, den Wasserdruck bei Hochwasser zu mindern. Eine Brücke, der man die uralte Angst der Römer vor dem Fluss förmlich in die Architektur eingeschrieben sieht — dieselbe Angst, die vier Jahrhunderte später die Muraglioni hervorbringen sollte.<br><br>
+Um zu verstehen, warum sie existieren, muss man zum 28. Dezember 1870 zurückgehen, nur wenige Monate nachdem Rom Hauptstadt des Königreichs Italien geworden war. Der Tiber tritt in einer der verheerendsten Fluten seiner Geschichte über die Ufer und steigt bei Ripetta auf über 17 Meter über dem normalen Pegel. Prati wird zu einem See, Trastevere und die Piazza del Popolo stehen unter Wasser. Drei Tage später, am 31. Dezember, zieht König Vittorio Emanuele II. in Rom ein, um die Annexion an das Königreich zu feiern — und durchquert dabei eine noch völlig überflutete Stadt. Ein triumphaler Einzug, ruiniert von knöcheltiefem Wasser: nicht gerade der Empfang, den sich die neue Hauptstadt erhofft hatte.<br><br>
+Der König ist zutiefst erschüttert, und daraus entsteht eine fünf Jahre andauernde Debatte darüber, wie das Problem endgültig gelöst werden könnte. Garibaldi, damals Abgeordneter, schlägt sogar vor, den gesamten Lauf des Tibers aus der Stadt hinaus umzuleiten. Am Ende setzt sich 1875 das Projekt des Ingenieurs Raffaele Canevari durch: hohe Stützmauern aus Travertin, ein auf hundert Meter verbreitertes Flussbett, und oberhalb der Mauern die neuen Straßen, die wir heute Lungotevere nennen.<br><br>
+Die Arbeiten werden fast ein halbes Jahrhundert dauern, bis 1926, und werden das Gesicht Roms für immer verändern: Lebewohl den natürlichen Ufern, den kleinen Häfen, den Treppen, die direkt ins Wasser führten und die jahrhundertelang die Bühne des Stadtlebens gebildet hatten — genau jene Ufer, die Sie in den Aquarellen von Ettore Roesler Franz abgebildet sehen, der sie genau in jenen Jahren malte, bevor sie für immer verschwanden, in einer Serie, die nicht zufällig "Roma sparita", das verschwundene Rom, heißt. Im Gegenzug hört Rom jedoch fast vollständig auf, überflutet zu werden: Als 1937 eine mit der von 1870 vergleichbare Flut eintrifft, sind die Schäden minimal.<br><br>
+Die Muraglioni sind vielleicht das stillste, aber zugleich wirkungsvollste Projekt der gesamten Umgestaltung nach 1870: kein Denkmal, kein Palast, sondern eine Infrastruktur, die das Verhältnis zwischen Rom und seinem Fluss für immer neu gezeichnet hat.`,
+        deepen: [
+          { type: "link", title: "Tiber-Hochwassermauern — Wikipedia", url: "https://de.wikipedia.org/wiki/Tiber-Hochwassermauern" },
+        ]
+      },
+      pt: {
+        name: "Ponte Sisto e i muraglioni",
+        desc: "A inundação de 1870 que mudou Roma",
+        audio: "audio/en/tappa4.mp3",
+        photos: [
+          { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Ponte_Sisto_Roma.jpg?width=900",
+            caption: "Ponte Sisto", credit: "Wikimedia Commons" },
+          { time: 67, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Lungotevere,_Rome,_Italy.jpg?width=900",
+            caption: "The Tiber's flood walls (muraglioni)", credit: "Wikimedia Commons" },
+        ],
+        fullText: `Eis-nos em Ponte Sisto, uma das pontes mais fotografadas de Roma — mas a verdadeira protagonista desta paragem não é apenas a ponte renascentista sob os vossos pés, é aquela longa moldura de travertino que corre ao longo do rio em ambas as margens: os muraglioni.<br><br>
+Antes, porém, uma palavra sobre a própria ponte, porque também ela tem por trás uma história de inundações. Aqui já existia em época romana uma ponte, talvez construída por Agripa, genro de Augusto, depois reconstruída sob Antonino Pio com o nome de Pons Aurelius. Em 792, uma inundação do Tibre varreu-a: durante quase setecentos anos os romanos chamaram-lhe simplesmente "Ponte Rotto", deixando-a em ruínas. Foi o papa Sisto IV quem a reconstruiu do zero entre 1473 e 1479, em preparação para o Jubileu — e dele tomou o nome que ainda hoje mantém. Reparem, ao centro, naquele grande orifício circular sobre o pilar: chama-se "occhialone", e é um recurso técnico pensado especificamente para aliviar a pressão da água durante as cheias. Uma ponte que traz escrito na sua própria arquitetura o medo ancestral dos romanos pelo rio — o mesmo medo que, quatro séculos mais tarde, produziria os muraglioni.<br><br>
+Para compreender porque existem, é preciso recuar a 28 de dezembro de 1870, poucos meses depois de Roma se ter tornado capital do Reino de Itália. O Tibre transborda numa das cheias mais devastadoras da sua história, atingindo mais de 17 metros acima do nível normal em Ripetta. Prati transforma-se num lago, Trastevere e a piazza del Popolo ficam debaixo de água. Três dias depois, a 31 de dezembro, o rei Vittorio Emanuele II entra em Roma para celebrar a anexação ao Reino — e fá-lo atravessando uma cidade ainda completamente inundada. Uma entrada triunfal arruinada pela água até aos tornozelos: não exatamente as boas-vindas que a nova capital esperava.<br><br>
+O rei fica profundamente impressionado, e a partir daí abre-se um debate de cinco anos sobre como resolver o problema de uma vez por todas. Garibaldi, então deputado, chega a propor desviar todo o curso do Tibre para fora da cidade. No final, em 1875, prevalece o projeto do engenheiro Raffaele Canevari: altos muros de contenção em travertino, um leito alargado até cem metros, e sobre os muros as novas ruas que hoje chamamos Lungotevere.<br><br>
+As obras durarão quase meio século, até 1926, e mudarão para sempre o rosto de Roma: adeus às margens naturais, aos pequenos portos, às escadarias que desciam diretamente para a água e que durante séculos tinham servido de cenário à vida citadina — essas mesmas margens que vedes retratadas nas aguarelas de Ettore Roesler Franz, que as pintou precisamente nesses anos antes de desaparecerem para sempre, numa série que não por acaso se chama "Roma sparita", a Roma desaparecida. Em troca, porém, Roma deixa quase por completo de se inundar: quando em 1937 chega uma cheia comparável à de 1870, os danos são mínimos.<br><br>
+Os muraglioni são talvez o projeto mais silencioso mas mais decisivo de toda a transformação pós-1870: não um monumento, não um palácio, mas uma infraestrutura que redesenhou para sempre a relação entre Roma e o seu rio.`,
+        deepen: [
+          { type: "link", title: "Muraglioni do Tibre — Wikipedia", url: "https://pt.wikipedia.org/wiki/Muraglioni_do_Tibre" },
+        ]
+      },
+      zh: {
+        name: "Ponte Sisto e i muraglioni",
+        desc: "改变罗马的1870年洪水",
+        audio: "audio/en/tappa4.mp3",
+        photos: [
+          { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Ponte_Sisto_Roma.jpg?width=900",
+            caption: "Ponte Sisto", credit: "Wikimedia Commons" },
+          { time: 67, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Lungotevere,_Rome,_Italy.jpg?width=900",
+            caption: "The Tiber's flood walls (muraglioni)", credit: "Wikimedia Commons" },
+        ],
+        fullText: `我们来到了Ponte Sisto，罗马最上镜的桥梁之一——但这一站真正的主角，并不只是你们脚下这座文艺复兴时期的桥，而是那条沿河两岸延伸的长长的travertine（石灰华）护墙：muraglioni，也就是防洪堤。<br><br>
+不过在此之前，先说说这座桥本身，因为它背后也有一段与洪水相关的历史。早在古罗马时期，这里就已经有一座桥，也许是奥古斯都的女婿阿格里帕所建，后来在安东尼·庇护统治下重建，命名为Pons Aurelius。公元792年，一场台伯河洪水将它冲毁：此后近七百年间，罗马人干脆称它为"Ponte Rotto"（断桥），任其荒废。是教皇西斯图斯四世在1473年至1479年间，为迎接大禧年而将其彻底重建——它至今仍沿用他的名字。请注意桥中央那个巨大的圆孔：它被称为"occhialone"（大眼），是专门用来在洪水期间减轻水压的技术设计。这座桥的建筑本身，仿佛铭刻着罗马人对河流的古老恐惧——正是这种恐惧，在四个世纪之后催生了muraglioni。<br><br>
+要理解它们为何存在，必须回到1870年12月28日，也就是罗马成为意大利王国首都仅仅几个月之后。台伯河爆发了历史上最具破坏性的一次洪水，水位在Ripetta一带比正常水位高出17米以上。Prati区变成了一片湖泊，特拉斯提弗列和Piazza del Popolo都被淹没在水中。三天后，12月31日，国王维托里奥·埃马努埃莱二世进入罗马，庆祝罗马并入王国——而他正是穿越一座依然完全被淹没的城市完成这次入城的。一场被没到脚踝的洪水毁掉的凯旋仪式：这可不是新首都所期待的欢迎方式。<br><br>
+国王对此深感震撼，从此展开了一场长达五年的辩论，讨论如何一劳永逸地解决这个问题。当时身为议员的加里波第甚至提议将整条台伯河改道，绕开城市。最终，在1875年，工程师Raffaele Canevari的方案胜出：修建高大的travertine挡水墙，将河床拓宽至一百米，墙上则是我们如今称为Lungotevere的新道路。<br><br>
+这项工程将持续近半个世纪，直到1926年才完工，并永远改变了罗马的面貌：告别了天然的河岸、小码头，以及那些数百年来一直是城市生活舞台的直通水面的阶梯——正是你们在Ettore Roesler Franz的水彩画中所看到的那些河岸，他正是在这些即将永远消失的年份里将它们描绘下来，收录进一套名副其实叫做"Roma sparita"（消失的罗马）的系列画作中。但作为交换，罗马几乎彻底摆脱了水患：1937年当一场与1870年相当的洪水再次来袭时，造成的损失微乎其微。<br><br>
+muraglioni或许是1870年后整个城市转型中最不动声色、却影响最深远的工程：它不是一座纪念碑，也不是一座宫殿，而是一项基础设施，从此永远重新定义了罗马与其河流之间的关系。`,
+        deepen: [
+          { type: "link", title: "台伯河防洪堤 — Wikipedia", url: "https://zh.wikipedia.org/wiki/台伯河防洪堤" },
+        ]
+      },
     }
   },
   {
@@ -392,6 +917,61 @@ The muraglioni are perhaps the quietest yet most far-reaching project of the who
         fullText: `This narrow, rather unassuming little street carries a name that tells of a vanished trade: the pettinari were the craftsmen who worked flax and hemp with a comb, the tool used to separate the fibres before spinning. Like so many streets in the historic centre, the name has stuck around even though the trade disappeared centuries ago — in Rome, street names are often the only surviving record of professions that no longer exist. It leads us straight towards Corso Vittorio Emanuele II, one of the signature arteries of the new capital.`,
         deepen: [
           { type: "link", title: "Rione Regola — Wikipedia", url: "https://en.wikipedia.org/wiki/Rione_Regola" },
+        ]
+      },
+      es: {
+        name: "Via dei Pettinari",
+        desc: "Un oficio desaparecido",
+        audio: "audio/en/int2.mp3",
+        photos: [
+        ],
+        fullText: `Esta callecita estrecha y algo anónima lleva un nombre que cuenta un oficio desaparecido: los pettinari eran los artesanos que trabajaban el lino y el cáñamo con el peine, es decir, el instrumento que separaba las fibras antes del hilado. Como tantas calles del centro histórico, el nombre ha permanecido aunque el oficio desapareciera hace siglos — en Roma las calles son a menudo el único archivo que queda de profesiones que ya no existen. Nos lleva directos hacia Corso Vittorio Emanuele II, una de las arterias símbolo de la nueva capital.`,
+        deepen: [
+          { type: "link", title: "Rione Regola — Wikipedia", url: "https://es.wikipedia.org/wiki/Rione_Regola" },
+        ]
+      },
+      fr: {
+        name: "Via dei Pettinari",
+        desc: "Un métier disparu",
+        audio: "audio/en/int2.mp3",
+        photos: [
+        ],
+        fullText: `Cette ruelle étroite et plutôt anonyme porte un nom qui raconte un métier disparu : les pettinari étaient les artisans qui travaillaient le lin et le chanvre au peigne, c'est-à-dire l'outil servant à séparer les fibres avant le filage. Comme tant de rues du centre historique, le nom est resté même si le métier a disparu depuis des siècles — à Rome, les noms de rues sont souvent les seules archives restantes de professions qui n'existent plus. Elle nous mène tout droit vers Corso Vittorio Emanuele II, l'une des artères emblématiques de la nouvelle capitale.`,
+        deepen: [
+          { type: "link", title: "Rione Regola — Wikipedia", url: "https://fr.wikipedia.org/wiki/Rione_Regola" },
+        ]
+      },
+      de: {
+        name: "Via dei Pettinari",
+        desc: "Ein verschwundenes Handwerk",
+        audio: "audio/en/int2.mp3",
+        photos: [
+        ],
+        fullText: `Diese schmale, eher unauffällige Gasse trägt einen Namen, der von einem verschwundenen Handwerk erzählt: Die pettinari waren die Handwerker, die Flachs und Hanf mit dem Kamm bearbeiteten, also dem Werkzeug, mit dem die Fasern vor dem Spinnen getrennt wurden. Wie so viele Straßen der Altstadt hat sich der Name gehalten, obwohl das Handwerk seit Jahrhunderten verschwunden ist — in Rom sind die Straßennamen oft das einzige erhaltene Archiv von Berufen, die es nicht mehr gibt. Sie führt uns direkt auf den Corso Vittorio Emanuele II, eine der symbolträchtigen Achsen der neuen Hauptstadt.`,
+        deepen: [
+          { type: "link", title: "Rione Regola — Wikipedia", url: "https://de.wikipedia.org/wiki/Rione_Regola" },
+        ]
+      },
+      pt: {
+        name: "Via dei Pettinari",
+        desc: "Um ofício desaparecido",
+        audio: "audio/en/int2.mp3",
+        photos: [
+        ],
+        fullText: `Esta ruazinha estreita e um tanto anónima traz um nome que conta um ofício desaparecido: os pettinari eram os artesãos que trabalhavam o linho e o cânhamo com o pente, ou seja, o instrumento que separava as fibras antes da fiação. Como tantas ruas do centro histórico, o nome ficou mesmo depois de o ofício ter desaparecido há séculos — em Roma as ruas são muitas vezes o único arquivo que resta de profissões que já não existem. Leva-nos diretamente ao Corso Vittorio Emanuele II, uma das artérias símbolo da nova capital.`,
+        deepen: [
+          { type: "link", title: "Rione Regola — Wikipedia", url: "https://pt.wikipedia.org/wiki/Rione_Regola" },
+        ]
+      },
+      zh: {
+        name: "Via dei Pettinari",
+        desc: "一门消失的手艺",
+        audio: "audio/en/int2.mp3",
+        photos: [
+        ],
+        fullText: `这条狭窄而略显平凡的小街，名字背后讲述着一门早已消失的行当：pettinari是用梳子加工亚麻和大麻的工匠，梳子是纺纱前用来梳理分离纤维的工具。和历史中心的许多街道一样，即使这门手艺早已消失了几个世纪，名字却依然保留了下来——在罗马，街道名称往往是那些已不复存在的行业留下的唯一档案。这条路径直通向Corso Vittorio Emanuele II，新首都的标志性大道之一。`,
+        deepen: [
+          { type: "link", title: "雷戈拉区 — Wikipedia", url: "https://zh.wikipedia.org/wiki/雷戈拉区" },
         ]
       },
     }
@@ -436,6 +1016,96 @@ Let's continue towards Largo Argentina.`,
           { type: "link", title: "Museo Barracco — Wikipedia", url: "https://en.wikipedia.org/wiki/Museo_Barracco" },
         ]
       },
+      es: {
+        name: "Corso Vittorio Emanuele II — Piccola Farnesina",
+        desc: "El rettifilo y un malentendido de 500 años",
+        audio: "audio/en/tappa5.mp3",
+        photos: [
+          { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Corso_Vittorio_Emanuele_II_-_Museo_Barracco_-_panoramio_(1).jpg?width=900",
+            caption: "The Piccola Farnesina on Corso Vittorio Emanuele II", credit: "Wikimedia Commons" },
+        ],
+        fullText: `Estamos en Corso Vittorio Emanuele II, el llamado "rettifilo": una calle recta como una regla, cortada a través del tejido medieval y renacentista de Roma entre 1883 y finales del siglo XIX para conectar el centro histórico con Castel Sant'Angelo y con Prati, el nuevo barrio burgués que nacía al otro lado del río. Antes de esta calle, aquí había un laberinto de callejuelas estrechas típico de la Roma preunitaria: el rettifilo borró buena parte de él, y los palacios que quedaron a caballo entre el trazado viejo y el nuevo fueron simplemente cortados y reconstruidos con una fachada nueva hacia la calle — una intervención quirúrgica a escala urbana, el mismo principio exacto del Corso Vittorio en Trastevere que dejamos al inicio del recorrido, aplicado aquí en la orilla opuesta del río.<br><br>
+El plan urbanístico de 1883 imaginaba estas grandes arterias como el símbolo de la modernidad burguesa de la nueva capital: rectas, anchas, transitables por los nuevos tranvías, flanqueadas por edificios elegantes con el revoque color ocre que se convertiría en el sello estilístico de toda la arquitectura umbertina. El precio, sin embargo, fue la desaparición de manzanas enteras de historia menuda — talleres, patios, iglesias menores — que nadie se preocupó de documentar antes de derribarlas.<br><br>
+Uno de los mejores ejemplos lo tenemos justo delante: este elegante palacete renacentista que todos llaman "Piccola Farnesina". Y aquí hay un malentendido que dura ya quinientos años: el edificio no tiene nada que ver con los Farnese. Fue construido en 1523 para un prelado bretón, Thomas Le Roy, llegado a Roma en el séquito del rey de Francia. Por sus servicios a la corte papal, Le Roy obtuvo el derecho de añadir a su escudo la flor de lis de los reyes de Francia — que, sin embargo, en Roma es también el símbolo heráldico de la familia Farnese. Quien miraba la fachada, al ver esas flores de lis, dio por hecho que se trataba de una residencia de la familia Farnese: de ahí el nombre "Piccola Farnesina", que se mantuvo incluso después de aclararse el malentendido.<br><br>
+El palacete también pagó caro el precio de la nueva capital: fue parcialmente demolido entre 1898 y 1905 precisamente por las obras del rettifilo, y reconstruido. Hoy alberga el Museo Barracco, la colección de escultura antigua — egipcia, asiria, griega, etrusca — donada a la ciudad en 1902 por el barón calabrés Giovanni Barracco, que pasó una vida entera como parlamentario recogiendo piezas del mercado de antigüedades y de las excavaciones de la Roma umbertina. Curiosamente, también la colección tuvo su propio vaivén urbanístico: su primera sede, un templete neoclásico construido expresamente en Corso Vittorio, fue demolida en 1938 por nuevas obras viarias, y las piezas pasaron una década en los almacenes de los Musei Capitolini antes de encontrar finalmente su hogar aquí, en la Piccola Farnesina, en 1948.<br><br>
+Pero eso, si os interesa, es una visita aparte, de pago: aquí fuera la historia que contar ya está completa, y es la de una Roma que en el siglo XIX — y luego de nuevo en el XX — no dudaba en desmontar pieza a pieza un palacio para abrir paso a una calle recta, para luego emocionarse retrospectivamente por lo que había perdido.<br><br>
+Sigamos hacia Largo Argentina.`,
+        deepen: [
+          { type: "link", title: "Museo Barracco — Wikipedia", url: "https://es.wikipedia.org/wiki/Museo_Barracco" },
+        ]
+      },
+      fr: {
+        name: "Corso Vittorio Emanuele II — Piccola Farnesina",
+        desc: "Le rettifilo et un malentendu vieux de 500 ans",
+        audio: "audio/en/tappa5.mp3",
+        photos: [
+          { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Corso_Vittorio_Emanuele_II_-_Museo_Barracco_-_panoramio_(1).jpg?width=900",
+            caption: "The Piccola Farnesina on Corso Vittorio Emanuele II", credit: "Wikimedia Commons" },
+        ],
+        fullText: `Nous sommes sur Corso Vittorio Emanuele II, le fameux "rettifilo" : une rue droite comme une règle, tracée à travers le tissu médiéval et Renaissance de Rome entre 1883 et la fin du XIXe siècle pour relier le centre historique à Castel Sant'Angelo et à Prati, le nouveau quartier bourgeois qui naissait de l'autre côté du fleuve. Avant cette rue, il y avait ici un dédale de ruelles étroites typique de la Rome préunitaire : le rettifilo en effaça une bonne partie, et les palais qui se retrouvèrent à cheval entre l'ancien tracé et le nouveau furent simplement tranchés et reconstruits avec une nouvelle façade côté rue — une intervention chirurgicale à l'échelle urbaine, exactement le même principe que le Corso Vittorio à Trastevere que nous avons quitté au début du parcours, appliqué ici sur la rive opposée du fleuve.<br><br>
+Le plan d'urbanisme de 1883 imaginait ces grandes artères comme le symbole de la modernité bourgeoise de la nouvelle capitale : droites, larges, praticables par les nouveaux tramways, bordées d'élégants immeubles au crépi couleur ocre qui deviendra la signature stylistique de toute l'architecture umbertine. Le prix à payer, cependant, fut la disparition de quartiers entiers d'histoire modeste — ateliers, cours, petites églises — que personne ne prit la peine de documenter avant de les démolir.<br><br>
+L'un des meilleurs exemples se trouve juste devant nous : cet élégant petit palais Renaissance que tout le monde appelle la "Piccola Farnesina". Et voici un malentendu qui dure depuis cinq cents ans : le bâtiment n'a rien à voir avec les Farnèse. Il fut construit en 1523 pour un prélat breton, Thomas Le Roy, venu à Rome dans la suite du roi de France. Pour ses services à la cour pontificale, Le Roy obtint le droit d'ajouter à ses armoiries la fleur de lys des rois de France — qui, à Rome, est aussi le symbole héraldique de la famille Farnèse. Quiconque regardait la façade, en voyant ces fleurs de lys, supposait qu'il s'agissait d'une résidence de la famille Farnèse : d'où le nom "Piccola Farnesina", resté même après que le malentendu eut été éclairci.<br><br>
+Le petit palais paya lui aussi cher le prix de la nouvelle capitale : il fut partiellement démoli entre 1898 et 1905, précisément pour les travaux du rettifilo, puis reconstruit. Il abrite aujourd'hui le Museo Barracco, la collection de sculpture antique — égyptienne, assyrienne, grecque, étrusque — offerte à la ville en 1902 par le baron calabrais Giovanni Barracco, qui passa toute sa vie de parlementaire à rassembler des pièces sur le marché des antiquaires et lors des fouilles de la Rome umbertine. Curieusement, la collection connut elle aussi sa propre mésaventure urbanistique : son premier siège, un petit temple néoclassique construit exprès sur le Corso Vittorio, fut démoli en 1938 pour de nouveaux travaux routiers, et les œuvres passèrent une décennie dans les réserves des Musei Capitolini avant de trouver enfin refuge ici, dans la Piccola Farnesina, en 1948.<br><br>
+Mais cela, si cela vous intéresse, est une visite à part, payante : ici dehors, l'histoire à raconter est déjà complète, et c'est celle d'une Rome qui, au XIXe siècle — puis de nouveau au XXe — n'hésitait pas à démonter pièce par pièce un palais pour faire passer une rue bien droite, quitte à s'émouvoir rétrospectivement de ce qu'elle avait perdu.<br><br>
+Continuons vers Largo Argentina.`,
+        deepen: [
+          { type: "link", title: "Musée Barracco — Wikipedia", url: "https://fr.wikipedia.org/wiki/Musée_Barracco" },
+        ]
+      },
+      de: {
+        name: "Corso Vittorio Emanuele II — Piccola Farnesina",
+        desc: "Der Rettifilo und ein 500 Jahre altes Missverständnis",
+        audio: "audio/en/tappa5.mp3",
+        photos: [
+          { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Corso_Vittorio_Emanuele_II_-_Museo_Barracco_-_panoramio_(1).jpg?width=900",
+            caption: "The Piccola Farnesina on Corso Vittorio Emanuele II", credit: "Wikimedia Commons" },
+        ],
+        fullText: `Wir befinden uns auf dem Corso Vittorio Emanuele II, dem sogenannten "Rettifilo": einer schnurgeraden Straße, die zwischen 1883 und dem Ende des 19. Jahrhunderts durch das mittelalterliche und Renaissance-Gefüge Roms geschlagen wurde, um die Altstadt mit Castel Sant'Angelo und mit Prati, dem neuen bürgerlichen Viertel jenseits des Flusses, zu verbinden. Vor dieser Straße gab es hier ein Gewirr enger Gassen, typisch für das vorunitarische Rom: Der Rettifilo löschte einen großen Teil davon aus, und die Paläste, die sich zwischen altem und neuem Verlauf wiederfanden, wurden einfach durchtrennt und mit einer neuen Fassade zur Straße hin wiederaufgebaut — ein chirurgischer Eingriff im städtischen Maßstab, genau dasselbe Prinzip wie beim Corso Vittorio in Trastevere, den wir zu Beginn des Spaziergangs verlassen haben, hier auf dem gegenüberliegenden Flussufer angewandt.<br><br>
+Der Bebauungsplan von 1883 stellte sich diese großen Achsen als Symbol der bürgerlichen Modernität der neuen Hauptstadt vor: gerade, breit, befahrbar für die neuen Straßenbahnen, gesäumt von eleganten Gebäuden mit dem ockerfarbenen Putz, der zum stilistischen Markenzeichen der gesamten umbertinischen Architektur werden sollte. Der Preis dafür war jedoch das Verschwinden ganzer Viertel kleinteiliger Geschichte — Werkstätten, Innenhöfe, kleinere Kirchen —, die niemand für nötig hielt zu dokumentieren, bevor sie abgerissen wurden.<br><br>
+Eines der besten Beispiele haben wir direkt vor uns: dieses elegante kleine Renaissance-Palais, das alle die "Piccola Farnesina" nennen. Und hier liegt ein Missverständnis vor, das seit fünfhundert Jahren andauert: Das Gebäude hat nichts mit den Farnese zu tun. Es wurde 1523 für einen bretonischen Prälaten erbaut, Thomas Le Roy, der im Gefolge des französischen Königs nach Rom gekommen war. Für seine Dienste am päpstlichen Hof erhielt Le Roy das Recht, seinem Wappen die Lilie der französischen Könige hinzuzufügen — die in Rom jedoch auch das heraldische Symbol der Familie Farnese ist. Wer die Fassade betrachtete und diese Lilien sah, nahm einfach an, es handle sich um einen Familiensitz der Farnese: daher der Name "Piccola Farnesina", der blieb, selbst nachdem das Missverständnis aufgeklärt worden war.<br><br>
+Auch das kleine Palais zahlte seinen Preis für die neue Hauptstadt: Es wurde zwischen 1898 und 1905 wegen der Arbeiten am Rettifilo teilweise abgerissen und wiederaufgebaut. Heute beherbergt es das Museo Barracco, die Sammlung antiker Skulpturen — ägyptisch, assyrisch, griechisch, etruskisch —, die der Stadt 1902 vom kalabrischen Baron Giovanni Barracco geschenkt wurde, der ein ganzes Parlamentarierleben damit verbrachte, Stücke vom Antiquitätenmarkt und aus den Ausgrabungen des umbertinischen Rom zusammenzutragen. Merkwürdigerweise hatte auch die Sammlung ihre eigene städtebauliche Odyssee: Ihr erster Sitz, ein eigens am Corso Vittorio errichteter neoklassizistischer Tempel, wurde 1938 für weitere Straßenarbeiten abgerissen, und die Werke verbrachten ein Jahrzehnt in den Depots der Musei Capitolini, bevor sie 1948 endlich hier, in der Piccola Farnesina, ein Zuhause fanden.<br><br>
+Doch das ist, falls es Sie interessiert, ein gesonderter, kostenpflichtiger Besuch: Hier draußen ist die zu erzählende Geschichte bereits vollständig, und es ist die Geschichte eines Rom, das im 19. Jahrhundert — und dann erneut im 20. — nicht zögerte, einen Palast Stück für Stück abzutragen, um eine gerade Straße durchzuziehen, um sich dann rückblickend gerührt darüber zu zeigen, was verloren gegangen war.<br><br>
+Weiter geht es zur Largo Argentina.`,
+        deepen: [
+          { type: "link", title: "Museo Barracco — Wikipedia", url: "https://de.wikipedia.org/wiki/Museo_Barracco" },
+        ]
+      },
+      pt: {
+        name: "Corso Vittorio Emanuele II — Piccola Farnesina",
+        desc: "O rettifilo e um equívoco de 500 anos",
+        audio: "audio/en/tappa5.mp3",
+        photos: [
+          { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Corso_Vittorio_Emanuele_II_-_Museo_Barracco_-_panoramio_(1).jpg?width=900",
+            caption: "The Piccola Farnesina on Corso Vittorio Emanuele II", credit: "Wikimedia Commons" },
+        ],
+        fullText: `Estamos no Corso Vittorio Emanuele II, o chamado "rettifilo": uma rua reta como uma régua, cortada através do tecido medieval e renascentista de Roma entre 1883 e o final do século XIX para ligar o centro histórico a Castel Sant'Angelo e a Prati, o novo bairro burguês que nascia do outro lado do rio. Antes desta rua, havia aqui um labirinto de vielas estreitas típico da Roma pré-unitária: o rettifilo apagou boa parte dele, e os palácios que ficaram a meio caminho entre o traçado antigo e o novo foram simplesmente cortados e reconstruídos com uma fachada nova voltada para a rua — uma intervenção cirúrgica à escala urbana, exatamente o mesmo princípio do Corso Vittorio em Trastevere que deixámos no início do passeio, aplicado aqui na margem oposta do rio.<br><br>
+O plano regulador de 1883 imaginava estas grandes artérias como o símbolo da modernidade burguesa da nova capital: retas, largas, transitáveis pelos novos elétricos, ladeadas por edifícios elegantes com o reboco cor de ocre que se tornaria a marca estilística de toda a arquitetura umbertina. O preço, porém, foi o desaparecimento de quarteirões inteiros de história miúda — oficinas, pátios, igrejas menores — que ninguém se preocupou em documentar antes de os demolir.<br><br>
+Um dos melhores exemplos temo-lo mesmo à nossa frente: este elegante palacete renascentista que toda a gente chama "Piccola Farnesina". E aqui há um equívoco que dura há quinhentos anos: o edifício não tem nada a ver com os Farnese. Foi construído em 1523 para um prelado bretão, Thomas Le Roy, chegado a Roma no séquito do rei de França. Pelos seus serviços à corte papal, Le Roy obteve o direito de acrescentar ao seu brasão a flor-de-lis dos reis de França — que, porém, em Roma, é também o símbolo heráldico da família Farnese. Quem olhava para a fachada, ao ver aquelas flores-de-lis, dava por garantido que se tratava de uma residência da família Farnese: daí o nome "Piccola Farnesina", que se manteve mesmo depois de o equívoco ter sido esclarecido.<br><br>
+O palacete também pagou caro o preço da nova capital: foi parcialmente demolido entre 1898 e 1905 precisamente para as obras do rettifilo, e reconstruído. Hoje alberga o Museo Barracco, a coleção de escultura antiga — egípcia, assíria, grega, etrusca — doada à cidade em 1902 pelo barão calabrês Giovanni Barracco, que passou uma vida inteira como parlamentar a reunir peças do mercado de antiguidades e das escavações da Roma umbertina. Curiosamente, também a coleção teve a sua própria odisseia urbanística: a sua primeira sede, um templete neoclássico construído propositadamente no Corso Vittorio, foi demolida em 1938 para novas obras rodoviárias, e as obras passaram uma década nos armazéns dos Musei Capitolini antes de encontrarem finalmente casa aqui, na Piccola Farnesina, em 1948.<br><br>
+Mas isso, se vos interessar, é uma visita à parte, paga: aqui fora a história a contar já está completa, e é a de uma Roma que no século XIX — e depois novamente no século XX — não hesitava em desmontar peça por peça um palácio para abrir caminho a uma rua direita, para depois se comover retrospetivamente com o que tinha perdido.<br><br>
+Sigamos em direção a Largo Argentina.`,
+        deepen: [
+          { type: "link", title: "Museu Barracco — Wikipedia", url: "https://pt.wikipedia.org/wiki/Museu_Barracco" },
+        ]
+      },
+      zh: {
+        name: "Corso Vittorio Emanuele II — Piccola Farnesina",
+        desc: "直线大道与持续五百年的误会",
+        audio: "audio/en/tappa5.mp3",
+        photos: [
+          { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Corso_Vittorio_Emanuele_II_-_Museo_Barracco_-_panoramio_(1).jpg?width=900",
+            caption: "The Piccola Farnesina on Corso Vittorio Emanuele II", credit: "Wikimedia Commons" },
+        ],
+        fullText: `我们现在身处Corso Vittorio Emanuele II，即所谓的"rettifilo"（直线大道）：这是一条笔直如尺的街道，于1883年至19世纪末之间，穿过罗马中世纪和文艺复兴时期的肌理开辟而成，用以连接历史中心与圣天使堡，以及河对岸正在兴起的新兴中产阶级街区Prati。在这条街道开辟之前，这里曾是前统一时期罗马典型的狭窄巷道迷宫：rettifilo抹去了其中相当大的一部分，那些正好横跨新旧路线的宫殿，则被简单地拦腰截断，并在临街一侧重建了新的立面——这是一场城市尺度上的外科手术，与我们在行程开始时经过的、特拉斯提弗列那条Corso Vittorio所遵循的原理如出一辙，只不过这次应用在河对岸。<br><br>
+1883年的城市规划将这些宏伟的大道设想为新首都中产阶级现代性的象征：笔直、宽阔，可供新式有轨电车通行，两旁排列着饰以赭黄色灰泥的优雅建筑，这种色调后来成为整个翁贝托时期建筑风格的标志。然而，代价却是无数细微历史街区的消失——作坊、庭院、小教堂——在被拆除之前，没有人费心去记录它们。<br><br>
+我们眼前就是最好的例子之一：这座人人称之为"Piccola Farnesina"的优雅文艺复兴小宫殿。而这里藏着一个持续了五百年的误会：这座建筑与法尔内塞家族毫无关系。它建于1523年，为一位布列塔尼籍的教士Thomas Le Roy而建，他随法国国王的随行队伍来到罗马。因在教廷效力有功，Le Roy获准在自己的纹章上加入法国国王的百合花徽——然而在罗马，这一图案恰好也是法尔内塞家族的纹章标志。人们看到立面上的这些百合花徽，便想当然地以为这是法尔内塞家族的宅邸：由此得名"Piccola Farnesina"，即便误会后来被澄清，这个名字依然沿用至今。<br><br>
+这座小宫殿同样为新首都付出了代价：因rettifilo的工程，它在1898年至1905年间被部分拆除并重建。如今，它是Museo Barracco博物馆的所在地，收藏着古代雕塑——埃及、亚述、希腊、伊特鲁里亚——这批藏品于1902年由卡拉布里亚男爵Giovanni Barracco捐赠给罗马市，他一生作为议员，从古董市场和翁贝托时代罗马的考古发掘中收集了大量藏品。有趣的是，这批藏品本身也经历了一段城市规划的波折：它最初的展馆是专门在Corso Vittorio建造的新古典主义小庙，1938年因新的道路工程被拆除，这些藏品在Musei Capitolini博物馆的库房里存放了十年，才于1948年最终在这里，在Piccola Farnesina，找到了归宿。<br><br>
+不过，如果你们感兴趣，那是另一次需要购票的参观了：在这外面要讲的故事已经完整——那就是一座在19世纪、乃至后来的20世纪都毫不犹豫地将一座宫殿一块块拆解，只为开辟一条笔直道路的罗马，事后却又回过头来，为自己失去的东西而感伤不已。<br><br>
+让我们继续前往Largo Argentina。`,
+        deepen: [
+          { type: "link", title: "巴拉科博物馆 — Wikipedia", url: "https://zh.wikipedia.org/wiki/巴拉科博物馆" },
+        ]
+      },
     }
   },
   {
@@ -472,6 +1142,86 @@ Per quasi un secolo, però, quest'area è stata famosa soprattutto per un'altra 
 For nearly a century, though, this area has been famous chiefly for another reason: the historic colony of cats that lived here, perched over archaeological remains that for years could only be seen from above. Only since 2023, thanks to restoration funded by the Bulgari fashion house, has the sacred area finally been open to walk through up close, with walkways guiding visitors among the four republican temples and the base where Caesar fell. The cats, don't worry, are still there.`,
         deepen: [
           { type: "link", title: "Largo di Torre Argentina — Wikipedia", url: "https://en.wikipedia.org/wiki/Largo_di_Torre_Argentina" },
+        ]
+      },
+      es: {
+        name: "Largo di Torre Argentina",
+        desc: "Donde murió César",
+        audio: "audio/en/int3.mp3",
+        photos: [
+          { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Largo_di_Torre_Argentina_2.jpg?width=900",
+            caption: "The sacred area of Largo Argentina", credit: "Wikimedia Commons" },
+          { time: 22, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Rome-Largo-di-Torre-Argentina-Cat-Sanctuary-shelter-homeless-cats-bySonse.jpg?width=900",
+            caption: "The historic cat sanctuary", credit: "Wikimedia Commons" },
+        ],
+        fullText: `Bajo el nivel de la calle, entre las ruinas que veis asomándoos a las barandillas, se encuentra uno de los lugares más cargados de historia de toda Roma: es aquí, en la Curia de Pompeyo — y no en el Senado, como a menudo se cree — donde el 15 de marzo del 44 a.C. fue asesinado Julio César, apuñalado por los conjurados encabezados por Bruto y Casio.<br><br>
+Sin embargo, durante casi un siglo esta zona ha sido famosa sobre todo por otro motivo: la histórica colonia de gatos que vivía aquí, asomada a unos restos arqueológicos que durante años solo podían verse desde arriba. Solo desde 2023, gracias a una restauración financiada por la casa Bulgari, el área sacra es por fin visitable de cerca, con pasarelas que guían entre los cuatro templos republicanos y la base donde cayó César. Los gatos, tranquilos, siguen ahí.`,
+        deepen: [
+          { type: "link", title: "Área sagrada de Largo Argentina — Wikipedia", url: "https://es.wikipedia.org/wiki/Área_sagrada_de_Largo_Argentina" },
+        ]
+      },
+      fr: {
+        name: "Largo di Torre Argentina",
+        desc: "Où mourut César",
+        audio: "audio/en/int3.mp3",
+        photos: [
+          { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Largo_di_Torre_Argentina_2.jpg?width=900",
+            caption: "The sacred area of Largo Argentina", credit: "Wikimedia Commons" },
+          { time: 22, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Rome-Largo-di-Torre-Argentina-Cat-Sanctuary-shelter-homeless-cats-bySonse.jpg?width=900",
+            caption: "The historic cat sanctuary", credit: "Wikimedia Commons" },
+        ],
+        fullText: `En contrebas de la rue, parmi les ruines que vous voyez en vous penchant par-dessus les balustrades, se trouve l'un des lieux les plus chargés d'histoire de toute Rome : c'est ici, à la Curie de Pompée — et non au Sénat, comme on le croit souvent — que Jules César fut assassiné le 15 mars 44 av. J.-C., poignardé par les conjurés menés par Brutus et Cassius.<br><br>
+Pendant près d'un siècle, pourtant, cette zone fut surtout célèbre pour une tout autre raison : la fameuse colonie de chats qui y vivait, dominant des vestiges archéologiques que l'on ne pouvait voir, pendant des années, que d'en haut. Ce n'est que depuis 2023, grâce à une restauration financée par la maison Bulgari, que l'aire sacrée est enfin visitable de près, avec des passerelles guidant entre les quatre temples républicains et le socle où César est tombé. Les chats, rassurez-vous, sont toujours là.`,
+        deepen: [
+          { type: "link", title: "Largo di Torre Argentina — Wikipedia", url: "https://fr.wikipedia.org/wiki/Largo_di_Torre_Argentina" },
+        ]
+      },
+      de: {
+        name: "Largo di Torre Argentina",
+        desc: "Wo Caesar starb",
+        audio: "audio/en/int3.mp3",
+        photos: [
+          { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Largo_di_Torre_Argentina_2.jpg?width=900",
+            caption: "The sacred area of Largo Argentina", credit: "Wikimedia Commons" },
+          { time: 22, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Rome-Largo-di-Torre-Argentina-Cat-Sanctuary-shelter-homeless-cats-bySonse.jpg?width=900",
+            caption: "The historic cat sanctuary", credit: "Wikimedia Commons" },
+        ],
+        fullText: `Unterhalb des Straßenniveaus, zwischen den Ruinen, die Sie sehen, wenn Sie sich über die Geländer beugen, liegt einer der geschichtsträchtigsten Orte ganz Roms: Genau hier, in der Curia des Pompeius — und nicht im Senat, wie oft angenommen wird —, wurde Julius Caesar am 15. März 44 v. Chr. ermordet, erstochen von den Verschwörern unter Führung von Brutus und Cassius.<br><br>
+Fast ein Jahrhundert lang jedoch war dieses Gebiet vor allem aus einem anderen Grund berühmt: wegen der historischen Katzenkolonie, die hier lebte, hoch über archäologischen Überresten, die jahrelang nur von oben zu sehen waren. Erst seit 2023, dank einer von der Modehaus Bulgari finanzierten Restaurierung, ist das heilige Areal endlich aus der Nähe begehbar, mit Stegen, die zwischen den vier republikanischen Tempeln und dem Sockel hindurchführen, an dem Caesar fiel. Die Katzen, keine Sorge, sind immer noch da.`,
+        deepen: [
+          { type: "link", title: "Largo di Torre Argentina — Wikipedia", url: "https://de.wikipedia.org/wiki/Largo_di_Torre_Argentina" },
+        ]
+      },
+      pt: {
+        name: "Largo di Torre Argentina",
+        desc: "Onde César morreu",
+        audio: "audio/en/int3.mp3",
+        photos: [
+          { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Largo_di_Torre_Argentina_2.jpg?width=900",
+            caption: "The sacred area of Largo Argentina", credit: "Wikimedia Commons" },
+          { time: 22, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Rome-Largo-di-Torre-Argentina-Cat-Sanctuary-shelter-homeless-cats-bySonse.jpg?width=900",
+            caption: "The historic cat sanctuary", credit: "Wikimedia Commons" },
+        ],
+        fullText: `Abaixo do nível da rua, entre as ruínas que vedes debruçando-vos sobre os parapeitos, encontra-se um dos lugares mais carregados de história de toda Roma: é aqui, na Cúria de Pompeu — e não no Senado, como muitas vezes se crê — que a 15 de março de 44 a.C. foi assassinado Júlio César, esfaqueado pelos conjurados liderados por Bruto e Cássio.<br><br>
+Durante quase um século, porém, esta zona ficou famosa sobretudo por outra razão: a histórica colónia de gatos que ali vivia, debruçada sobre vestígios arqueológicos que durante anos só podiam ver-se do alto. Só desde 2023, graças a um restauro financiado pela casa Bulgari, a área sagrada é finalmente visitável de perto, com passadiços que guiam entre os quatro templos republicanos e a base onde César caiu. Os gatos, tranquilos, continuam lá.`,
+        deepen: [
+          { type: "link", title: "Área sagrada de Largo Argentina — Wikipedia", url: "https://pt.wikipedia.org/wiki/Área_sagrada_de_Largo_Argentina" },
+        ]
+      },
+      zh: {
+        name: "Largo di Torre Argentina",
+        desc: "凯撒殒命之地",
+        audio: "audio/en/int3.mp3",
+        photos: [
+          { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Largo_di_Torre_Argentina_2.jpg?width=900",
+            caption: "The sacred area of Largo Argentina", credit: "Wikimedia Commons" },
+          { time: 22, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Rome-Largo-di-Torre-Argentina-Cat-Sanctuary-shelter-homeless-cats-bySonse.jpg?width=900",
+            caption: "The historic cat sanctuary", credit: "Wikimedia Commons" },
+        ],
+        fullText: `在街道下方，透过你们俯身栏杆所看到的这些废墟中，坐落着整个罗马历史最厚重的地点之一：正是在这里，庞培大会堂（Curia di Pompeo）——而非人们常以为的元老院——公元前44年3月15日，尤利乌斯·凯撒被布鲁图斯和卡西乌斯率领的密谋者刺杀身亡。<br><br>
+然而近一个世纪以来，这片区域主要因另一个原因而闻名：这里生活着一个历史悠久的猫群落，俯瞰着多年来只能从上方俯视的考古遗迹。直到2023年，得益于Bulgari时尚品牌资助的一次修复，这片圣地才终于对外开放，游客可通过步道近距离走近四座共和时期神庙以及凯撒倒下的基座。别担心，那些猫依然安然在那里。`,
+        deepen: [
+          { type: "link", title: "阿根廷广场圣区 — Wikipedia", url: "https://zh.wikipedia.org/wiki/阿根廷广场圣区" },
         ]
       },
     }
@@ -518,6 +1268,106 @@ This is also a place carrying the weight of a more recent and much deeper wound:
 To get a sense of what the old Ghetto looked like before the nineteenth-century demolitions, just look today at the row of still-medieval buildings facing the north side of Via del Portico d'Ottavia, right next to the Roman ruins: it's the only surviving scrap of that vanished world, as dense with history as it is with suffering.`,
         deepen: [
           { type: "link", title: "Roman Ghetto — Wikipedia", url: "https://en.wikipedia.org/wiki/Roman_Ghetto" },
+        ]
+      },
+      es: {
+        name: "Il Ghetto e il Tempio Maggiore",
+        desc: "Demolición, renacimiento, memoria",
+        audio: "audio/en/tappa6.mp3",
+        photos: [
+          { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Portico_di_Ottavia_Front.jpg?width=900",
+            caption: "Portico d'Ottavia", credit: "Wikimedia Commons" },
+          { time: 98, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Tempio_Maggiore_di_Roma.jpg?width=900",
+            caption: "The Tempio Maggiore (Great Synagogue)", credit: "Wikimedia Commons" },
+        ],
+        fullText: `Hemos entrado en la zona que durante más de tres siglos fue el Ghetto judío de Roma, uno de los barrios más antiguos y, a la vez, más transformados por el nacimiento de la capital. La comunidad judía romana es, se calcula, la más antigua de Europa con presencia ininterrumpida: los primeros testimonios se remontan a más de dos mil años atrás. Pero en 1555 el papa Paulo IV Carafa impuso el confinamiento de los judíos romanos en una zona reducida y amurallada, justo aquí, entre Via del Portico d'Ottavia y el Tíber: nacía el Ghetto.<br><br>
+Durante más de tres siglos las condiciones fueron durísimas: hacinamiento, edificios que crecían en vertical porque no se podía expandir en horizontal, inundaciones frecuentes porque la zona era una de las más bajas y cercanas al río. Justo junto al Portico d'Ottavia, columnata de época augusta, durante siglos funcionó un mercado de pescado — una de las pocas actividades comerciales permitidas a los judíos del Ghetto — y de esa cercanía nace todavía hoy una especialidad de la cocina romana, el caldo de pescado, considerado hoy un manjar pero nacido simplemente de la necesidad de no desperdiciar nada de la pesca.<br><br>
+Con la Breccia di Porta Pia y Roma convertida en capital, el Ghetto perdió su razón de ser jurídica — pero sus condiciones higiénicas seguían siendo un problema serio, agravado por las obras de los muraglioni que atravesaban precisamente esa zona. En 1888 el nuevo plan urbanístico decidió una demolición casi total: desaparecieron callejuelas históricas como la vieja Via della Pescheria y la característica piazza Giudea, uno de los principales accesos al viejo Ghetto. En su lugar surgieron cuatro manzanas ordenadas, más anchas, más higiénicas — pero también mucho menos características, según el estilo "umbertino" que se extendía por toda la nueva capital.<br><br>
+Sobre parte de esa zona se levantó, entre 1901 y 1904, el Tempio Maggiore que tenéis delante: la gran sinagoga de Roma, una de las más imponentes de Europa, construida expresamente para ser visible desde cualquier punto de la ciudad — su cúpula cuadrada, única en el horizonte romano, era una señal deliberada, tras siglos de reclusión forzada tras un muro, de plena ciudadanía y plena visibilidad. Los arquitectos eligieron un estilo ecléctico, con referencias babilónicas y asirias, precisamente para marcar una diferencia clara con el estilo de las iglesias que la rodean.<br><br>
+Es un lugar que carga también con el peso de una herida más reciente y profunda: el 16 de octubre de 1943, durante la ocupación nazi de Roma, más de mil habitantes del barrio — hombres, mujeres, más de doscientos niños — fueron detenidos en estas mismas calles y deportados a los campos de exterminio. Una placa, no lejos de aquí, recuerda todavía hoy sus nombres.<br><br>
+Para haceros una idea de cómo era el viejo Ghetto antes de las demoliciones decimonónicas, basta observar hoy la fila de edificios todavía medievales que da al lado norte de Via del Portico d'Ottavia, justo junto a las ruinas romanas: es el único retazo que queda de aquel mundo desaparecido, tan cargado de historia como de sufrimiento.`,
+        deepen: [
+          { type: "link", title: "Gueto de Roma — Wikipedia", url: "https://es.wikipedia.org/wiki/Gueto_de_Roma" },
+        ]
+      },
+      fr: {
+        name: "Il Ghetto e il Tempio Maggiore",
+        desc: "Démolition, renaissance, mémoire",
+        audio: "audio/en/tappa6.mp3",
+        photos: [
+          { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Portico_di_Ottavia_Front.jpg?width=900",
+            caption: "Portico d'Ottavia", credit: "Wikimedia Commons" },
+          { time: 98, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Tempio_Maggiore_di_Roma.jpg?width=900",
+            caption: "The Tempio Maggiore (Great Synagogue)", credit: "Wikimedia Commons" },
+        ],
+        fullText: `Nous sommes entrés dans la zone qui, pendant plus de trois siècles, fut le Ghetto juif de Rome, l'un des quartiers à la fois les plus anciens et les plus transformés par la naissance de la capitale. La communauté juive romaine est, estime-t-on, la plus ancienne d'Europe en présence ininterrompue : les premiers témoignages remontent à plus de deux mille ans. Mais en 1555, le pape Paul IV Carafa imposa le confinement des juifs romains dans une zone restreinte et fermée par des murs, juste ici, entre Via del Portico d'Ottavia et le Tibre : le Ghetto était né.<br><br>
+Pendant plus de trois siècles, les conditions furent extrêmement dures : surpeuplement, bâtiments contraints de grandir en hauteur faute de pouvoir s'étendre horizontalement, inondations fréquentes car la zone était parmi les plus basses et les plus proches du fleuve. Juste à côté du Portico d'Ottavia, colonnade d'époque augustéenne, fonctionna pendant des siècles un marché aux poissons — l'une des rares activités commerciales autorisées aux juifs du Ghetto — et de cette proximité naît encore aujourd'hui une spécialité de la cuisine romaine, le bouillon de poisson, considéré aujourd'hui comme un mets raffiné mais né simplement de la nécessité de ne rien gaspiller de la pêche.<br><br>
+Avec la Brèche de Porta Pia et Rome devenue capitale, le Ghetto perdit sa raison d'être juridique — mais ses conditions sanitaires restaient un problème sérieux, aggravé par les travaux des muraglioni qui traversaient précisément cette zone. En 1888, le nouveau plan d'urbanisme décida d'une démolition quasi totale : disparurent des ruelles historiques comme l'ancienne Via della Pescheria et la caractéristique piazza Giudea, l'un des principaux accès à l'ancien Ghetto. À leur place naquirent quatre îlots ordonnés, plus larges, plus salubres — mais aussi beaucoup moins typiques, selon le style "umbertin" qui se répandait dans toute la nouvelle capitale.<br><br>
+Sur une partie de cette zone s'éleva, entre 1901 et 1904, le Tempio Maggiore que vous avez devant vous : la grande synagogue de Rome, l'une des plus imposantes d'Europe, construite exprès pour être visible depuis tous les points de la ville — sa coupole carrée, unique dans le panorama romain, était un signal voulu, après des siècles de réclusion forcée derrière un mur, de pleine citoyenneté et de pleine visibilité. Les architectes choisirent un style éclectique, aux résonances babyloniennes et assyriennes, précisément pour marquer une différence nette avec le style des églises environnantes.<br><br>
+C'est un lieu qui porte aussi le poids d'une blessure plus récente et bien plus profonde : le 16 octobre 1943, durant l'occupation nazie de Rome, plus de mille habitants du quartier — hommes, femmes, plus de deux cents enfants — furent raflés dans ces rues mêmes et déportés vers les camps d'extermination. Une plaque, non loin d'ici, en rappelle encore aujourd'hui les noms.<br><br>
+Pour vous faire une idée de l'aspect de l'ancien Ghetto avant les démolitions du XIXe siècle, il suffit d'observer aujourd'hui la rangée de bâtiments encore médiévaux qui donne sur le côté nord de Via del Portico d'Ottavia, juste à côté des ruines romaines : c'est le seul vestige subsistant de ce monde disparu, aussi dense d'histoire que de souffrance.`,
+        deepen: [
+          { type: "link", title: "Ghetto de Rome — Wikipedia", url: "https://fr.wikipedia.org/wiki/Ghetto_de_Rome" },
+        ]
+      },
+      de: {
+        name: "Il Ghetto e il Tempio Maggiore",
+        desc: "Abriss, Wiedergeburt, Erinnerung",
+        audio: "audio/en/tappa6.mp3",
+        photos: [
+          { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Portico_di_Ottavia_Front.jpg?width=900",
+            caption: "Portico d'Ottavia", credit: "Wikimedia Commons" },
+          { time: 98, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Tempio_Maggiore_di_Roma.jpg?width=900",
+            caption: "The Tempio Maggiore (Great Synagogue)", credit: "Wikimedia Commons" },
+        ],
+        fullText: `Wir sind in das Gebiet eingetreten, das über drei Jahrhunderte lang das jüdische Ghetto Roms war, eines der ältesten und zugleich am stärksten durch die Entstehung der Hauptstadt veränderten Viertel. Die römische jüdische Gemeinde gilt als die älteste Europas mit ununterbrochener Präsenz: Die ersten Zeugnisse reichen mehr als zweitausend Jahre zurück. Doch 1555 zwang Papst Paul IV. Carafa die römischen Juden in ein eingegrenztes, ummauertes Gebiet, genau hier zwischen der Via del Portico d'Ottavia und dem Tiber: Das Ghetto war geboren.<br><br>
+Über drei Jahrhunderte lang waren die Bedingungen hart: Überbevölkerung, Gebäude, die zwangsläufig in die Höhe wuchsen, weil eine horizontale Ausdehnung nicht möglich war, häufige Überschwemmungen, da das Gebiet zu den tiefstgelegenen und flussnächsten gehörte. Direkt neben dem Portico d'Ottavia, einer Säulenhalle aus augusteischer Zeit, betrieb man jahrhundertelang einen Fischmarkt — eine der wenigen den jüdischen Ghettobewohnern erlaubten Gewerbetätigkeiten — und aus dieser Nähe entstand eine bis heute bestehende Spezialität der römischen Küche, die Fischbrühe, heute als Delikatesse geschätzt, doch schlicht aus der Notwendigkeit geboren, nichts vom Fang zu verschwenden.<br><br>
+Mit der Bresche von Porta Pia und Rom als neuer Hauptstadt verlor das Ghetto seine rechtliche Existenzgrundlage — doch seine hygienischen Zustände blieben ein ernstes Problem, verschärft durch die Muraglioni-Arbeiten, die genau durch dieses Gebiet verliefen. 1888 entschied der neue Bebauungsplan für einen fast vollständigen Abriss: Historische Gassen wie die alte Via della Pescheria und die charakteristische Piazza Giudea, einer der Hauptzugänge zum alten Ghetto, verschwanden. An ihrer Stelle entstanden vier geordnete, breitere, hygienischere Wohnblöcke — aber auch weit weniger charaktervolle, im "umbertinischen" Stil, der sich in der gesamten neuen Hauptstadt ausbreitete.<br><br>
+Auf einem Teil dieses Gebiets erhob sich zwischen 1901 und 1904 der Tempio Maggiore, den Sie vor sich sehen: die große Synagoge Roms, eine der imposantesten Europas, eigens so gebaut, dass sie von jedem Punkt der Stadt aus sichtbar ist — ihre quadratische Kuppel, einzigartig in der römischen Skyline, war ein bewusst gesetztes Zeichen, nach Jahrhunderten erzwungener Abschottung hinter einer Mauer, voller Bürgerschaft und voller Sichtbarkeit. Die Architekten wählten einen eklektischen Stil mit babylonischen und assyrischen Anklängen, gerade um sich deutlich vom Stil der umliegenden Kirchen abzugrenzen.<br><br>
+Es ist ein Ort, der auch die Last einer jüngeren, viel tieferen Wunde trägt: Am 16. Oktober 1943, während der deutschen Besatzung Roms, wurden über tausend Bewohner des Viertels — Männer, Frauen, mehr als zweihundert Kinder — genau in diesen Straßen zusammengetrieben und in die Vernichtungslager deportiert. Eine Gedenktafel, nicht weit von hier, hält bis heute ihre Namen fest.<br><br>
+Um sich vorzustellen, wie das alte Ghetto vor den Abrissen des 19. Jahrhunderts aussah, genügt ein Blick auf die noch mittelalterliche Häuserzeile an der Nordseite der Via del Portico d'Ottavia, direkt neben den römischen Ruinen: Sie ist das einzige erhaltene Fragment jener verschwundenen Welt, ebenso reich an Geschichte wie an Leid.`,
+        deepen: [
+          { type: "link", title: "Römisches Ghetto — Wikipedia", url: "https://de.wikipedia.org/wiki/Römisches_Ghetto" },
+        ]
+      },
+      pt: {
+        name: "Il Ghetto e il Tempio Maggiore",
+        desc: "Demolição, renascimento, memória",
+        audio: "audio/en/tappa6.mp3",
+        photos: [
+          { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Portico_di_Ottavia_Front.jpg?width=900",
+            caption: "Portico d'Ottavia", credit: "Wikimedia Commons" },
+          { time: 98, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Tempio_Maggiore_di_Roma.jpg?width=900",
+            caption: "The Tempio Maggiore (Great Synagogue)", credit: "Wikimedia Commons" },
+        ],
+        fullText: `Entrámos na área que durante mais de três séculos foi o Gueto judaico de Roma, um dos bairros mais antigos e, ao mesmo tempo, mais transformados pelo nascimento da capital. A comunidade judaica romana é, estima-se, a mais antiga da Europa com presença ininterrupta: os primeiros testemunhos remontam a mais de dois mil anos. Mas em 1555 o papa Paulo IV Carafa impôs a reclusão dos judeus romanos numa área restrita e murada, precisamente aqui, entre a Via del Portico d'Ottavia e o Tibre: nascia o Gueto.<br><br>
+Durante mais de três séculos as condições foram durísssimas: superlotação, edifícios que cresciam na vertical porque não podiam expandir-se na horizontal, inundações frequentes porque a zona era das mais baixas e próximas do rio. Mesmo ao lado do Portico d'Ottavia, colunata de época augustana, funcionou durante séculos um mercado de peixe — uma das poucas atividades comerciais permitidas aos judeus do Gueto — e dessa proximidade nasce ainda hoje uma especialidade da cozinha romana, o caldo de peixe, hoje considerado uma iguaria mas nascido simplesmente da necessidade de não desperdiçar nada do pescado.<br><br>
+Com a Breccia di Porta Pia e Roma tornada capital, o Gueto perdeu a sua razão de ser jurídica — mas as suas condições higiénicas continuavam a ser um problema sério, agravado pelas obras dos muraglioni que cortavam precisamente aquela zona. Em 1888 o novo plano urbanístico decidiu por uma demolição quase total: desapareceram vielas históricas como a antiga Via della Pescheria e a característica piazza Giudea, um dos principais acessos ao antigo Gueto. No seu lugar nasceram quatro quarteirões ordenados, mais largos, mais higiénicos — mas também muito menos característicos, segundo o estilo "umbertino" que se espalhava por toda a nova capital.<br><br>
+Numa parte dessa área ergueu-se, entre 1901 e 1904, o Tempio Maggiore que tendes diante de vós: a grande sinagoga de Roma, uma das mais imponentes da Europa, construída propositadamente para ser visível de qualquer ponto da cidade — a sua cúpula quadrada, única no horizonte romano, era um sinal deliberado, após séculos de reclusão forçada atrás de um muro, de plena cidadania e plena visibilidade. Os arquitetos escolheram um estilo eclético, com referências babilónicas e assírias, precisamente para marcar uma diferença nítida em relação ao estilo das igrejas que a rodeiam.<br><br>
+É um lugar que carrega também o peso de uma ferida mais recente e profunda: a 16 de outubro de 1943, durante a ocupação nazi de Roma, mais de mil habitantes do bairro — homens, mulheres, mais de duzentas crianças — foram capturados precisamente nestas ruas e deportados para os campos de extermínio. Uma lápide, não longe daqui, ainda hoje recorda os seus nomes.<br><br>
+Para ter uma ideia de como era o antigo Gueto antes das demolições oitocentistas, basta observar hoje a fileira de edifícios ainda medievais que dá para o lado norte da Via del Portico d'Ottavia, mesmo ao lado das ruínas romanas: é o único retalho que resta daquele mundo desaparecido, tão denso de história quanto de sofrimento.`,
+        deepen: [
+          { type: "link", title: "Gueto de Roma — Wikipedia", url: "https://pt.wikipedia.org/wiki/Gueto_de_Roma" },
+        ]
+      },
+      zh: {
+        name: "Il Ghetto e il Tempio Maggiore",
+        desc: "拆除、重生与记忆",
+        audio: "audio/en/tappa6.mp3",
+        photos: [
+          { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Portico_di_Ottavia_Front.jpg?width=900",
+            caption: "Portico d'Ottavia", credit: "Wikimedia Commons" },
+          { time: 98, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Tempio_Maggiore_di_Roma.jpg?width=900",
+            caption: "The Tempio Maggiore (Great Synagogue)", credit: "Wikimedia Commons" },
+        ],
+        fullText: `我们已经进入了这片超过三个世纪以来一直是罗马犹太隔都（Ghetto）的区域，这是罗马最古老、同时也因首都诞生而变化最剧烈的街区之一。据估计，罗马犹太社区是欧洲持续存在时间最长、从未中断的社区：最早的历史证据可追溯到两千多年前。但1555年，教皇保罗四世·卡拉法下令将罗马犹太人限制在一片狭小、被城墙围起的区域内，就在这里，位于Via del Portico d'Ottavia和台伯河之间：Ghetto由此诞生。<br><br>
+三个多世纪以来，这里的生活条件极为艰苦：拥挤不堪，由于无法横向扩展，建筑只能向上加建，加之该区域地势低洼、临近河流，频繁遭受水患。就在奥古斯都时代的柱廊Portico d'Ottavia旁边，几个世纪以来一直经营着一个鱼市——这是Ghetto犹太人被允许从事的为数不多的商业活动之一——正是这份紧邻关系，孕育出至今仍是罗马料理特色的一道菜：鱼汤（brodo di pesce），如今被视为一道美味佳肴，但最初诞生的原因，仅仅是为了不浪费任何捕获的鱼获。<br><br>
+随着Porta Pia城门被攻破、罗马成为首都，Ghetto失去了其法律存在的意义——但其卫生条件依然是一个严重问题，而穿过这一区域的muraglioni工程更加剧了这一状况。1888年，新的城市规划决定几乎全面拆除：诸如古老的Via della Pescheria以及颇具特色的piazza Giudea等历史巷道随之消失，后者曾是通往旧Ghetto的主要入口之一。取而代之的是四个整齐、更宽敞、更卫生的街区——但按照当时席卷整个新首都的"翁贝托"风格，这些街区也远远失去了原有的特色。<br><br>
+在这片区域的一部分上，1901年至1904年间建起了你们眼前的Tempio Maggiore（大犹太会堂）：罗马最大的犹太教堂，也是欧洲最宏伟的犹太会堂之一，其建造刻意追求从城市任何角落都能看到——它那在罗马天际线上独一无二的方形圆顶，正是在经历了数个世纪被围墙禁锢的强制隔离之后，一种关于完全公民权和完全可见性的有意宣示。建筑师们选择了一种融合巴比伦与亚述元素的折衷主义风格，正是为了与周围教堂的风格形成鲜明对比。<br><br>
+这也是一个承载着更近、更深创伤的地方：1943年10月16日，在纳粹占领罗马期间，超过一千名街区居民——男人、女人，还有两百多名儿童——正是在这些街道上被围捕，随后被驱逐至灭绝营。不远处的一块纪念牌，至今仍铭刻着他们的名字。<br><br>
+要想象19世纪拆除之前旧Ghetto的模样，只需看看今天Via del Portico d'Ottavia北侧那排依然保留中世纪风貌的建筑，就在古罗马遗迹旁边：这是那个消失世界仅存的一角，承载的历史与苦难同样深重。`,
+        deepen: [
+          { type: "link", title: "罗马隔都 — Wikipedia", url: "https://zh.wikipedia.org/wiki/罗马隔都" },
         ]
       },
     }
@@ -568,6 +1418,111 @@ Now let's head back towards Trastevere, passing through a much older piece of Ro
           { type: "link", title: "Victor Emmanuel II Monument — Wikipedia", url: "https://en.wikipedia.org/wiki/Victor_Emmanuel_II_Monument" },
         ]
       },
+      es: {
+        name: "Piazza Venezia e il Vittoriano",
+        desc: "Un palacio trasladado para dejar sitio al monumento",
+        audio: "audio/en/tappa7.mp3",
+        photos: [
+          { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Piazza_Venezia_-_Il_Vittoriano.jpg?width=900",
+            caption: "The Vittoriano", credit: "Wikimedia Commons" },
+          { time: 64, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Piazza_Venezia_a_Roma.jpg?width=900",
+            caption: "Piazza Venezia", credit: "Wikimedia Commons" },
+        ],
+        fullText: `Hemos llegado al gran final de nuestro recorrido por la Roma convertida en capital: Piazza Venezia, dominada por la mole blanca del Vittoriano — el monumento a Vittorio Emanuele II, el rey que en 1870 entró en esta ciudad y la convirtió en capital de Italia. Los romanos, hay que decirlo, nunca han sido tiernos con él: lo llaman desde siempre "la máquina de escribir" o "la tarta nupcial", por esa fachada tan blanca y cuadrada que desentona bastante con el resto del centro histórico circundante.<br><br>
+Para construirlo, entre 1885 y principios del siglo XX, hubo que arrasar un trozo entero de la historia medieval y renacentista del Campidoglio. Desapareció el convento del Aracoeli con sus tres claustros del siglo XV. Desapareció, en 1886, la Torre di Paolo III, una imponente villa fortificada del siglo XVI mandada construir por el papa Paulo III Farnese — su demolición desató polémicas furibundas entre intelectuales italianos y extranjeros de la época, pero no bastó para salvarla. Desapareció también uno de los palacios más bellos de Roma, la suntuosa residencia de los Torlonia.<br><br>
+Pero la historia más curiosa concierne al Palazzetto Venezia, el edificio del siglo XV que veis hoy junto a Palazzo Venezia. Originalmente se encontraba unas decenas de metros más adelante, justo en medio de lo que hoy es la plaza — y "hacía sombra", por así decirlo, a la vista del nuevo monumento. En 1910, en vísperas de la inauguración del Vittoriano, se decidió simplemente desmontarlo. No demolerlo: desmontarlo piedra a piedra, y volverlo a montar unos metros más atrás, en el lado opuesto de Palazzo Venezia, para liberar por completo la vista sobre el monumento recién estrenado. Todo un edificio renacentista trasladado como un mueble, solo por una cuestión de escenografía urbana.<br><br>
+El Vittoriano, inaugurado en 1911 y completado solo en 1925, alberga hoy también la tumba del Milite Ignoto, el soldado desconocido que representa a todos los caídos italianos sin nombre, velado día y noche por una llama siempre encendida. Palazzo Venezia, justo al lado, tendría otro momento de fama pocos años después: en 1929 Mussolini lo convirtió en sede del gobierno, y desde su balcón pronunció los discursos de las grandes concentraciones fascistas en esta misma plaza — otro capítulo, nada glorioso, de la larga vida política de este lugar.<br><br>
+Y aquí, en esta plaza construida desmontando y volviendo a montar trozos enteros de ciudad para hacer sitio a un monumento gigantesco, se cierra simbólicamente el relato de cómo Roma, al convertirse en capital, tuvo que reinventarse a sí misma: demoliendo, trasladando, a veces inventando desde cero una nueva imagen de ciudad moderna sobre la antigua.<br><br>
+No todos, hay que decirlo, apreciaron la operación desde el principio: ya en la época de la construcción, intelectuales y críticos de arte protestaron contra la decisión de borrar siglos de estratificación medieval y renacentista en nombre de un monumento que, además, con su piedra blanquísima de Botticino no armonizaba en absoluto con los travertinos dorados del resto de la ciudad. Un debate que, bien mirado, los romanos nunca han cerrado del todo: basta con preguntar a cualquiera que viva aquí qué piensa de la "tarta nupcial" para escuchar, todavía hoy, opiniones opuestas y apasionadas.<br><br>
+Ahora volvamos hacia Trastevere pasando por un trozo de Roma mucho más antigua: la Isola Tiberina.`,
+        deepen: [
+          { type: "link", title: "Vittoriano — Wikipedia", url: "https://es.wikipedia.org/wiki/Vittoriano" },
+        ]
+      },
+      fr: {
+        name: "Piazza Venezia e il Vittoriano",
+        desc: "Un palais déplacé pour faire place au monument",
+        audio: "audio/en/tappa7.mp3",
+        photos: [
+          { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Piazza_Venezia_-_Il_Vittoriano.jpg?width=900",
+            caption: "The Vittoriano", credit: "Wikimedia Commons" },
+          { time: 64, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Piazza_Venezia_a_Roma.jpg?width=900",
+            caption: "Piazza Venezia", credit: "Wikimedia Commons" },
+        ],
+        fullText: `Nous voici arrivés au grand final de notre parcours à travers la Rome devenue capitale : Piazza Venezia, dominée par la masse blanche du Vittoriano — le monument à Vittorio Emanuele II, le roi qui, en 1870, entra dans cette ville et en fit la capitale de l'Italie. Les Romains, il faut le dire, n'ont jamais été tendres avec lui : ils l'appellent depuis toujours "la machine à écrire" ou "le gâteau de mariage", pour cette façade si blanche et carrée qui détonne pas mal avec le reste du centre historique environnant.<br><br>
+Pour le construire, entre 1885 et le début du XXe siècle, il fallut raser tout un pan de l'histoire médiévale et Renaissance du Capitole. Disparut le couvent de l'Aracoeli avec ses trois cloîtres du XVe siècle. Disparut, en 1886, la Torre di Paolo III, une imposante villa fortifiée du XVIe siècle voulue par le pape Paul III Farnèse — sa démolition déclencha des polémiques furieuses parmi les intellectuels italiens et étrangers de l'époque, sans pouvoir toutefois la sauver. Disparut aussi l'un des plus beaux palais de Rome, la somptueuse résidence des Torlonia.<br><br>
+Mais l'histoire la plus curieuse concerne le Palazzetto Venezia, le bâtiment du XVe siècle que vous voyez aujourd'hui à côté de Palazzo Venezia. Il se trouvait à l'origine quelques dizaines de mètres plus avant, en plein milieu de ce qui est aujourd'hui la place — et il "faisait de l'ombre", si l'on peut dire, à la vue du nouveau monument. En 1910, à la veille de l'inauguration du Vittoriano, il fut simplement décidé de le démonter. Pas de le démolir : de le démonter pierre par pierre, et de le remonter quelques mètres plus en arrière, de l'autre côté de Palazzo Venezia, pour dégager complètement la vue sur le monument flambant neuf. Tout un bâtiment Renaissance déplacé comme un meuble, uniquement pour une question de mise en scène urbaine.<br><br>
+Le Vittoriano, inauguré en 1911 et achevé seulement en 1925, abrite aujourd'hui aussi la tombe du Milite Ignoto, le soldat inconnu qui représente tous les morts italiens sans nom, veillé jour et nuit par une flamme toujours allumée. Palazzo Venezia, juste à côté, connaîtrait un autre moment de célébrité quelques années plus tard : en 1929, Mussolini en fit le siège du gouvernement, et depuis son balcon prononça les discours des grands rassemblements fascistes sur cette même place — un autre chapitre, tout sauf glorieux, de la longue vie politique de ce lieu.<br><br>
+Et ici, sur cette place construite en démontant et en réassemblant des pans entiers de ville pour faire place à un monument gigantesque, se referme symboliquement le récit de la façon dont Rome, en devenant capitale, a dû se réinventer : démolissant, déplaçant, parfois inventant de toutes pièces une nouvelle image de ville moderne par-dessus l'ancienne.<br><br>
+Tout le monde, il faut le dire, n'a pas apprécié l'opération dès le début : dès l'époque de la construction, intellectuels et critiques d'art protestèrent contre le choix d'effacer des siècles de strates médiévales et Renaissance au nom d'un monument qui, de surcroît, avec sa pierre d'un blanc éclatant de Botticino, ne s'accordait absolument pas avec les travertins dorés du reste de la ville. Un débat que, à bien y regarder, les Romains n'ont jamais vraiment refermé : il suffit de demander à n'importe quel habitant du coin ce qu'il pense du "gâteau de mariage" pour entendre, aujourd'hui encore, des avis opposés et passionnés.<br><br>
+Retournons maintenant vers le Trastevere en passant par un morceau de Rome bien plus ancien : l'Isola Tiberina.`,
+        deepen: [
+          { type: "link", title: "Vittoriano — Wikipedia", url: "https://fr.wikipedia.org/wiki/Vittoriano" },
+        ]
+      },
+      de: {
+        name: "Piazza Venezia e il Vittoriano",
+        desc: "Ein Palast, verschoben, um Platz für das Denkmal zu schaffen",
+        audio: "audio/en/tappa7.mp3",
+        photos: [
+          { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Piazza_Venezia_-_Il_Vittoriano.jpg?width=900",
+            caption: "The Vittoriano", credit: "Wikimedia Commons" },
+          { time: 64, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Piazza_Venezia_a_Roma.jpg?width=900",
+            caption: "Piazza Venezia", credit: "Wikimedia Commons" },
+        ],
+        fullText: `Wir sind beim großen Finale unseres Spaziergangs durch das zur Hauptstadt gewordene Rom angekommen: der Piazza Venezia, beherrscht von der weißen Masse des Vittoriano — dem Denkmal für Vittorio Emanuele II., den König, der 1870 in diese Stadt einzog und sie zur Hauptstadt Italiens machte. Die Römer, das muss man sagen, waren nie zimperlich mit ihm: Sie nennen es seit jeher "die Schreibmaschine" oder "die Hochzeitstorte", wegen jener so weißen und eckigen Fassade, die mit dem Rest der umgebenden Altstadt ziemlich schlecht harmoniert.<br><br>
+Um es zu bauen, musste zwischen 1885 und dem frühen 20. Jahrhundert ein ganzes Stück mittelalterlicher und Renaissance-Geschichte des Kapitolshügels dem Erdboden gleichgemacht werden. Es verschwand das Aracoeli-Kloster mit seinen drei Kreuzgängen aus dem 15. Jahrhundert. Es verschwand 1886 die Torre di Paolo III., eine imposante befestigte Villa des 16. Jahrhunderts, die Papst Paul III. Farnese errichten ließ — ihr Abriss löste unter italienischen und ausländischen Intellektuellen der damaligen Zeit heftige Proteste aus, konnte sie aber nicht retten. Es verschwand auch einer der schönsten Paläste Roms, die prunkvolle Residenz der Torlonia.<br><br>
+Die kurioseste Geschichte betrifft jedoch das Palazzetto Venezia, das Gebäude aus dem 15. Jahrhundert, das Sie heute neben dem Palazzo Venezia sehen. Ursprünglich stand es einige Dutzend Meter weiter vorn, genau in der Mitte dessen, was heute der Platz ist — und "verstellte", sagen wir mal, die Sicht auf das neue Denkmal. 1910, am Vorabend der Einweihung des Vittoriano, entschied man sich einfach, es abzubauen. Nicht abzureißen: Stein für Stein auseinanderzunehmen und einige Meter weiter hinten, auf der gegenüberliegenden Seite des Palazzo Venezia, wieder aufzubauen, um den Blick auf das nagelneue Denkmal vollständig freizumachen. Ein ganzes Renaissance-Gebäude wie ein Möbelstück verschoben, nur aus Gründen der städtischen Inszenierung.<br><br>
+Der Vittoriano, 1911 eingeweiht und erst 1925 vollendet, beherbergt heute auch das Grab des Milite Ignoto, des unbekannten Soldaten, der stellvertretend für alle namenlosen italienischen Gefallenen steht, Tag und Nacht von einer ewigen Flamme bewacht. Der Palazzo Venezia gleich nebenan sollte wenige Jahre später einen weiteren Moment der Berühmtheit erleben: 1929 machte Mussolini ihn zum Regierungssitz und hielt von seinem Balkon aus die Reden zu den großen faschistischen Massenkundgebungen auf genau diesem Platz — ein weiteres, alles andere als glorreiches Kapitel in der langen politischen Geschichte dieses Ortes.<br><br>
+Und hier, auf diesem Platz, der durch das Abbauen und Wiederzusammensetzen ganzer Stadtteile entstand, um Platz für ein gigantisches Denkmal zu schaffen, schließt sich symbolisch die Erzählung davon, wie Rom sich beim Werden zur Hauptstadt neu erfinden musste: abreißend, verschiebend, manchmal von Grund auf ein neues Bild einer modernen Stadt über die alte legend.<br><br>
+Nicht alle, das muss man sagen, begrüßten das Vorhaben von Anfang an: Schon zur Zeit des Baus protestierten Intellektuelle und Kunstkritiker gegen die Entscheidung, Jahrhunderte mittelalterlicher und Renaissance-Schichtung im Namen eines Denkmals auszulöschen, das zudem mit seinem strahlend weißen Botticino-Stein überhaupt nicht zu den goldenen Travertinen des restlichen Stadtbilds passte. Eine Debatte, die die Römer, genau betrachtet, nie wirklich abgeschlossen haben: Man muss nur irgendjemanden fragen, der hier wohnt, was er von der "Hochzeitstorte" hält, um bis heute leidenschaftlich gegensätzliche Meinungen zu hören.<br><br>
+Nun kehren wir zurück in Richtung Trastevere, vorbei an einem viel älteren Stück Rom: der Isola Tiberina.`,
+        deepen: [
+          { type: "link", title: "Vittoriano — Wikipedia", url: "https://de.wikipedia.org/wiki/Vittoriano" },
+        ]
+      },
+      pt: {
+        name: "Piazza Venezia e il Vittoriano",
+        desc: "Um palácio deslocado para dar lugar ao monumento",
+        audio: "audio/en/tappa7.mp3",
+        photos: [
+          { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Piazza_Venezia_-_Il_Vittoriano.jpg?width=900",
+            caption: "The Vittoriano", credit: "Wikimedia Commons" },
+          { time: 64, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Piazza_Venezia_a_Roma.jpg?width=900",
+            caption: "Piazza Venezia", credit: "Wikimedia Commons" },
+        ],
+        fullText: `Chegámos ao grande final do nosso passeio pela Roma tornada capital: Piazza Venezia, dominada pela mole branca do Vittoriano — o monumento a Vittorio Emanuele II, o rei que em 1870 entrou nesta cidade e a tornou capital de Itália. Os romanos, é preciso dizê-lo, nunca foram meigos com ele: chamam-lhe desde sempre "a máquina de escrever" ou "o bolo de casamento", por aquela fachada tão branca e quadrada que destoa bastante do resto do centro histórico circundante.<br><br>
+Para o construir, entre 1885 e o início do século XX, foi preciso arrasar um pedaço inteiro da história medieval e renascentista do Capitólio. Desapareceu o convento do Aracoeli com os seus três claustros quatrocentistas. Desapareceu, em 1886, a Torre di Paolo III, uma imponente vila fortificada do século XVI mandada construir pelo papa Paulo III Farnese — a sua demolição desencadeou polémicas furibundas entre intelectuais italianos e estrangeiros da época, mas não bastou para a salvar. Desapareceu também um dos palácios mais belos de Roma, a suntuosa residência dos Torlonia.<br><br>
+Mas a história mais curiosa diz respeito ao Palazzetto Venezia, o edifício quatrocentista que hoje vedes junto ao Palazzo Venezia. Originalmente encontrava-se algumas dezenas de metros mais à frente, mesmo no meio do que hoje é a praça — e "fazia sombra", digamos assim, à vista do novo monumento. Em 1910, na véspera da inauguração do Vittoriano, decidiu-se simplesmente desmontá-lo. Não demoli-lo: desmontá-lo pedra a pedra, e voltar a montá-lo alguns metros mais atrás, do lado oposto do Palazzo Venezia, para libertar completamente a vista sobre o monumento novinho em folha. Um edifício renascentista inteiro deslocado como um móvel, apenas por uma questão de cenografia urbana.<br><br>
+O Vittoriano, inaugurado em 1911 e concluído apenas em 1925, guarda hoje também o túmulo do Milite Ignoto, o soldado desconhecido que representa todos os caídos italianos sem nome, velado dia e noite por uma chama sempre acesa. O Palazzo Venezia, mesmo ao lado, teria outro momento de celebridade poucos anos depois: em 1929 Mussolini fez dele a sede do governo, e da sua sacada proferiu os discursos aos grandes comícios fascistas nesta mesma praça — outro capítulo, longe de glorioso, da longa vida política deste lugar.<br><br>
+E aqui, nesta praça construída desmontando e remontando pedaços inteiros de cidade para dar lugar a um monumento gigantesco, fecha-se simbolicamente o relato de como Roma, ao tornar-se capital, teve de se reinventar: demolindo, deslocando, por vezes inventando do zero uma nova imagem de cidade moderna sobre a antiga.<br><br>
+Nem todos, é preciso dizê-lo, apreciaram a operação desde o início: já na época da construção, intelectuais e críticos de arte protestaram contra a escolha de apagar séculos de estratificação medieval e renascentista em nome de um monumento que, aliás, com a sua pedra branquíssima de Botticino, não combinava nada com os travertinos dourados do resto da cidade. Um debate que, bem vistas as coisas, os romanos nunca fecharam verdadeiramente: basta perguntar a quem quer que viva aqui o que pensa do "bolo de casamento" para ouvir, ainda hoje, opiniões opostas e apaixonadas.<br><br>
+Agora voltemos em direção a Trastevere passando por um pedaço de Roma muito mais antiga: a Isola Tiberina.`,
+        deepen: [
+          { type: "link", title: "Vittoriano — Wikipedia", url: "https://pt.wikipedia.org/wiki/Vittoriano" },
+        ]
+      },
+      zh: {
+        name: "Piazza Venezia e il Vittoriano",
+        desc: "为纪念碑腾地而搬迁的宫殿",
+        audio: "audio/en/tappa7.mp3",
+        photos: [
+          { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Piazza_Venezia_-_Il_Vittoriano.jpg?width=900",
+            caption: "The Vittoriano", credit: "Wikimedia Commons" },
+          { time: 64, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Piazza_Venezia_a_Roma.jpg?width=900",
+            caption: "Piazza Venezia", credit: "Wikimedia Commons" },
+        ],
+        fullText: `我们来到了这次"罗马成为首都"行程的盛大终点：Piazza Venezia广场，由维托里亚诺（Vittoriano）那洁白宏伟的建筑体量主导——这是献给维托里奥·埃马努埃莱二世的纪念碑，正是这位国王于1870年进入这座城市，并将其变为意大利首都。必须说，罗马人对他从来都不算客气：他们一直称这座建筑为"打字机"或"婚礼蛋糕"，因为它那洁白方正的立面，与周围历史中心的风格颇为格格不入。<br><br>
+为了建造它，在1885年至20世纪初之间，卡皮托利欧山上一整段中世纪与文艺复兴历史被夷为平地。带有三座15世纪回廊的Aracoeli修道院消失了。1886年，由教皇保罗三世·法尔内塞下令建造的一座宏伟的16世纪设防别墅——Torre di Paolo III也消失了：它的拆除在当时的意大利及外国知识分子中引发了激烈的争议，但这并未能挽救它。罗马最美的宫殿之一——奢华的Torlonia家族宅邸，也随之消失。<br><br>
+但最耐人寻味的故事，要属Palazzetto Venezia——如今你们在Palazzo Venezia旁看到的这座15世纪建筑。它原本坐落在再往前几十米的地方，正好位于今天广场的中央位置——可以说，它"挡住了"人们观赏新纪念碑的视线。1910年，就在维托里亚诺落成前夕，人们决定干脆将它拆卸下来。不是拆毁：而是逐块石头拆解，再在几米之外、Palazzo Venezia的另一侧重新组装起来，从而彻底腾出通往这座崭新纪念碑的视野。一整座文艺复兴建筑，就这样像搬家具一样被整体迁移，仅仅是出于城市景观布局的考量。<br><br>
+维托里亚诺于1911年落成，直到1925年才最终完工，如今这里也安葬着无名战士之墓（Milite Ignoto），代表着所有无名牺牲的意大利士兵，日夜由一团永不熄灭的火焰守护。就在旁边的Palazzo Venezia，几年后也迎来了另一段声名鹊起的时刻：1929年，墨索里尼将其设为政府所在地，并在同一个广场上，从阳台向法西斯大型集会发表演讲——这是这个地方漫长政治生涯中，另一段绝非光彩的篇章。<br><br>
+就在这座通过拆解、再重新组装整片城市街区、为一座巨型纪念碑腾出空间而建成的广场上，象征性地为我们的故事画上了句号：罗马在成为首都的过程中，是如何不得不重新塑造自我的——拆除、迁移，有时甚至凭空创造出一副覆盖在古老城市之上的、崭新的现代城市形象。<br><br>
+必须说，并非所有人从一开始就欣赏这项工程：早在建造之时，知识分子与艺术评论家就曾抗议这种选择——为了一座纪念碑而抹去数个世纪的中世纪与文艺复兴层积，况且这座纪念碑那来自Botticino的耀眼白石，与城中其余部分金黄色的travertine石材完全格格不入。仔细想来，这场争论罗马人其实从未真正达成共识：只需随便问一位住在附近的居民对这座"婚礼蛋糕"的看法，至今仍能听到截然对立、各执己见的观点。<br><br>
+现在让我们折返，朝特拉斯提弗列方向走去，途中会经过一处更为古老的罗马遗迹：Isola Tiberina。`,
+        deepen: [
+          { type: "link", title: "维托里亚诺 — Wikipedia", url: "https://zh.wikipedia.org/wiki/维托里亚诺" },
+        ]
+      },
     }
   },
   {
@@ -598,6 +1553,71 @@ Now let's head back towards Trastevere, passing through a much older piece of Ro
         fullText: `This building that looks like a small Colosseum with flats on top isn't an optical illusion: it really was the "model" that the Colosseum was inspired by. The Teatro di Marcello was begun by Julius Caesar and completed by Augustus, who dedicated it to his nephew Marcellus, who died young and had been designated as his heir. It could hold up to twenty thousand spectators. In the Middle Ages it became a fortress, then in the sixteenth century it was turned into a noble family's palace: today, remarkably, some of the flats in the upper section are still lived in. Two thousand years of history, and there are still people living inside it.`,
         deepen: [
           { type: "link", title: "Theatre of Marcellus — Wikipedia", url: "https://en.wikipedia.org/wiki/Theatre_of_Marcellus" },
+        ]
+      },
+      es: {
+        name: "Teatro di Marcello",
+        desc: "El modelo del Coliseo",
+        audio: "audio/en/int4.mp3",
+        photos: [
+          { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Teatro_di_Marcello_intero.jpg?width=900",
+            caption: "The Teatro di Marcello", credit: "Wikimedia Commons" },
+        ],
+        fullText: `Este edificio que parece un pequeño Coliseo con apartamentos encima no es una ilusión óptica: fue de verdad el "modelo" en el que se inspiró el Coliseo. El Teatro di Marcello fue iniciado por Julio César y completado por Augusto, que lo dedicó a su sobrino Marcelo, muerto muy joven y designado por él como heredero. Podía albergar hasta veinte mil espectadores. En la Edad Media se convirtió en fortaleza, luego en el siglo XVI fue transformado en palacio nobiliario: hoy, increíblemente, algunos apartamentos de la parte superior siguen habitados. Dos mil años de historia, y todavía hay quien vive dentro.`,
+        deepen: [
+          { type: "link", title: "Teatro de Marcelo — Wikipedia", url: "https://es.wikipedia.org/wiki/Teatro_de_Marcelo" },
+        ]
+      },
+      fr: {
+        name: "Teatro di Marcello",
+        desc: "Le modèle du Colisée",
+        audio: "audio/en/int4.mp3",
+        photos: [
+          { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Teatro_di_Marcello_intero.jpg?width=900",
+            caption: "The Teatro di Marcello", credit: "Wikimedia Commons" },
+        ],
+        fullText: `Ce bâtiment qui ressemble à un petit Colisée surmonté d'appartements n'est pas une illusion d'optique : c'est bel et bien le "modèle" dont s'inspira le Colisée. Le Teatro di Marcello fut commencé par Jules César et achevé par Auguste, qui le dédia à son neveu Marcellus, mort très jeune et qu'il avait désigné comme héritier. Il pouvait accueillir jusqu'à vingt mille spectateurs. Au Moyen Âge, il devint forteresse, puis au XVIe siècle fut transformé en palais nobiliaire : aujourd'hui, chose incroyable, certains appartements de la partie supérieure sont encore habités. Deux mille ans d'histoire, et il y a encore des gens qui vivent dedans.`,
+        deepen: [
+          { type: "link", title: "Théâtre de Marcellus — Wikipedia", url: "https://fr.wikipedia.org/wiki/Théâtre_de_Marcellus" },
+        ]
+      },
+      de: {
+        name: "Teatro di Marcello",
+        desc: "Das Vorbild des Kolosseums",
+        audio: "audio/en/int4.mp3",
+        photos: [
+          { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Teatro_di_Marcello_intero.jpg?width=900",
+            caption: "The Teatro di Marcello", credit: "Wikimedia Commons" },
+        ],
+        fullText: `Dieses Gebäude, das wie ein kleines Kolosseum mit Wohnungen obendrauf wirkt, ist keine optische Täuschung: Es war tatsächlich das "Vorbild", an dem sich das Kolosseum orientierte. Das Teatro di Marcello wurde von Julius Caesar begonnen und von Augustus vollendet, der es seinem Neffen Marcellus widmete, der jung starb und von ihm als Erbe bestimmt worden war. Es konnte bis zu zwanzigtausend Zuschauer fassen. Im Mittelalter wurde es zur Festung, im 16. Jahrhundert dann in einen Adelspalast umgewandelt: Heute sind, unglaublicherweise, einige Wohnungen im oberen Teil immer noch bewohnt. Zweitausend Jahre Geschichte, und es leben noch immer Menschen darin.`,
+        deepen: [
+          { type: "link", title: "Marcellus-Theater — Wikipedia", url: "https://de.wikipedia.org/wiki/Marcellus-Theater" },
+        ]
+      },
+      pt: {
+        name: "Teatro di Marcello",
+        desc: "O modelo do Coliseu",
+        audio: "audio/en/int4.mp3",
+        photos: [
+          { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Teatro_di_Marcello_intero.jpg?width=900",
+            caption: "The Teatro di Marcello", credit: "Wikimedia Commons" },
+        ],
+        fullText: `Este edifício que parece um pequeno Coliseu com apartamentos em cima não é uma ilusão de ótica: foi realmente o "modelo" em que o Coliseu se inspirou. O Teatro di Marcello foi iniciado por Júlio César e concluído por Augusto, que o dedicou ao sobrinho Marcelo, morto muito jovem e por ele designado como herdeiro. Podia acolher até vinte mil espectadores. Na Idade Média tornou-se fortaleza, depois no século XVI foi transformado em palácio nobre: hoje, incrivelmente, alguns apartamentos na parte superior ainda estão habitados. Dois mil anos de história, e ainda há quem viva lá dentro.`,
+        deepen: [
+          { type: "link", title: "Teatro de Marcelo — Wikipedia", url: "https://pt.wikipedia.org/wiki/Teatro_de_Marcelo" },
+        ]
+      },
+      zh: {
+        name: "Teatro di Marcello",
+        desc: "斗兽场的原型",
+        audio: "audio/en/int4.mp3",
+        photos: [
+          { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Teatro_di_Marcello_intero.jpg?width=900",
+            caption: "The Teatro di Marcello", credit: "Wikimedia Commons" },
+        ],
+        fullText: `这座看起来像是顶部盖了公寓的小型斗兽场的建筑，绝非视觉错觉：它确实是斗兽场所参照的"原型"。Teatro di Marcello由尤利乌斯·凯撒始建，由奥古斯都完成，他将其献给自己的侄子马尔切卢斯——一位英年早逝、被他指定为继承人的年轻人。这座剧场最多可容纳两万名观众。中世纪时它变成了一座要塞，16世纪又被改建为贵族宫殿：如今，令人难以置信的是，上层的一些公寓至今仍有人居住。两千年的历史，至今仍有人生活在其中。`,
+        deepen: [
+          { type: "link", title: "马采罗剧场 — Wikipedia", url: "https://zh.wikipedia.org/wiki/马采罗剧场" },
         ]
       },
     }
@@ -638,6 +1658,86 @@ Crossing the bridge brings you onto the Isola Tiberina, Rome's only river island
           { type: "link", title: "Tiber Island — Wikipedia", url: "https://en.wikipedia.org/wiki/Tiber_Island" },
         ]
       },
+      es: {
+        name: "Ponte Fabricio e Isola Tiberina",
+        desc: "Las cuatro cabezas y la serpiente de Esculapio",
+        audio: "audio/en/int5.mp3",
+        photos: [
+          { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Ponte_Fabricio_Roma.jpg?width=900",
+            caption: "Ponte Fabricio, the 'Four Heads' bridge", credit: "Wikimedia Commons" },
+          { time: 42, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Isola_Tiberina_2014.JPG?width=900",
+            caption: "The Isola Tiberina (Tiber Island)", credit: "Wikimedia Commons" },
+        ],
+        fullText: `Este es el Ponte Fabricio, construido en el año 62 a.C. por un tal Lucio Fabricio: es el puente más antiguo de Roma que se conserva todavía en su forma original, con más de dos mil años a sus espaldas. Los romanos, sin embargo, lo llaman desde hace siglos "Ponte dei Quattro Capi", por las dos hermas de cuatro caras que veis en el pretil. La leyenda — falsa, pero demasiado bonita para no contarla — dice que el papa Sixto V encargó la restauración del puente a cuatro arquitectos, que se pelearon tan ferozmente durante las obras que hicieron enfurecer al Papa: terminados los trabajos, los mandó decapitar a los cuatro allí mismo, e hizo esculpir sus cabezas unidas para la eternidad en un único bloque de mármol, condenándolos a una cercanía forzosa que en vida habían rechazado.<br><br>
+Cruzando el puente se llega a la Isola Tiberina, la única isla fluvial de Roma, modelada desde la antigüedad con forma de nave — si os asomáis a la punta aguas abajo, todavía reconoceréis la proa de travertino. La leyenda cuenta que en el 291 a.C., durante una grave epidemia, los romanos fueron a Epidauro, en Grecia, a buscar la ayuda de Esculapio, dios de la medicina. En el viaje de vuelta, la serpiente sagrada del dios — símbolo todavía hoy de la medicina — saltó de la nave y se refugió justo en esta isla, indicando dónde construir su templo. Desde entonces la isla nunca ha abandonado su vocación: hoy alberga el hospital Fatebenefratelli, prácticamente el mismo oficio que ejercía hace dos mil doscientos años.`,
+        deepen: [
+          { type: "link", title: "Isla Tiberina — Wikipedia", url: "https://es.wikipedia.org/wiki/Isla_Tiberina" },
+        ]
+      },
+      fr: {
+        name: "Ponte Fabricio e Isola Tiberina",
+        desc: "Les quatre têtes et le serpent d'Esculape",
+        audio: "audio/en/int5.mp3",
+        photos: [
+          { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Ponte_Fabricio_Roma.jpg?width=900",
+            caption: "Ponte Fabricio, the 'Four Heads' bridge", credit: "Wikimedia Commons" },
+          { time: 42, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Isola_Tiberina_2014.JPG?width=900",
+            caption: "The Isola Tiberina (Tiber Island)", credit: "Wikimedia Commons" },
+        ],
+        fullText: `Voici le Ponte Fabricio, construit en 62 av. J.-C. par un certain Lucius Fabricius : c'est le plus ancien pont de Rome encore conservé dans sa forme originale, avec plus de deux mille ans derrière lui aujourd'hui. Les Romains l'appellent cependant depuis des siècles le "Ponte dei Quattro Capi", le pont des quatre têtes, à cause des deux hermès à quatre visages que vous voyez sur le parapet. La légende — fausse, mais trop belle pour ne pas être racontée — dit que le pape Sixte V confia la restauration du pont à quatre architectes, qui se disputèrent si férocement pendant les travaux qu'ils mirent le Pape en fureur : les travaux achevés, il les aurait tous quatre fait décapiter sur place, et fait sculpter leurs têtes réunies pour l'éternité dans un seul bloc de marbre, les condamnant à une proximité forcée qu'ils avaient refusée de leur vivant.<br><br>
+En traversant le pont, on arrive sur l'Isola Tiberina, la seule île fluviale de Rome, façonnée depuis l'Antiquité en forme de navire — si vous vous penchez sur la pointe aval, vous reconnaîtrez encore la proue en travertin. La légende veut qu'en 291 av. J.-C., lors d'une grave épidémie, les Romains soient allés à Épidaure, en Grèce, chercher l'aide d'Esculape, dieu de la médecine. Sur le chemin du retour, le serpent sacré du dieu — symbole encore aujourd'hui de la médecine — sauta du navire et se réfugia précisément sur cette île, indiquant où construire son temple. Depuis, l'île n'a jamais abandonné sa vocation : elle abrite aujourd'hui l'hôpital Fatebenefratelli, exerçant pratiquement le même métier qu'il y a deux mille deux cents ans.`,
+        deepen: [
+          { type: "link", title: "Île Tibérine — Wikipedia", url: "https://fr.wikipedia.org/wiki/Île_Tibérine" },
+        ]
+      },
+      de: {
+        name: "Ponte Fabricio e Isola Tiberina",
+        desc: "Die vier Köpfe und die Schlange des Äskulap",
+        audio: "audio/en/int5.mp3",
+        photos: [
+          { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Ponte_Fabricio_Roma.jpg?width=900",
+            caption: "Ponte Fabricio, the 'Four Heads' bridge", credit: "Wikimedia Commons" },
+          { time: 42, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Isola_Tiberina_2014.JPG?width=900",
+            caption: "The Isola Tiberina (Tiber Island)", credit: "Wikimedia Commons" },
+        ],
+        fullText: `Dies ist die Ponte Fabricio, im Jahr 62 v. Chr. von einem gewissen Lucius Fabricius erbaut: Sie ist die älteste Brücke Roms, die noch heute in ihrer ursprünglichen Form erhalten ist, heute über zweitausend Jahre alt. Die Römer nennen sie jedoch seit Jahrhunderten "Ponte dei Quattro Capi", Brücke der vier Köpfe, wegen der beiden vierköpfigen Hermen, die Sie auf dem Geländer sehen. Die Legende — falsch, aber zu schön, um sie nicht zu erzählen — besagt, Papst Sixtus V. habe vier Architekten mit der Restaurierung der Brücke beauftragt, die sich während der Arbeiten so heftig stritten, dass sie den Papst zur Weißglut brachten: Nach Abschluss der Arbeiten habe er alle vier direkt an Ort und Stelle enthaupten lassen und ihre Köpfe für die Ewigkeit vereint in einem einzigen Marmorblock meißeln lassen — verurteilt zu einer erzwungenen Nähe, die sie zu Lebzeiten abgelehnt hatten.<br><br>
+Überquert man die Brücke, gelangt man auf die Isola Tiberina, Roms einzige Flussinsel, seit der Antike in Schiffsform gestaltet — beugt man sich über die stromabwärts gelegene Spitze, erkennt man noch den Bug aus Travertin. Der Legende nach zogen die Römer 291 v. Chr. während einer schweren Epidemie nach Epidauros in Griechenland, um die Hilfe des Äskulap, des Gottes der Medizin, zu erbitten. Auf der Rückfahrt sprang die heilige Schlange des Gottes — bis heute Symbol der Medizin — vom Schiff und flüchtete genau auf diese Insel, womit sie anzeigte, wo sein Tempel errichtet werden sollte. Seither hat die Insel ihre Berufung nie aufgegeben: Heute beherbergt sie das Fatebenefratelli-Krankenhaus, das praktisch denselben Dienst leistet wie vor zweitausendzweihundert Jahren.`,
+        deepen: [
+          { type: "link", title: "Tiberinsel — Wikipedia", url: "https://de.wikipedia.org/wiki/Tiberinsel" },
+        ]
+      },
+      pt: {
+        name: "Ponte Fabricio e Isola Tiberina",
+        desc: "As quatro cabeças e a serpente de Esculápio",
+        audio: "audio/en/int5.mp3",
+        photos: [
+          { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Ponte_Fabricio_Roma.jpg?width=900",
+            caption: "Ponte Fabricio, the 'Four Heads' bridge", credit: "Wikimedia Commons" },
+          { time: 42, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Isola_Tiberina_2014.JPG?width=900",
+            caption: "The Isola Tiberina (Tiber Island)", credit: "Wikimedia Commons" },
+        ],
+        fullText: `Esta é a Ponte Fabricio, construída em 62 a.C. por um tal Lúcio Fabrício: é a ponte mais antiga de Roma ainda conservada na sua forma original, hoje com mais de dois mil anos às costas. Os romanos, porém, chamam-lhe há séculos "Ponte dei Quattro Capi", a ponte das quatro cabeças, por causa das duas hermas de quatro faces que vedes no parapeito. A lenda — falsa, mas demasiado bonita para não a contar — diz que o papa Sisto V confiou a restauração da ponte a quatro arquitetos, que se digladiaram tão ferozmente durante as obras que enfureceram o Papa: terminadas as obras, mandou-os decapitar a todos ali mesmo, e mandou esculpir as suas cabeças unidas para a eternidade num único bloco de mármore, condenando-os a uma proximidade forçada que em vida tinham recusado.<br><br>
+Atravessando a ponte chega-se à Isola Tiberina, a única ilha fluvial de Roma, moldada desde a Antiguidade em forma de navio — se vos debruçardes sobre a ponta a jusante, ainda reconhecereis a proa de travertino. A lenda conta que em 291 a.C., durante uma grave epidemia, os romanos foram a Epidauro, na Grécia, buscar a ajuda de Esculápio, deus da medicina. No caminho de volta, a serpente sagrada do deus — símbolo ainda hoje da medicina — saltou do navio e refugiou-se precisamente nesta ilha, indicando onde construir o seu templo. Desde então a ilha nunca abandonou a sua vocação: hoje alberga o hospital Fatebenefratelli, praticamente o mesmo ofício que exercia há dois mil e duzentos anos.`,
+        deepen: [
+          { type: "link", title: "Ilha Tibertina — Wikipedia", url: "https://pt.wikipedia.org/wiki/Ilha_Tibertina" },
+        ]
+      },
+      zh: {
+        name: "Ponte Fabricio e Isola Tiberina",
+        desc: "四头桥与埃斯库拉庇乌斯的圣蛇",
+        audio: "audio/en/int5.mp3",
+        photos: [
+          { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Ponte_Fabricio_Roma.jpg?width=900",
+            caption: "Ponte Fabricio, the 'Four Heads' bridge", credit: "Wikimedia Commons" },
+          { time: 42, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Isola_Tiberina_2014.JPG?width=900",
+            caption: "The Isola Tiberina (Tiber Island)", credit: "Wikimedia Commons" },
+        ],
+        fullText: `这就是Ponte Fabricio，由一位名叫Lucio Fabricio的人建于公元前62年：它是罗马现存唯一仍保持原貌的最古老桥梁，至今已有两千多年历史。然而，罗马人几个世纪以来一直称它为"Ponte dei Quattro Capi"（四头桥），因为桥栏上矗立着两尊四面头像的赫尔墨柱。有一个传说——虽是假的，但实在太精彩，不容不讲——说教皇西斯图斯五世将这座桥的修复工程交给了四位建筑师，他们在施工期间争吵得如此激烈，以致激怒了教皇：工程完工后，教皇下令将四人当场斩首，并命人将他们的头颅合刻于同一块大理石中，永远相连，让他们在生前拒绝的亲近，死后被迫永远承受。<br><br>
+过桥之后便来到Isola Tiberina，罗马唯一的河心岛，自古以来就被塑造成船只的形状——如果你俯身查看下游的那一端，仍能辨认出travertine石材雕刻的船首。传说公元前291年，一场严重瘟疫肆虐罗马，罗马人前往希腊的埃庇达鲁斯（Epidauro），寻求医神埃斯库拉庇乌斯（Esculapio）的庇佑。归途中，这位神祇的圣蛇——至今仍是医学的象征——从船上跃下，正好藏身于这座岛上，指示了应在此处建造神庙的地点。自那以后，这座岛屿从未改变过它的使命：如今这里是Fatebenefratelli医院的所在地，从事的几乎正是两千两百年前同样的工作。`,
+        deepen: [
+          { type: "link", title: "台伯河岛 — Wikipedia", url: "https://zh.wikipedia.org/wiki/台伯河岛" },
+        ]
+      },
     }
   },
   {
@@ -668,6 +1768,71 @@ Crossing the bridge brings you onto the Isola Tiberina, Rome's only river island
         fullText: `The last bridge on our walk: Ponte Cestio, which connects the Isola Tiberina to Trastevere, almost the same age as the Ponte Fabricio we just crossed — it dates from around 46 BC. What you see today, though, isn't entirely original: it was rebuilt almost from scratch between 1888 and 1892, as part of the very same muraglioni works we talked about at Ponte Sisto. Even Rome's oldest bridges, it turns out, had to reckon with the new capital's building fever. Crossing it brings us back to Trastevere: a few more steps and we're back in Piazza Sonnino, where we started — the loop closes.`,
         deepen: [
           { type: "link", title: "Ponte Cestio — Wikipedia", url: "https://en.wikipedia.org/wiki/Ponte_Cestio" },
+        ]
+      },
+      es: {
+        name: "Ponte Cestio",
+        desc: "Cierre del anillo",
+        audio: "audio/en/int6.mp3",
+        photos: [
+          { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Ponte_Cestio.jpg?width=900",
+            caption: "Ponte Cestio", credit: "Wikimedia Commons" },
+        ],
+        fullText: `Último puente de nuestro recorrido: Ponte Cestio, que conecta la Isola Tiberina con Trastevere, casi coetáneo del Ponte Fabricio que acabamos de cruzar — data de alrededor del 46 a.C. Lo que veis hoy, sin embargo, no es del todo original: fue reconstruido casi desde cero entre 1888 y 1892, precisamente en el marco de las obras de los muraglioni que contamos en Ponte Sisto. Incluso los puentes más antiguos de Roma, en definitiva, tuvieron que enfrentarse a la fiebre constructora de la nueva capital. Cruzándolo se vuelve a Trastevere: unos pocos pasos más y estamos de nuevo en Piazza Sonnino, donde empezamos — el círculo se cierra.`,
+        deepen: [
+          { type: "link", title: "Ponte Cestio — Wikipedia", url: "https://es.wikipedia.org/wiki/Ponte_Cestio" },
+        ]
+      },
+      fr: {
+        name: "Ponte Cestio",
+        desc: "Fermeture de la boucle",
+        audio: "audio/en/int6.mp3",
+        photos: [
+          { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Ponte_Cestio.jpg?width=900",
+            caption: "Ponte Cestio", credit: "Wikimedia Commons" },
+        ],
+        fullText: `Dernier pont de notre parcours : Ponte Cestio, qui relie l'Isola Tiberina au Trastevere, presque contemporain du Ponte Fabricio que nous venons de traverser — il date d'environ 46 av. J.-C. Ce que vous voyez aujourd'hui, cependant, n'est pas entièrement d'origine : il fut reconstruit presque entièrement entre 1888 et 1892, précisément dans le cadre des travaux des muraglioni que nous avons racontés à Ponte Sisto. Même les ponts les plus anciens de Rome, en somme, ont dû composer avec la fièvre bâtisseuse de la nouvelle capitale. En le traversant, on revient au Trastevere : encore quelques pas et nous voici de nouveau Piazza Sonnino, où nous avons commencé — la boucle est bouclée.`,
+        deepen: [
+          { type: "link", title: "Ponte Cestio — Wikipedia", url: "https://fr.wikipedia.org/wiki/Ponte_Cestio" },
+        ]
+      },
+      de: {
+        name: "Ponte Cestio",
+        desc: "Der Kreis schließt sich",
+        audio: "audio/en/int6.mp3",
+        photos: [
+          { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Ponte_Cestio.jpg?width=900",
+            caption: "Ponte Cestio", credit: "Wikimedia Commons" },
+        ],
+        fullText: `Letzte Brücke unseres Spaziergangs: die Ponte Cestio, die die Isola Tiberina mit Trastevere verbindet, fast gleich alt wie die Ponte Fabricio, die wir gerade überquert haben — sie stammt aus der Zeit um 46 v. Chr. Was Sie heute sehen, ist jedoch nicht vollständig original: Sie wurde zwischen 1888 und 1892 fast vollständig neu errichtet, genau im Rahmen der Muraglioni-Arbeiten, von denen wir an der Ponte Sisto erzählt haben. Selbst Roms älteste Brücken mussten sich also mit dem Baufieber der neuen Hauptstadt auseinandersetzen. Überquert man sie, kehrt man nach Trastevere zurück: Noch ein paar Schritte, und wir sind wieder auf der Piazza Sonnino, wo wir begonnen haben — der Kreis schließt sich.`,
+        deepen: [
+          { type: "link", title: "Ponte Cestio — Wikipedia", url: "https://de.wikipedia.org/wiki/Ponte_Cestio" },
+        ]
+      },
+      pt: {
+        name: "Ponte Cestio",
+        desc: "Fecho do anel",
+        audio: "audio/en/int6.mp3",
+        photos: [
+          { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Ponte_Cestio.jpg?width=900",
+            caption: "Ponte Cestio", credit: "Wikimedia Commons" },
+        ],
+        fullText: `Última ponte do nosso passeio: Ponte Cestio, que liga a Isola Tiberina a Trastevere, quase coetânea da Ponte Fabricio que acabámos de atravessar — data de cerca de 46 a.C. O que vedes hoje, porém, não é totalmente original: foi reconstruída quase do zero entre 1888 e 1892, precisamente no âmbito das obras dos muraglioni que contámos em Ponte Sisto. Até as pontes mais antigas de Roma, enfim, tiveram de se haver com a febre construtora da nova capital. Atravessando-a volta-se a Trastevere: mais alguns passos e estamos de novo na Piazza Sonnino, onde começámos — o círculo fecha-se.`,
+        deepen: [
+          { type: "link", title: "Ponte Cestio — Wikipedia", url: "https://pt.wikipedia.org/wiki/Ponte_Cestio" },
+        ]
+      },
+      zh: {
+        name: "Ponte Cestio",
+        desc: "环线闭合",
+        audio: "audio/en/int6.mp3",
+        photos: [
+          { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Ponte_Cestio.jpg?width=900",
+            caption: "Ponte Cestio", credit: "Wikimedia Commons" },
+        ],
+        fullText: `我们行程的最后一座桥：Ponte Cestio，连接Isola Tiberina与特拉斯提弗列，几乎与我们刚刚穿过的Ponte Fabricio同龄——大约建于公元前46年。不过，你们今天看到的这座桥并非完全是原始的：它在1888年至1892年间几乎被彻底重建，正是我们在Ponte Sisto讲过的那场muraglioni工程的一部分。可以说，就连罗马最古老的桥梁，也不得不面对新首都那股建设热潮。跨过这座桥，我们便回到了特拉斯提弗列：再走几步，我们又回到了出发的地方——Piazza Sonnino，这个环形行程至此画上了圆满的句号。`,
+        deepen: [
+          { type: "link", title: "切斯提奥桥 — Wikipedia", url: "https://zh.wikipedia.org/wiki/切斯提奥桥" },
         ]
       },
     }
