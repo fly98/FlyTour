@@ -41,16 +41,15 @@ const ROUTE_LINE = (typeof ROUTE_COORDS !== 'undefined' && ROUTE_COORDS.length)
   ? ROUTE_COORDS
   : STOPS.map(s => [s.lat, s.lon]);
 
-const map = new maplibregl.Map({
-  container: 'map',
-  style: 'https://tiles.openfreemap.org/styles/liberty',
-  center: [STOPS[0].lon, STOPS[0].lat], // attenzione: MapLibre vuole [lon, lat], Leaflet voleva [lat, lon]
-  zoom: 16,
-  pitch: 45, // "liberty" ha già i palazzi in 3D (building-3d, da zoom 14): con pitch si vedono
-  attributionControl: { compact: true }
-});
-map.dragRotate.disable();
-map.touchZoomRotate.disableRotation();
+// TUTTA l'inizializzazione della mappa è in un try/catch: MapLibre richiede WebGL,
+// e alcuni contesti (in-app browser, webview ridotte) non lo supportano — in quel
+// caso il costruttore lancia un'eccezione. Prima non era protetta: se falliva qui,
+// TUTTO il resto dello script (elenco tappe, player audio, GPS) restava bloccato,
+// perché un'eccezione non gestita ferma l'esecuzione del resto del file. La mappa
+// è un extra: l'audioguida deve funzionare anche senza.
+let map = null;
+const stopMarkers = {};
+let meMarker = null;
 
 function boundsFromCoords(coordsLatLon){
   const b = new maplibregl.LngLatBounds();
@@ -58,42 +57,64 @@ function boundsFromCoords(coordsLatLon){
   return b;
 }
 
-map.on('load', () => {
-  map.addSource('route', {
-    type: 'geojson',
-    data: { type: 'Feature', geometry: { type: 'LineString',
-      coordinates: ROUTE_LINE.map(([lat, lon]) => [lon, lat]) } }
+try {
+  map = new maplibregl.Map({
+    container: 'map',
+    style: 'https://tiles.openfreemap.org/styles/liberty',
+    center: [STOPS[0].lon, STOPS[0].lat], // attenzione: MapLibre vuole [lon, lat], Leaflet voleva [lat, lon]
+    zoom: 16,
+    pitch: 45, // "liberty" ha già i palazzi in 3D (building-3d, da zoom 14): con pitch si vedono
+    attributionControl: { compact: true }
   });
-  map.addLayer({
-    id: 'route-line', type: 'line', source: 'route',
-    layout: { 'line-join': 'round', 'line-cap': 'round' },
-    paint: { 'line-color': '#7c9a82', 'line-width': 4, 'line-opacity': 0.85 }
-  });
-  map.fitBounds(boundsFromCoords(ROUTE_LINE), {padding: 40, duration: 0});
-  setTimeout(() => {
-    map.resize();
-    map.fitBounds(boundsFromCoords(ROUTE_LINE), {padding: 24, duration: 0});
-  }, 300);
-});
+  map.on('error', (e) => console.warn('Mappa: errore non bloccante', e && e.error));
+  map.dragRotate.disable();
+  map.touchZoomRotate.disableRotation();
 
-const stopMarkers = {};
-STOPS.forEach(s => {
-  const el = document.createElement('div');
-  el.innerHTML = `<div class="stop-marker${s.ready ? '' : ' pending'}" id="marker-${s.id}"><span>${s.id}</span></div>`;
-  const m = new maplibregl.Marker({element: el.firstElementChild, anchor: 'bottom'})
-    .setLngLat([s.lon, s.lat]).addTo(map);
-  stopMarkers[s.id] = m;
-});
+  map.on('load', () => {
+    try {
+      map.addSource('route', {
+        type: 'geojson',
+        data: { type: 'Feature', geometry: { type: 'LineString',
+          coordinates: ROUTE_LINE.map(([lat, lon]) => [lon, lat]) } }
+      });
+      map.addLayer({
+        id: 'route-line', type: 'line', source: 'route',
+        layout: { 'line-join': 'round', 'line-cap': 'round' },
+        paint: { 'line-color': '#7c9a82', 'line-width': 4, 'line-opacity': 0.85 }
+      });
+      map.fitBounds(boundsFromCoords(ROUTE_LINE), {padding: 40, duration: 0});
+      setTimeout(() => {
+        map.resize();
+        map.fitBounds(boundsFromCoords(ROUTE_LINE), {padding: 24, duration: 0});
+      }, 300);
+    } catch(e){ console.warn('Mappa: route/bounds non disegnati', e); }
+  });
+
+  STOPS.forEach(s => {
+    const el = document.createElement('div');
+    el.innerHTML = `<div class="stop-marker${s.ready ? '' : ' pending'}" id="marker-${s.id}"><span>${s.id}</span></div>`;
+    const m = new maplibregl.Marker({element: el.firstElementChild, anchor: 'bottom'})
+      .setLngLat([s.lon, s.lat]).addTo(map);
+    stopMarkers[s.id] = m;
+  });
+} catch(e) {
+  console.warn('Mappa non disponibile (WebGL assente o errore di caricamento), proseguo senza:', e);
+  map = null;
+  const mapWrap = document.querySelector('.map-wrap');
+  if(mapWrap) mapWrap.style.display = 'none';
+}
 
 function zoomToStop(stop){
+  if(!map) return;
   map.flyTo({center: [stop.lon, stop.lat], zoom: 18, duration: 600});
 }
 function zoomToOverview(){
+  if(!map) return;
   map.fitBounds(boundsFromCoords(ROUTE_LINE), {padding: 24, duration: 600});
 }
 
-let meMarker = null;
 function updateMeMarker(lat, lon){
+  if(!map) return;
   if(!meMarker){
     const el = document.createElement('div');
     el.innerHTML = '<div class="me-marker"></div>';
