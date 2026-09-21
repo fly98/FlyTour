@@ -151,6 +151,217 @@ function T(stop, field){
   return (stop.i18n && stop.i18n[currentLang]) ? stop.i18n[currentLang][field] : stop[field];
 }
 
+// ---- Stringhe UI fisse, tradotte nelle 7 lingue del sito ----
+// (prima erano scritte solo in italiano nell'HTML/JS: cambiando lingua sopra,
+// tutto il resto dell'interfaccia — bottoni, messaggi GPS, popup — restava in
+// italiano. Ora si aggiornano insieme al testo delle tappe.)
+const UI_STRINGS = {
+  it: {
+    backLink: '← Tutti i percorsi',
+    autoplayTitle: 'Riproduzione automatica',
+    autoplayDesc: 'Parte da sola quando arrivi a una tappa',
+    gpsDefault: 'Posizione non attiva — tocca "Attiva GPS" qui sotto',
+    resetBtn: 'Ricomincia il giro',
+    footer: 'Genera audio con Google Cloud TTS · fatto per camminarci sopra',
+    arrivalEyebrow: 'Sei arrivato',
+    laterBtn: 'Più tardi',
+    playNowBtn: '▶ Riproduci',
+    approfondisci: 'Approfondisci',
+    endEyebrow: 'Tappa completata',
+    endCloseBtn: 'Continua a camminare',
+    leggi: 'Leggi',
+    pending: 'in arrivo',
+    navTitle: 'Naviga fin qui',
+    confirmReset: 'Ricominciare il giro da capo? Le tappe già ascoltate torneranno disponibili.',
+    allDone: 'Hai ascoltato tutte le tappe 🎉',
+    gpsUnavailable: (msg) => `GPS non disponibile (${msg}) — usa la lista qui sotto`,
+    noGeoSupport: 'Il browser non supporta la geolocalizzazione',
+    distanceToNext: (m, name) => `A ${m} m dalla prossima tappa — ${name}`,
+  },
+  en: {
+    backLink: '← All routes',
+    autoplayTitle: 'Autoplay',
+    autoplayDesc: 'Starts on its own when you reach a stop',
+    gpsDefault: 'Location not active — tap "Enable GPS" below',
+    resetBtn: 'Restart the tour',
+    footer: 'Audio generated with Google Cloud TTS · made for walking',
+    arrivalEyebrow: "You've arrived",
+    laterBtn: 'Later',
+    playNowBtn: '▶ Play',
+    approfondisci: 'Learn more',
+    endEyebrow: 'Stop completed',
+    endCloseBtn: 'Keep walking',
+    leggi: 'Read',
+    pending: 'coming soon',
+    navTitle: 'Navigate here',
+    confirmReset: 'Restart the tour from the beginning? Stops already listened to will become available again.',
+    allDone: "You've listened to every stop 🎉",
+    gpsUnavailable: (msg) => `GPS not available (${msg}) — use the list below`,
+    noGeoSupport: "Your browser doesn't support geolocation",
+    distanceToNext: (m, name) => `${m} m from the next stop — ${name}`,
+  },
+  es: {
+    backLink: '← Todos los recorridos',
+    autoplayTitle: 'Reproducción automática',
+    autoplayDesc: 'Empieza sola cuando llegas a una parada',
+    gpsDefault: 'Ubicación no activa — toca "Activar GPS" abajo',
+    resetBtn: 'Reiniciar el recorrido',
+    footer: 'Audio generado con Google Cloud TTS · hecho para caminar',
+    arrivalEyebrow: 'Has llegado',
+    laterBtn: 'Más tarde',
+    playNowBtn: '▶ Reproducir',
+    approfondisci: 'Saber más',
+    endEyebrow: 'Parada completada',
+    endCloseBtn: 'Seguir caminando',
+    leggi: 'Leer',
+    pending: 'próximamente',
+    navTitle: 'Navegar hasta aquí',
+    confirmReset: '¿Reiniciar el recorrido desde el principio? Las paradas ya escuchadas volverán a estar disponibles.',
+    allDone: 'Has escuchado todas las paradas 🎉',
+    gpsUnavailable: (msg) => `GPS no disponible (${msg}) — usa la lista de abajo`,
+    noGeoSupport: 'Tu navegador no admite la geolocalización',
+    distanceToNext: (m, name) => `A ${m} m de la próxima parada — ${name}`,
+  },
+  fr: {
+    backLink: '← Tous les parcours',
+    autoplayTitle: 'Lecture automatique',
+    autoplayDesc: "Démarre seule à l'arrivée à une étape",
+    gpsDefault: 'Position non active — appuyez sur "Activer le GPS" ci-dessous',
+    resetBtn: 'Recommencer le parcours',
+    footer: 'Audio généré avec Google Cloud TTS · fait pour marcher',
+    arrivalEyebrow: 'Vous êtes arrivé',
+    laterBtn: 'Plus tard',
+    playNowBtn: '▶ Lecture',
+    approfondisci: 'En savoir plus',
+    endEyebrow: 'Étape terminée',
+    endCloseBtn: 'Continuer à marcher',
+    leggi: 'Lire',
+    pending: 'bientôt disponible',
+    navTitle: "Naviguer jusqu'ici",
+    confirmReset: 'Recommencer le parcours depuis le début ? Les étapes déjà écoutées redeviendront disponibles.',
+    allDone: 'Vous avez écouté toutes les étapes 🎉',
+    gpsUnavailable: (msg) => `GPS non disponible (${msg}) — utilisez la liste ci-dessous`,
+    noGeoSupport: 'Votre navigateur ne prend pas en charge la géolocalisation',
+    distanceToNext: (m, name) => `À ${m} m de la prochaine étape — ${name}`,
+  },
+  de: {
+    backLink: '← Alle Touren',
+    autoplayTitle: 'Automatische Wiedergabe',
+    autoplayDesc: 'Startet von selbst, wenn du eine Station erreichst',
+    gpsDefault: 'Standort nicht aktiv — unten auf "GPS aktivieren" tippen',
+    resetBtn: 'Tour neu starten',
+    footer: 'Audio erstellt mit Google Cloud TTS · zum Erlaufen gemacht',
+    arrivalEyebrow: 'Du bist angekommen',
+    laterBtn: 'Später',
+    playNowBtn: '▶ Abspielen',
+    approfondisci: 'Mehr erfahren',
+    endEyebrow: 'Station abgeschlossen',
+    endCloseBtn: 'Weitergehen',
+    leggi: 'Lesen',
+    pending: 'demnächst',
+    navTitle: 'Hierher navigieren',
+    confirmReset: 'Die Tour von vorne beginnen? Bereits gehörte Stationen werden wieder verfügbar.',
+    allDone: 'Du hast alle Stationen gehört 🎉',
+    gpsUnavailable: (msg) => `GPS nicht verfügbar (${msg}) — nutze die Liste unten`,
+    noGeoSupport: 'Dein Browser unterstützt keine Standortbestimmung',
+    distanceToNext: (m, name) => `${m} m bis zur nächsten Station — ${name}`,
+  },
+  pt: {
+    backLink: '← Todos os percursos',
+    autoplayTitle: 'Reprodução automática',
+    autoplayDesc: 'Começa sozinha quando chegas a uma paragem',
+    gpsDefault: 'Localização não ativa — toca em "Ativar GPS" abaixo',
+    resetBtn: 'Reiniciar o percurso',
+    footer: 'Áudio gerado com Google Cloud TTS · feito para caminhar',
+    arrivalEyebrow: 'Chegaste',
+    laterBtn: 'Mais tarde',
+    playNowBtn: '▶ Reproduzir',
+    approfondisci: 'Saber mais',
+    endEyebrow: 'Paragem concluída',
+    endCloseBtn: 'Continuar a caminhar',
+    leggi: 'Ler',
+    pending: 'brevemente',
+    navTitle: 'Navegar até aqui',
+    confirmReset: 'Reiniciar o percurso do início? As paragens já ouvidas voltarão a ficar disponíveis.',
+    allDone: 'Ouviste todas as paragens 🎉',
+    gpsUnavailable: (msg) => `GPS não disponível (${msg}) — usa a lista abaixo`,
+    noGeoSupport: 'O teu navegador não suporta geolocalização',
+    distanceToNext: (m, name) => `A ${m} m da próxima paragem — ${name}`,
+  },
+  zh: {
+    backLink: '← 所有路线',
+    autoplayTitle: '自动播放',
+    autoplayDesc: '到达一个站点时自动开始播放',
+    gpsDefault: '定位未开启 — 点击下方"开启定位"',
+    resetBtn: '重新开始',
+    footer: '音频由 Google Cloud TTS 生成 · 专为步行讲解设计',
+    arrivalEyebrow: '你已到达',
+    laterBtn: '稍后',
+    playNowBtn: '▶ 播放',
+    approfondisci: '延伸阅读',
+    endEyebrow: '本站讲解完成',
+    endCloseBtn: '继续前行',
+    leggi: '阅读',
+    pending: '即将上线',
+    navTitle: '导航至此处',
+    confirmReset: '要从头重新开始吗？已听过的站点将重新变为可用。',
+    allDone: '你已听完所有站点 🎉',
+    gpsUnavailable: (msg) => `定位不可用（${msg}）— 请使用下方列表`,
+    noGeoSupport: '你的浏览器不支持定位功能',
+    distanceToNext: (m, name) => `距下一站 ${m} 米 — ${name}`,
+  },
+};
+function U(key){
+  const lang = UI_STRINGS[currentLang] ? currentLang : (UI_STRINGS['en'] ? 'en' : 'it');
+  return UI_STRINGS[lang][key];
+}
+// ---- Titolo, eyebrow e sottotitolo della pagina: tradotti se la pagina fornisce PAGE_I18N ----
+// (portata a livello globale: prima era definita solo dentro il ramo multilingua,
+// quindi sui giri bilingue IT/EN — es. Trastevere — non veniva mai chiamata e il
+// titolo/sottotitolo restavano nella lingua di partenza anche cambiando toggle.)
+function applyPageI18n(){
+  if(typeof PAGE_I18N === 'undefined') return;
+  const p = PAGE_I18N[currentLang] || PAGE_I18N['en'] || PAGE_I18N['it'];
+  if(!p) return;
+  const elEyebrow = document.getElementById('txtEyebrow');
+  const elH1 = document.getElementById('txtH1');
+  const elSubtitle = document.getElementById('txtSubtitle');
+  if(elEyebrow && p.eyebrow) elEyebrow.textContent = p.eyebrow;
+  if(elH1 && p.h1) elH1.textContent = p.h1;
+  if(elSubtitle && p.subtitle) elSubtitle.textContent = p.subtitle;
+}
+
+function applyUIStrings(){
+  const backLink = document.querySelector('.back-link');
+  if(backLink) backLink.textContent = U('backLink');
+  const toggleLabel = document.querySelector('.toggle-label');
+  if(toggleLabel) toggleLabel.innerHTML = `<b>${U('autoplayTitle')}</b><br>${U('autoplayDesc')}`;
+  if(resetBtn) resetBtn.textContent = U('resetBtn');
+  const footerEl = document.querySelector('footer');
+  if(footerEl) footerEl.textContent = U('footer');
+  const arrivalEyebrow = document.querySelector('#arrivalOverlay .arrival-eyebrow');
+  if(arrivalEyebrow) arrivalEyebrow.textContent = U('arrivalEyebrow');
+  const laterBtnEl = document.getElementById('laterBtn');
+  if(laterBtnEl) laterBtnEl.textContent = U('laterBtn');
+  const playNowBtnEl = document.getElementById('playNowBtn');
+  if(playNowBtnEl) playNowBtnEl.textContent = U('playNowBtn');
+  document.querySelectorAll('.yt-eyebrow').forEach(el => el.textContent = U('approfondisci'));
+  const endEyebrow = document.querySelector('#endOverlay .arrival-eyebrow');
+  if(endEyebrow) endEyebrow.textContent = U('endEyebrow');
+  const endCloseBtnEl = document.getElementById('endCloseBtn');
+  if(endCloseBtnEl) endCloseBtnEl.textContent = U('endCloseBtn');
+  // Il testo GPS di default va aggiornato solo se il GPS non ha ancora dato un fix
+  // reale: altrimenti sovrascriveremmo un messaggio di stato corretto (distanza, errore...).
+  // In try/catch: le primissime chiamate ad applyUIStrings() avvengono prima che
+  // gpsText/gpsUpdateCount siano dichiarate più avanti nel file (temporal dead zone);
+  // richiamando la funzione dopo un cambio lingua, a pagina già caricata, funziona.
+  try {
+    if(gpsText && gpsUpdateCount === 0 && gpsErrorCount === 0){
+      gpsText.textContent = U('gpsDefault');
+    }
+  } catch(e) { /* gpsText non ancora dichiarata: verrà applicata al prossimo cambio lingua */ }
+}
+
 // ---- Utils ----
 function haversine(lat1, lon1, lat2, lon2){
   const R = 6371000;
@@ -196,12 +407,12 @@ function render(){
         <p class="stop-desc">${T(s,'desc')}</p>
       </div>
       <div class="stop-actions">
-        <a class="nav-link" href="${navUrl}" target="_blank" title="Naviga fin qui" data-navlink>
+        <a class="nav-link" href="${navUrl}" target="_blank" title="${U('navTitle')}" data-navlink>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l18-8-8 18-2-8-8-2z"/></svg>
         </a>
         ${s.ready
-          ? `<button class="stop-text-btn" data-textbtn="${s.id}">Leggi</button><div class="stop-icon" data-playicon>${done ? '✓' : '▶'}</div>`
-          : `<span class="pending-tag">in arrivo</span>`}
+          ? `<button class="stop-text-btn" data-textbtn="${s.id}">${U('leggi')}</button><div class="stop-icon" data-playicon>${done ? '✓' : '▶'}</div>`
+          : `<span class="pending-tag">${U('pending')}</span>`}
       </div>
     `;
     el.querySelector('[data-navlink]').onclick = (e) => e.stopPropagation();
@@ -262,7 +473,7 @@ document.getElementById('playerCloseBtn').onclick = () => {
 
 // ---- Reset sessione ----
 document.getElementById('resetBtn').onclick = () => {
-  if(!confirm('Ricominciare il giro da capo? Le tappe già ascoltate torneranno disponibili.')) return;
+  if(!confirm(U('confirmReset'))) return;
   audioEl.pause();
   playerEl.classList.remove('show');
   state.played = new Set();
@@ -413,7 +624,7 @@ const endOverlay = document.getElementById('endOverlay');
 function showEndOverlay(stopId){
   const stop = STOPS.find(s => s.id === stopId);
   if(!stop) return;
-  document.getElementById('endTitle').textContent = T(stop,'name') + ' — completata';
+  document.getElementById('endTitle').textContent = T(stop,'name') + ' — ' + U('endEyebrow').toLowerCase();
   const ytWrap = document.getElementById('endYtLinks');
   const ytList = document.getElementById('endYtLinksList');
   const deepen = T(stop,'deepen');
@@ -468,6 +679,8 @@ if(isBilingual && !isMultiLang && langToggleBtn){
       saveLang();
       renderLangToggle();
       render();
+      applyPageI18n();
+      applyUIStrings();
       trackEvent('lang', TOUR_SLUG, currentLang);
       if(state.currentStopId){
         const stop = STOPS.find(s => s.id === state.currentStopId);
@@ -484,6 +697,8 @@ if(isBilingual && !isMultiLang && langToggleBtn){
     };
   });
   renderLangToggle();
+  applyPageI18n();
+  applyUIStrings();
 } else if(isMultiLang){
   // ---- Giro con più di 2 lingue: testo (selettore in alto a destra) e audio (IT/EN, sopra le tappe) separati ----
   if(langToggleBtn) langToggleBtn.style.display = 'none';
@@ -557,25 +772,15 @@ if(isBilingual && !isMultiLang && langToggleBtn){
   });
   renderAudioButtons();
 
-  // ---- Titolo, eyebrow e sottotitolo della pagina: tradotti se la pagina fornisce PAGE_I18N ----
-  function applyPageI18n(){
-    if(typeof PAGE_I18N === 'undefined') return;
-    const p = PAGE_I18N[currentLang] || PAGE_I18N['en'] || PAGE_I18N['it'];
-    if(!p) return;
-    const elEyebrow = document.getElementById('txtEyebrow');
-    const elH1 = document.getElementById('txtH1');
-    const elSubtitle = document.getElementById('txtSubtitle');
-    if(elEyebrow && p.eyebrow) elEyebrow.textContent = p.eyebrow;
-    if(elH1 && p.h1) elH1.textContent = p.h1;
-    if(elSubtitle && p.subtitle) elSubtitle.textContent = p.subtitle;
-  }
   applyPageI18n();
+  applyUIStrings();
 
   textLangSelect.addEventListener('change', () => {
     currentLang = textLangSelect.value;
     saveLang();
     render();
     applyPageI18n();
+    applyUIStrings();
     trackEvent('lang', TOUR_SLUG, currentLang);
     if(textModalOverlay.classList.contains('show') && state.currentStopId){
       openTextModal(state.currentStopId);
@@ -583,6 +788,8 @@ if(isBilingual && !isMultiLang && langToggleBtn){
   });
 } else {
   if(langToggleBtn) langToggleBtn.style.display = 'none';
+  applyPageI18n();
+  applyUIStrings();
 }
 
 // ---- Geolocalizzazione ----
@@ -595,6 +802,7 @@ document.getElementById('gpsStatusRow').addEventListener('click', (e) => {
 });
 let gpsUpdateCount = 0;
 let gpsErrorCount = 0;
+applyUIStrings(); // ri-applica ora che gpsText/gpsUpdateCount/gpsErrorCount esistono (copre il primo caricamento, lingua browser non italiana)
 function fmtClockTime(){
   const d = new Date();
   return d.toLocaleTimeString('it-IT', {hour12:false});
@@ -618,7 +826,7 @@ function onPosition(pos){
   });
 
   if(nearest){
-    gpsText.textContent = `A ${Math.round(nearestDist)} m dalla prossima tappa — ${T(nearest, 'name')}`;
+    gpsText.textContent = U('distanceToNext')(Math.round(nearestDist), T(nearest, 'name'));
     if(nearestDist <= RADIUS_METERS && state.currentStopId !== nearest.id){
       if(state.autoplay){
         playStop(nearest.id, false);
@@ -627,19 +835,19 @@ function onPosition(pos){
       }
     }
   } else {
-    gpsText.textContent = "Hai ascoltato tutte le tappe del pilota 🎉";
+    gpsText.textContent = U('allDone');
   }
 }
 function onGpsError(err){
   gpsDot.classList.remove('live');
   gpsErrorCount++;
   renderGpsDebug(`ultimo errore: ${fmtClockTime()} · codice ${err.code} · "${err.message}"`);
-  gpsText.textContent = "GPS non disponibile (" + err.message + ") — usa la lista qui sotto";
+  gpsText.textContent = U('gpsUnavailable')(err.message);
 }
 
 function startGps(){
   if(!navigator.geolocation){
-    gpsText.textContent = "Il browser non supporta la geolocalizzazione";
+    gpsText.textContent = U('noGeoSupport');
     renderGpsDebug("navigator.geolocation non disponibile");
     return;
   }
