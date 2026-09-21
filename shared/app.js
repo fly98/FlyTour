@@ -618,7 +618,7 @@ function onPosition(pos){
   });
 
   if(nearest){
-    gpsText.textContent = `A ${Math.round(nearestDist)} m dalla prossima tappa — ${nearest.name}`;
+    gpsText.textContent = `A ${Math.round(nearestDist)} m dalla prossima tappa — ${T(nearest, 'name')}`;
     if(nearestDist <= RADIUS_METERS && state.currentStopId !== nearest.id){
       if(state.autoplay){
         playStop(nearest.id, false);
