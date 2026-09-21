@@ -441,11 +441,21 @@
     "audience": "personal",
     "title": {
       "it": "Roma Capitale",
-      "en": "Roma Capitale"
+      "en": "Roma Capitale",
+      "es": "Roma Capitale",
+      "fr": "Roma Capitale",
+      "de": "Roma Capitale",
+      "pt": "Roma Capitale",
+      "zh": "Roma Capitale（罗马成为首都）"
     },
     "desc": {
       "it": "Come la città del papa diventò la capitale d'Italia nel 1870: demolizioni, spostamenti di interi palazzi, l'alluvione che cambiò il Tevere, e qualche leggenda da sfatare. Da Trastevere al Ghetto fino al Vittoriano, anello di ~4,5 km.",
-      "en": "How the pope's city became the capital of Italy in 1870: demolitions, entire palazzi moved brick by brick, the flood that changed the Tiber, and a few legends to debunk. From Trastevere to the Ghetto to the Vittoriano, a ~4.5 km loop."
+      "en": "How the pope's city became the capital of Italy in 1870: demolitions, entire palazzi moved brick by brick, the flood that changed the Tiber, and a few legends to debunk. From Trastevere to the Ghetto to the Vittoriano, a ~4.5 km loop.",
+      "es": "Cómo la ciudad del papa se convirtió en la capital de Italia en 1870: demoliciones, palacios enteros trasladados piedra a piedra, la inundación que cambió el Tíber, y alguna leyenda por desmentir. De Trastevere al Gueto hasta el Vittoriano, un anillo de ~4,5 km.",
+      "fr": "Comment la ville du pape est devenue la capitale de l'Italie en 1870 : démolitions, palais entiers déplacés pierre par pierre, l'inondation qui a changé le Tibre, et quelques légendes à démentir. Du Trastevere au Ghetto jusqu'au Vittoriano, une boucle de ~4,5 km.",
+      "de": "Wie die Stadt des Papstes 1870 zur Hauptstadt Italiens wurde: Abrisse, ganze Paläste Stein für Stein versetzt, die Flut, die den Tiber veränderte, und ein paar Legenden zum Entlarven. Von Trastevere über das Ghetto bis zum Vittoriano, ein Rundweg von ~4,5 km.",
+      "pt": "Como a cidade do papa se tornou a capital de Itália em 1870: demolições, palácios inteiros deslocados pedra a pedra, a inundação que mudou o Tibre, e algumas lendas para desmontar. De Trastevere ao Gueto até ao Vittoriano, um anel de ~4,5 km.",
+      "zh": "1870年，教皇之城如何成为意大利首都：拆除建筑、整座宫殿被逐块迁移、改变台伯河的大洪水，以及几个需要澄清的传说。从特拉斯提弗列经隔都到维托里亚诺，约4.5公里环线。"
     },
     "duration": "2h30-3h",
     "distance": "~4,5 km (anello)",
