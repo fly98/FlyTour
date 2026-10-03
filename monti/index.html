@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="FlyTour">
+<meta name="theme-color" content="#2a2622">
+<link rel="manifest" href="../manifest.json">
+<link rel="apple-touch-icon" href="../icons/icon-180.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../icons/icon-32.png">
+<title>Monti — Audioguida</title>
+<link href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" rel="stylesheet" />
+<link rel="stylesheet" href="../shared/app.css">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a href="../index.html" class="back-link">← Tutti i percorsi</a>
+    <div class="eyebrow">Passeggiata narrata · ~3h · ~4,5 km, anello</div>
+    <h1>Monti</h1>
+    <p class="subtitle">Il primo rione di Roma: la Suburra, torri medievali, il Marchese del Grillo, i ragazzi di via Panisperna e chiese di milleseicento anni. Cammina, e ti racconto io.</p>
+  </header>
+
+  <div class="trail" id="trail"></div>
+
+  <div class="map-wrap"><div id="map"></div></div>
+
+  <div class="toggle-row">
+    <div class="toggle-label"><b>Riproduzione automatica</b><br>Parte da sola quando arrivi a una tappa</div>
+    <label class="switch">
+      <input type="checkbox" id="autoplayToggle" checked>
+      <span class="slider"></span>
+    </label>
+  </div>
+
+  <div class="gps-status" id="gpsStatusRow" style="cursor:pointer;">
+    <div class="gps-dot" id="gpsDot"></div>
+    <span id="gpsText">Posizione non attiva — tocca "Attiva GPS" qui sotto</span>
+    <button class="reset-link" id="resetBtn">Ricomincia il giro</button>
+  </div>
+
+  <div id="gpsDebug" style="display:none; font-size:11px; opacity:0.6; padding:4px 20px 0; font-family:monospace; line-height:1.5;"></div>
+
+  <div class="stops" id="stops"></div>
+
+  <footer>Genera audio con Google Cloud TTS · fatto per camminarci sopra</footer>
+</div>
+
+<div class="arrival-overlay" id="arrivalOverlay">
+  <div class="arrival-card">
+    <div class="arrival-eyebrow">Sei arrivato</div>
+    <div class="arrival-title" id="arrivalTitle">—</div>
+    <div class="arrival-actions">
+      <button class="btn btn-ghost" id="laterBtn">Più tardi</button>
+      <button class="btn btn-primary" id="playNowBtn">▶ Riproduci</button>
+    </div>
+  </div>
+</div>
+
+<div class="text-modal-overlay" id="textModalOverlay">
+  <div class="text-modal">
+    <div class="text-modal-header">
+      <div class="text-modal-title" id="textModalTitle">—</div>
+      <button class="text-modal-close" id="textModalClose">✕</button>
+    </div>
+    <div class="text-modal-body" id="textModalBody"></div>
+    <div class="yt-links" id="ytLinks" style="display:none;">
+      <div class="yt-eyebrow">Approfondisci</div>
+      <div id="ytLinksList"></div>
+    </div>
+  </div>
+</div>
+
+<div class="arrival-overlay" id="endOverlay">
+  <div class="arrival-card">
+    <div class="arrival-eyebrow">Tappa completata</div>
+    <div class="arrival-title" id="endTitle">—</div>
+    <div class="yt-links" id="endYtLinks" style="display:none;">
+      <div class="yt-eyebrow">Approfondisci</div>
+      <div id="endYtLinksList"></div>
+    </div>
+    <div class="arrival-actions" style="margin-top:16px;">
+      <button class="btn btn-primary" id="endCloseBtn">Continua a camminare</button>
+    </div>
+  </div>
+</div>
+
+<div class="player" id="player">
+  <div class="photo-panel" id="photoPanel">
+    <img id="photoImg" src="" alt="">
+    <button class="player-close" id="playerCloseBtn">✕</button>
+    <div class="photo-caption" id="photoCaption"></div>
+  </div>
+  <div class="player-top">
+    <div class="player-name" id="playerName">—</div>
+  </div>
+  <div class="seek-row">
+    <span class="time-label" id="timeElapsed">0:00</span>
+    <input type="range" class="seek" id="seekBar" min="0" max="100" value="0" step="0.1">
+    <span class="time-label right" id="timeRemaining">-0:00</span>
+  </div>
+  <div class="transport">
+    <button class="skip-btn" id="backBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 19l-7-7 7-7M4 12h13a4 4 0 000-8"/></svg>
+      <span>15s</span>
+    </button>
+    <button class="play-btn" id="playPauseBtn" style="width:52px;height:52px;">
+      <svg viewBox="0 0 24 24" fill="#241a12" style="width:20px;height:20px;"><path id="playIcon" d="M8 5v14l11-7z"/></svg>
+    </button>
+    <button class="skip-btn" id="fwdBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 5l7 7-7 7M20 12H7a4 4 0 010-8"/></svg>
+      <span>15s</span>
+    </button>
+  </div>
+  <audio id="audioEl" style="display:none;"></audio>
+</div>
+
+<script src="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.js"></script>
+<script>
+// ---- Dati tappe: Monti (10 tappe + 5 intermezzi, anello, solo italiano) ----
+const STOPS = [
+  {
+    id: 1, ready: true,
+    name: "Piazza della Madonna dei Monti",
+    desc: "La piazza dei monticiani, la fontana di Sisto V e il santo mendicante morto qui accanto",
+    lat: 41.8949, lon: 12.49088,
+    audio: "audio/tappa1.mp3",
+    photos: [
+      { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Fontana_dei_catecumeni_a_madonna_dei_monti_051218-06.JPG?width=900",
+        caption: "La fontana dei Catecumeni in Piazza della Madonna dei Monti", credit: "Wikimedia Commons" },
+      { time: 82, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Fontana_su_la_Piazza_della_Madonna_de_Monti_by_Giovanni_Battista_Falda_%2817th-cent.%29.jpg?width=900",
+        caption: "La fontana in un'incisione del Seicento di Giovanni Battista Falda", credit: "Wikimedia Commons" },
+      { time: 152, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Facciata_della_chiesa_di_Santa_Maria_ai_Monti%2C_before_1976_-_Archivio_Accademia_delle_Scienze_Torino%2C_Millon_66_29_467.jpg?width=900",
+        caption: "La facciata di Santa Maria ai Monti", credit: "Wikimedia Commons" },
+      { time: 210, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Portrait_of_Saint_Benedict_Joseph_Labre_%281748%E2%80%931783%29_%28by_Antonio_Cavallucci%29.jpg?width=900",
+        caption: "San Benedetto Giuseppe Labre, ritratto di Antonio Cavallucci", credit: "Wikimedia Commons" }
+    ],
+    fullText: `Benvenuto a Monti. Siamo in Piazza della Madonna dei Monti, il cuore del primo rione di Roma: sulle carte è il Rione Uno. Questo giro è un anello di poco più di quattro chilometri. Parte e finisce proprio qui, e in mezzo ti porta a toccare tantissime cose in pochissimo spazio: torri medievali, una muraglia romana alta come un palazzo, il palazzo che porta il nome di un marchese burlone, un gruppo di giovani fisici che cambiarono il mondo, e chiese che custodiscono mosaici di milleseicento anni. Camminerai con una tappa ogni pochi minuti, e tra una tappa e l'altra ti racconterò anche quello che c'è per strada.<br><br>
+Partiamo dal nome. Monti non vuol dire che qui ci siano montagne. Nel Medioevo, con l'espressione «li monti» si indicava una zona vasta e quasi disabitata, fatta di vigne e orti, che comprendeva tre dei sette colli: l'Esquilino, il Viminale e una parte del Quirinale. Lo stemma del rione sono infatti tre monti verdi in campo bianco. Per secoli qui abitava pochissima gente, per un motivo semplicissimo: mancava l'acqua. Gli acquedotti romani erano stati danneggiati, e conveniva vivere giù, vicino al Tevere. Il rione si ripopolò davvero solo dal Seicento, quando papa Sisto Quinto tracciò le grandi strade nuove che ancora oggi attraversano la zona.<br><br>
+E con le strade arrivò l'acqua. Guarda la fontana in mezzo alla piazza, quella a vasche sovrapposte. La volle proprio Sisto Quinto, quando fu completato l'Acquedotto Felice, che prende il nome di battesimo del papa, Felice Peretti, e servì a rifornire d'acqua i colli del Viminale e del Quirinale, fino ad allora quasi all'asciutto. Il disegno è di Giacomo Della Porta, del 1588, e la realizzò l'anno dopo Battista Rusconi. Si chiama fontana dei Catecumeni perché qui vicino c'era il Collegio dei Neofiti, dove si preparavano al battesimo gli adulti che si convertivano. Più di quattro secoli dopo, è ancora il posto dove ci si ferma tutti, con un bicchiere in mano.<br><br>
+Chi abitava qui, i monticiani, aveva un'identità fortissima. Gli storici raccontano che il loro romano era perfino un po' diverso da quello degli altri rioni. E con i vicini di Trastevere, dall'altra parte del Tevere, la rivalità era vera: nel Trecento finiva in scontri anche cruenti. Se pensi a questo rione come a un quartiere di bar e botteghe alla moda, ricordati che dietro c'è una testardaggine che viene dal Medioevo.<br><br>
+Alle tue spalle c'è la chiesa che ha dato il nome alla piazza, Santa Maria ai Monti, e nasce da un episodio che la devozione popolare considerò miracoloso. Qui sorgeva un antico monastero di clarisse, abbandonato, e una sala con un affresco quattrocentesco della Madonna con il Bambino era usata addirittura come fienile. Un giorno di aprile del 1579 l'edificio fu scosso da forti tremori, e gli abitanti pensarono che fosse infestato dagli spiriti. Secondo il racconto che circolò allora, si udì anche una voce che pregava di non far male al Bambino: a parlare sarebbe stato proprio l'affresco. La notizia si sparse per tutta Roma, la folla si accalcò, cominciarono a essere segnalate guarigioni, e papa Gregorio Tredicesimo decise di far costruire qui una chiesa per custodire l'immagine. L'incarico andò a Giacomo Della Porta, lo stesso della fontana. Guarda la facciata: ricorda quella del Gesù, perché questa fu la seconda chiesa dei gesuiti a Roma.<br><br>
+Ora una storia più triste e più bella. Il 16 aprile 1783, mercoledì santo, un uomo di trentacinque anni si sentì male proprio dentro questa chiesa. Si chiamava Benedetto Giuseppe Labre, era nato in Francia, e i romani lo conoscevano come il pellegrino della Madonna. Aveva scelto di vivere da vagabondo di Dio: si calcola che in meno di quattordici anni abbia percorso circa trentamila chilometri, tra i santuari d'Europa, dormendo per strada e donando agli altri tutto ciò che considerava superfluo. A Roma si era sistemato sotto un'arcata del Colosseo, ma nobili e cardinali andavano a chiedergli consiglio. Quel mercoledì lo portarono nel retrobottega di un macellaio che abitava qui vicino, in Via dei Serpenti, un certo Francesco Zaccarelli. Il macellaio chiamò prima un medico, poi un prete. La sera, verso le otto, Labre morì. Tanta gente venne a rendergli omaggio, nella chiesa dove fu esposto il corpo, che non fu possibile celebrare gli uffici della Settimana Santa. Fu proclamato santo nel 1881, e la stanza in cui morì divenne una cappella.<br><br>
+Adesso mettiti in cammino. Scendi per Via Baccina, verso Via Cavour e Largo Corrado Ricci. E pensa a dove stai camminando: questa zona bassa e pantanosa, dove si raccoglievano le acque dei tre colli, nell'antica Roma si chiamava Suburra. Via della Madonna dei Monti e la vicina Via Leonina ricalcano l'Argileto, la strada dell'argilla e del fango. Era il quartiere più popolare e più malfamato di Roma, fitto di locande, di lupanari e di casamenti. E come tutti i quartieri così, ogni tanto prendeva fuoco. Tra poco vedrai che cosa fecero i romani per difendersi.`,
+    deepen: [
+      { type: "link", title: "Monti (rione) — Wikipedia", url: "https://it.wikipedia.org/wiki/Monti_(rione)" }
+    ]
+  },
+  {
+    id: 2, ready: true,
+    name: "Torre dei Conti e Via dei Fori Imperiali",
+    desc: "La torre di Innocenzo III, il quartiere demolito per la Via dell'Impero e un tesoro dietro un muro",
+    lat: 41.8934, lon: 12.48824,
+    audio: "audio/tappa2.mp3",
+    photos: [
+      { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Roma_Torre_dei_Conti_aprile_2013.jpg?width=900",
+        caption: "La Torre dei Conti", credit: "Wikimedia Commons" }
+    ],
+    fullText: `Eccoci a Largo Corrado Ricci, il punto dove Via Cavour incontra Via dei Fori Imperiali. Alza lo sguardo: la Torre dei Conti, un torrione di mattoni ruvido e un po' scheggiato, che sembra arrivare da un'altra epoca. Ci arriva davvero. Ma guarda su che cosa poggia: su una delle esedre, cioè uno degli spazi semicircolari, del Tempio della Pace, il complesso che l'imperatore Vespasiano inaugurò nel 75 dopo Cristo. Una torre medievale piantata sopra un tempio imperiale, il tutto a due passi da una strada fascista.<br><br>
+Un primo nucleo fortificato fu eretto già nell'858 dalla famiglia dei Conti di Anagni, e fu rivestito con il travertino portato via dai vicini Fori Imperiali, che per secoli sono stati una cava di marmi e di pietre. Poi, intorno al 1203, papa Innocenzo Terzo, che era dei Conti di Segni, la fece ingrandire per la sua famiglia. I lavori finirono nel 1216, l'anno in cui il papa morì. Con i suoi cinquanta, sessanta metri originari era la Torre Maggiore, e impressionò talmente Francesco Petrarca che la definì, in latino, quella torre che è unica in tutto il mondo.<br><br>
+Poi vennero i terremoti. Quello del 1349 la rese inabitabile, e la torre restò abbandonata fino al 1620. Altre scosse nel 1630 e nel 1644. Alla fine del Seicento furono aggiunti i due grandi contrafforti che vedi ancora oggi, per tenerla in piedi. E nel Novecento ebbe anche un uso curioso: nel 1937 Mussolini la donò alla Federazione nazionale degli Arditi d'Italia, e nel 1938 il grande salone del Tempio della Pace, sotto la torre, fu trasformato nel mausoleo del generale Alessandro Parisi, capo degli Arditi, morto in un incidente stradale. Il suo sarcofago di epoca romana è ancora lì sotto.<br><br>
+Il punto in cui ti trovi è fatto così per colpa di due grandi tagli. Il primo è Via Cavour, aperta alla fine dell'Ottocento, subito dopo il 1870, quando Roma diventò capitale. Il secondo, molto più violento, è la strada che hai davanti, Via dei Fori Imperiali, che all'inizio si chiamava Via dell'Impero. I lavori cominciarono nel 1924 e finirono nel 1932: la strada fu inaugurata da Mussolini il 28 ottobre di quell'anno. Per costruirla fu abbattuto un intero quartiere, detto Alessandrino, nato nel 1570 per volontà del cardinale Michele Bonelli, che si faceva chiamare l'Alessandrino, nipote di papa Pio Quinto, proprio sopra i resti dei Fori.<br><br>
+Furono cancellate strade, abbattuti palazzi e tre piccole chiese, e fu tagliata anche la collina della Velia, sostenuta poi da un muraglione di mattoni. Molti pensano che il taglio servisse a rendere la strada dritta per le parate militari, ma i documenti dell'epoca raccontano un'altra storia: il progetto originale prevedeva una curva, e fu il governatore di Roma, Francesco Boncompagni Ludovisi, a proporre di raddrizzare il tracciato per risparmiare sugli espropri e per fare del Colosseo il traguardo visivo di tutta la strada. Negli anni Settanta quelle demolizioni furono duramente criticate. Già nel 1927, l'archeologo Antonio Muñoz aveva bandito un concorso per documentare, con acquerelli, disegni e fotografie, non solo i palazzi ma anche la vita quotidiana dei quartieri che stavano per sparire.<br><br>
+Di quei cantieri resta un aneddoto che sembra inventato. Il 22 febbraio 1933, durante la demolizione di un caseggiato di Via Alessandrina, un manovale stava buttando giù un muro quando, dietro la prima fila di mattoni, trovò una lastra di ferro. La rimosse, e gli piovve addosso una cascata di monete d'oro e di gioielli. Era il cosiddetto tesoro di via Alessandrina, appartenuto a un noto antiquario, Francesco Martinetti, che aveva abitato in quell'appartamento. Il ritrovamento fece scalpore, e il regime lo usò come argomento a favore delle demolizioni. Il tesoro oggi fa parte delle collezioni dei Musei Capitolini.<br><br>
+Una cosa recente, che è giusto dirti. Il 3 novembre 2025 una parte della Torre dei Conti è crollata durante i lavori di restauro, che dovevano trasformarla in museo e centro servizi, e un operaio ha perso la vita. Dopo la messa in sicurezza dei vigili del fuoco, conclusa nell'aprile del 2026, la torre è stata restituita alla città e il restauro può riprendere. Se vedi ancora impalcature e transenne, il motivo è questo. Ora risali Via Tor de' Conti, proprio qui accanto: dopo pochi passi ti troverai davanti a una muraglia altissima, quella che i romani costruirono per difendersi dagli incendi.`,
+    deepen: [
+      { type: "link", title: "Torre dei Conti — Wikipedia", url: "https://it.wikipedia.org/wiki/Torre_dei_Conti" }
+    ]
+  },
+  {
+    id: 3, ready: true,
+    name: "Arco dei Pantani e il muro della Suburra",
+    desc: "La muraglia anti-incendio di Augusto, le Colonnacce e Giulio Cesare vicino di casa",
+    lat: 41.89415, lon: 12.48722,
+    audio: "audio/tappa3.mp3",
+    photos: [
+      { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Monti_-_muro_della_Suburra_e_casa_dei_cavalieri_di_Rodi_-_retro_1050880-1.JPG?width=900",
+        caption: "Il muro del Foro di Augusto, verso la Suburra", credit: "Wikimedia Commons" },
+      { time: 66, url: "https://commons.wikimedia.org/wiki/Special:FilePath/10_-_AVANZI_DEL_FORO_CREDUTO_DI_AUGUSTO_DETTO_ARCO_DE%27_PANTANI.jpg?width=900",
+        caption: "L'Arco dei Pantani in un'antica incisione", credit: "Wikimedia Commons" },
+      { time: 127, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Foro_di_Nerva%2C_fregio_delle_colonnacce%2C_90-97_dc._ca._04.JPG?width=900",
+        caption: "Il fregio delle Colonnacce, Foro di Nerva", credit: "Wikimedia Commons" }
+    ],
+    fullText: `Fermati e alza gli occhi. Questa muraglia di pietra grigia, alta circa trentatré metri, è il muro perimetrale del Foro di Augusto, ed è lì da più di duemila anni. È costruita con blocchi di peperino e di pietra gabina, senza malta: le pietre sono incastrate con precisione assoluta e legate da incastri di quercia a coda di rondine, e tutta la struttura si regge sul proprio peso. Per dirti quanto fosse solida: gli storici ricordano che regge da oltre due millenni, tra terremoti, incendi e demolizioni.<br><br>
+A cosa serviva? Il Foro di Augusto, inaugurato nel 2 avanti Cristo, fu costruito con il bottino di guerra e su un terreno che Augusto acquistò a sue spese, come lui stesso ricorda nelle Res Gestae. Ma dietro quel terreno c'era la Suburra. E la Suburra bruciava spesso: casamenti popolari fitti, fuochi di cucina, lampade. Il muro faceva da frangifuoco: separava i marmi e i templi dei Fori dai vicoli sovraffollati. Una specie di muro tagliafuoco della città, ma monumentale. Ed è l'unica traccia che affiora ancora oggi, nella città moderna, della Suburra antica.<br><br>
+L'apertura che vedi nel muro è l'Arco dei Pantani. Il nome è medievale, e viene probabilmente dallo stato in cui era ridotta la zona: dopo la fine dell'impero, il Foro, interrato e allagato, diventò uno spazio pieno di rovine e di acqua stagnante, un pantano. Da questo varco, nell'età romana, delle scalinate collegavano la strada della Suburra alla piazza del Foro, che stava più in basso. Alla base di quelle scale c'erano due archi trionfali, dedicati nel 19 dopo Cristo a Druso minore e a Germanico.<br><br>
+Ma la Suburra non era solo miseria. Giulio Cesare visse in una casa di famiglia proprio qui, in questo quartiere, fino al 63 avanti Cristo, quando a trentasette anni fu eletto pontefice massimo. Anche il poeta Marziale abitò da queste parti. Un quartiere dove, a pochi metri di distanza, vivevano il futuro dittatore e il sottoproletariato dei casamenti. Non per niente il suo nome è rimasto, nel linguaggio comune, sinonimo di luogo malfamato.<br><br>
+Un passo più in là, in fondo alla strada, il muro del Foro di Augusto si addossa al Foro di Nerva, chiamato anche Foro Transitorio perché serviva da passaggio tra la Suburra e gli altri Fori. Lo ideò l'imperatore Domiziano, devotissimo di Minerva, e lo inaugurò, dopo la sua morte, il successore Nerva, che gli diede il suo nome, nel 97 dopo Cristo. Lo spazio era così stretto che non c'era posto per i portici: i romani decorarono i muri con colonne sporgenti. Di tutto questo restano due colonne, che il popolo chiama le Colonnacce.<br><br>
+Nel Medioevo la zona cambiò faccia. Sul podio del tempio di Marte Ultore, nel nono secolo, i monaci basiliani costruirono una piccola chiesa e un monastero, e sopra le tre colonne rimaste del tempio piantarono perfino un campanile. Dal Duecento passò agli ospitalieri, i cavalieri di San Giovanni di Gerusalemme, i futuri cavalieri di Malta, che dal 1312 vi stabilirono il loro priorato romano. È la Casa dei Cavalieri di Rodi, l'edificio affacciato sul Foro con quella loggia che vedi in alto. Ricordatela, perché tra pochissimo la ritroverai in una storia di cinema.<br><br>
+Ora continua a salire per Via Tor de' Conti e imbocca la Salita del Grillo, una strada ripida che ricalca l'antica viabilità della Suburra, subito dietro il muro. Segui la salita fino alla piazzetta: ti aspetta il palazzo del marchese più famoso di Roma.`,
+    deepen: [
+      { type: "link", title: "Foro di Augusto — Wikipedia", url: "https://it.wikipedia.org/wiki/Foro_di_Augusto" }
+    ]
+  },
+  {
+    id: 4, ready: true,
+    name: "Palazzo del Grillo e il Marchese",
+    desc: "La Salita del Grillo, il torrione e il marchese che forse non fu mai come nel film",
+    lat: 41.8948, lon: 12.487,
+    audio: "audio/tappa4.mp3",
+    photos: [
+      { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Palazzo_del_Grillo_%28Roma%29.jpg?width=900",
+        caption: "Il Palazzo del Grillo, in Piazza del Grillo", credit: "Wikimedia Commons" },
+      { time: 231, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Monti_-_palazzo_dei_cavalieri_di_Rodi_-_loggia_1220910.JPG?width=900",
+        caption: "La loggia della Casa dei Cavalieri di Rodi", credit: "Wikimedia Commons" }
+    ],
+    fullText: `Piazza del Grillo. Il portale barocco con la conchiglia e la testa di leone, l'arco che scavalca la strada: questo è il Palazzo del Grillo, del Seicento. E se non lo conosci per il nome, lo conosci per una frase che in Italia sanno tutti a memoria: «Io so' io, e voi non siete…» e il resto lo conosci. Siamo nella casa del Marchese del Grillo, il nobile romano reso immortale da Alberto Sordi nel film di Mario Monicelli del 1981. Ti racconto che cosa è vero e che cosa no.<br><br>
+Partiamo dalla storia vera. Onofrio del Grillo esiste davvero: nato a Fabriano il 5 maggio 1714, marchese di Santa Cristina e conte di Portula. Arrivò a Roma da ragazzo, dopo la morte della madre, per vivere con lo zio Bernardo, che abitava nel palazzo di famiglia nel rione Monti, ai piedi del Monte Cavallo, cioè del Quirinale. Lo zio era ricco, avarissimo e maniaco: il pittore Pier Leone Ghezzi lo ritrasse in una caricatura del 1745 come un «grillaccio» gobbo, tirchio e sciatto. Nel 1757 lo zio morì e lasciò a Onofrio una grande eredità, e lui, nel giro di pochissimo, la dilapidò: tra le spese del matrimonio con Faustina Capranica e i lavori al palazzo, i debiti lo costrinsero a rivolgersi al papa.<br><br>
+E la carriera? Fu consigliere capitolino, poi priore dei caporioni, poi conservatore di Roma, una delle massime cariche civiche. Nel 1774, dopo la morte di Clemente Quattordicesimo, si trovò per mesi a governare l'ordine pubblico di una città in tumulto, durante il lungo conclave. Il nuovo papa, Pio Sesto, lo nominò suo cameriere segreto. Poi si ritirò a Fabriano, dove morì il 6 gennaio 1787. Niente Napoleone, niente Parigi: il vero Onofrio nacque quasi un secolo prima del 1809, l'anno in cui è ambientato il film.<br><br>
+Allora da dove vengono gli scherzi? Qui entra la leggenda. Gli aneddoti sul marchese cominciano a circolare a voce solo verso la metà dell'Ottocento, molto dopo la sua morte, e il primo libretto che li raccoglie è del 1887, di Raffaello Giovagnoli, che ammette di non sapere nemmeno il nome di battesimo del personaggio, e scrive che per molti era addirittura un duca. Gli storici, a partire dal Dizionario Biografico degli Italiani, dicono chiaramente che sulla loro autenticità è doveroso dubitare. Nella figura del marchese si sono probabilmente fuse l'avarizia e la stravaganza dello zio Bernardo e la prodigalità del nipote Onofrio.<br><br>
+Alcune delle storie più celebri vengono proprio da quel libretto. Il carbonaio che il marchese trova ubriaco per strada, fa lavare e mette a dormire nel proprio letto, fingendosi per un giorno il suo maggiordomo: nel racconto di Giovagnoli si chiamava Baciccia e aveva bottega in Via Tomacelli, nel film diventa Gasperino, il sosia. E la burla delle campane di Roma fatte suonare a morto, e il falegname che il marchese non voleva pagare perché, dice al papa, voleva mettere alla prova la Giustizia? Anche quella viene da Giovagnoli. Sono storie di tradizione orale, raccolte quasi un secolo dopo, e vanno prese per quello che sono: leggende romane, di quelle belle.<br><br>
+E la frase famosa? Non l'hanno inventata né Monicelli né Sordi. Viene da un sonetto di Giuseppe Gioachino Belli, il grande poeta romanesco dell'Ottocento, intitolato Li soprani der Monno vecchio, che racconta di un re che dal palazzo manda un editto ai popoli: «Io sò io», e voialtri non siete niente, per dirla in modo educato. Anche lo schiaffo che il marchese dà all'attrice Olimpia dopo un'esecuzione capitale viene da un altro sonetto di Belli, Er Ricordo, che racconta l'usanza romana dei padri che schiaffeggiavano i figli davanti a un'esecuzione, perché non la dimenticassero mai.<br><br>
+E il palazzo del film? Non è questo. Il palazzo del marchese, nel film, è Palazzo Pfanner, a Lucca. Ma una scena importante, quella sulla terrazza, è girata a Roma, proprio nella loggia della Casa dei Cavalieri di Rodi che hai visto un attimo fa, con una rapida inquadratura verso il Campidoglio. E gli appartamenti del Papa? Non si poteva girare al Quirinale, così furono girati in Campidoglio, nelle sale degli attuali Musei Capitolini.<br><br>
+Quanto a questo palazzo, una diceria dei romani vuole che ci abitasse davvero il marchese Onofrio. Non è documentato, ma è così bella che tutti la ripetono. Di certo c'è che il palazzo ingloba una torre medievale del 1223, detta la Miliziola, collegata da un arco, l'arco dei Conti, e che qui, dal 1965 al 1987, visse il pittore Renato Guttuso. Un marchese di leggenda, un grande pittore in carne e ossa. Ora prosegui in salita: lì in fondo ti aspetta un imperatore.`,
+    deepen: [
+      { type: "link", title: "Onofrio del Grillo — Wikipedia", url: "https://it.wikipedia.org/wiki/Onofrio_del_Grillo" }
+    ]
+  },
+  {
+    id: 5, ready: true,
+    name: "Mercati di Traiano e Torre delle Milizie",
+    desc: "Il complesso di Traiano costruito dentro una collina e la torre pendente detta «di Nerone»",
+    lat: 41.8959, lon: 12.4865,
+    audio: "audio/tappa5.mp3",
+    photos: [
+      { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Mercati_di_Traiano_-_Roma.jpg?width=900",
+        caption: "I Mercati di Traiano", credit: "Wikimedia Commons" },
+      { time: 75, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Torre_Delle_Milizie_e_Santa_Caterina_da_Siena.JPG?width=900",
+        caption: "La Torre delle Milizie e Santa Caterina a Magnanapoli", credit: "Wikimedia Commons" }
+    ],
+    fullText: `Questa è la grande scalinata nascosta della Roma imperiale: i Mercati di Traiano. Nascono agli inizi del secondo secolo insieme al Foro di Traiano, per occupare e sostenere il taglio della collina del Quirinale, che l'imperatore fece sbancare per fare spazio al suo foro. Il complesso ha una forma semicircolare, come l'esedra del foro, e si sviluppa su ben sei livelli. Per secoli li abbiamo chiamati mercati, ma oggi si pensa che servissero soprattutto come sede delle attività amministrative collegate ai Fori, e solo in parte per il commercio. L'architetto è probabilmente Apollodoro di Damasco, anche se i lavori di sbancamento potrebbero essere cominciati già sotto Domiziano.<br><br>
+In mezzo ai vari edifici corre una strada antica che nella tarda antichità prese il nome di Via Biberatica, un nome che, secondo una delle ipotesi, richiama il bere, forse per le taverne che vi si affacciavano. E a sud questa via si ricollega proprio alla Salita del Grillo, che hai appena percorso: ripercorre dunque un tracciato antichissimo. Dal 2007 i Mercati ospitano il Museo dei Fori Imperiali, con ingresso da Via Quattro Novembre, a pochi passi. Se un giorno ti avanzano due ore, entra: è uno dei pochi posti dove si cammina dentro la Roma imperiale, passando da una bottega romana all'altra.<br><br>
+Ora alza lo sguardo, dietro i Mercati: la Torre delle Milizie. Dritta, di mattoni, con una leggera pendenza verso il Colosseo di circa un grado e tre decimi, tanto da essere chiamata anche la torre pendente di Roma. La fece costruire, secondo Vasari, la famiglia Conti nei primi anni del Duecento, ai tempi di Innocenzo Terzo, come parte di un castello fortificato, il castello delle Milizie. Il terremoto del 1349, lo stesso che danneggiò la Torre dei Conti, la ferì gravemente e fece crollare l'ultimo piano.<br><br>
+Per molti è la Torre di Nerone. Una leggenda da guida turistica vuole che l'imperatore abbia assistito da qui all'incendio del 64, ma la torre è del Duecento, più di mille anni dopo. Gli storici dicono che Nerone avrebbe guardato la devastazione da una torre dei giardini di Mecenate, sull'Esquilino. E il nome Milizie? Fino all'inizio del Novecento si credeva derivasse da un corpo militare ospitato nel Duecento. Oggi quella spiegazione è ritenuta inaccettabile, e si discute se in zona ci fosse stato, prima, un quartiere militare. Come spesso a Roma, il nome è più famoso della spiegazione.<br><br>
+Il castello passò di mano più volte. Lo comprò Bonifacio Ottavo, che ne fece un fortilizio per i Caetani, poi fu degli Annibaldi, poi di nuovo dei Conti, che nel 1332 ne divisero la proprietà con gli Orsini. Nel 1619 la torre fu ceduta alle suore del monastero di Santa Caterina a Magnanapoli, che costruirono qui accanto la chiesa che vedi, e nel farlo spazzarono via le ultime rovine del castello. Oggi la torre resta sola, a ricordare quando Roma era una città di baroni e di torri. Adesso raggiungi Largo Magnanapoli, la piazza qui davanti: da lì parte Via Panisperna, la strada che attraverserà tutto il nostro giro. Prendila e comincia a salire.`,
+    deepen: [
+      { type: "link", title: "Mercati di Traiano — Wikipedia", url: "https://it.wikipedia.org/wiki/Mercati_di_Traiano" }
+    ]
+  },
+  {
+    id: 6, ready: true,
+    name: "San Lorenzo in Panisperna",
+    desc: "Pane e prosciutto, una casa medievale e il forno di San Lorenzo",
+    lat: 41.89742, lon: 12.49268,
+    audio: "audio/tappa6.mp3",
+    photos: [
+      { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/San_Lorenzo_in_Panisperna_-_esterno.jpg?width=900",
+        caption: "San Lorenzo in Panisperna", credit: "Wikimedia Commons" }
+    ],
+    fullText: `Fermati un momento davanti a questa chiesa: San Lorenzo in Panisperna. Il nome fa sorridere, e ha una spiegazione che i romani raccontano volentieri: Panisperna verrebbe da «panis et perna», pane e prosciutto, che le monache clarisse del convento vicino distribuivano ai poveri il 10 agosto, giorno di San Lorenzo. È una tradizione, non un documento, ma è così saporita che nessuno la discute. Il secondo nome, «in Formosa», viene invece da papa Formoso, che nel nono secolo costruì la prima chiesa attestata sul posto: la leggenda che la vuole costruita già da Costantino sul luogo del martirio del santo è appunto solo una leggenda. Nella cripta la tradizione indica il forno in cui sarebbe stato martirizzato Lorenzo, quello della famosa graticola. E accanto alla chiesa resta una delle pochissime case medievali rimaste a Roma. Davanti a questa porta, nel Trecento, una nobildonna svedese, Santa Brigida, chiedeva l'elemosina per i poveri. Ora prosegui lungo Via Panisperna: tra pochi passi arrivi a un indirizzo con una storia da Nobel.`,
+    deepen: [
+      { type: "link", title: "San Lorenzo in Panisperna — Wikipedia", url: "https://it.wikipedia.org/wiki/San_Lorenzo_in_Panisperna" }
+    ]
+  },
+  {
+    id: 7, ready: true,
+    name: "I ragazzi di via Panisperna",
+    desc: "Fermi, la paraffina e i giovani fisici che cambiarono il Novecento",
+    lat: 41.89789, lon: 12.49382,
+    audio: "audio/tappa7.mp3",
+    photos: [
+      { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Via_Panisperna_89%2C_Rome.png?width=900",
+        caption: "Via Panisperna 89", credit: "Wikimedia Commons" },
+      { time: 34, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Ragazzi_di_via_Panisperna.jpg?width=900",
+        caption: "I ragazzi di via Panisperna", credit: "Wikimedia Commons" }
+    ],
+    fullText: `Via Panisperna, numero 89. Siamo davanti a un posto dove, negli anni Trenta, un gruppo di ragazzi lavorò a quello che avrebbe cambiato il mondo. Qui, fino al 1935, al numero 90, c'era il Regio Istituto Fisico dell'Università di Roma, e chi vi lavorava è passato alla storia con un soprannome: i ragazzi di via Panisperna. Oggi un museo dedicato, il Museo storico della fisica e Centro studi Enrico Fermi, si trova in Piazza del Viminale, poco lontano, ma il luogo dove tutto è successo è questo.<br><br>
+Il capo era Enrico Fermi, che aveva venticinque anni quando nel 1926 gli fu assegnata la prima cattedra italiana di fisica teorica, creata apposta per lui. A proteggerlo c'era Orso Mario Corbino, senatore, già ministro, direttore dell'istituto, che per primo ne riconobbe le qualità. Intorno a Fermi si riunì un gruppo di giovanissimi: Edoardo Amaldi, Franco Rasetti, Emilio Segrè, poi, nel 1934, Bruno Pontecorvo e il chimico Oscar D'Agostino, e sul fronte teorico un fisico di genio, Ettore Majorana. Si racconta che tra loro chiamassero Fermi «il Papa», perché non sbagliava mai.<br><br>
+In quei mesi il gruppo bombardava vari elementi con i neutroni, per renderli artificialmente radioattivi. E qui arriva l'episodio che gli storici della scienza amano raccontare. Una mattina di ottobre del 1934 Fermi era solo in laboratorio, perché i suoi collaboratori erano a lezione o agli esami. Doveva misurare un campione d'argento, mettendo un cuneo di piombo tra la sorgente di neutroni e il bersaglio. Un istante prima di cominciare ebbe un'intuizione: al posto del piombo mise un pezzo di paraffina. I risultati furono straordinari, molto oltre ogni previsione. Perché l'avesse fatto non è mai stato del tutto chiaro: la persona più sorpresa fu proprio lui.<br><br>
+Il motivo lo capì subito dopo: la paraffina è ricca di idrogeno, e rallenta i neutroni, e i neutroni lenti sono molto più efficaci nel rendere radioattivi gli atomi, cosa che all'epoca nessuno si aspettava. La sera stessa i ragazzi scrissero un breve articolo, intitolato «Azione di sostanze idrogenate sulla radioattività provocata da neutroni». E ripeterono l'esperimento con l'acqua, anch'essa ricca di idrogeno, ottenendo lo stesso risultato clamoroso. Ed è qui che circola l'aneddoto più celebre: si racconta che per la prova con l'acqua usassero la vasca dei pesci rossi del giardino dell'istituto. Lo ricordano i protagonisti stessi, ma come per tutte le belle storie è bene prenderla con un sorriso.<br><br>
+Il resto è storia, e non è tutta allegra. Nel 1938, dopo la morte di Corbino, con le leggi razziali fasciste e alla vigilia della guerra, il gruppo si disperse. Fermi, la cui moglie aveva origini ebraiche, ricevette il Nobel per la fisica, proprio per la scoperta dei neutroni lenti, e partì per gli Stati Uniti. Segrè emigrò, Rasetti andò in Canada, Pontecorvo prima in Francia e poi, nel 1950, in Unione Sovietica. Majorana, il più geniale di tutti, scomparve misteriosamente nel 1938. Restarono in Italia soltanto Amaldi e D'Agostino, e Amaldi ricostruì la fisica italiana nel dopoguerra e fu uno dei fondatori del CERN. Quella scoperta aprì la strada al primo reattore a fissione a catena e, più tardi, alla bomba atomica. Un cancello qualsiasi di una strada di Roma, e il Novecento che ci passa dentro.<br><br>
+Ora scendi verso Via Urbana. Pochi minuti, e un salto indietro di duemila anni.`,
+    deepen: [
+      { type: "link", title: "Ragazzi di via Panisperna — Wikipedia", url: "https://it.wikipedia.org/wiki/Ragazzi_di_via_Panisperna" }
+    ]
+  },
+  {
+    id: 8, ready: true,
+    name: "Via Urbana, l'antico Vicus Patricius",
+    desc: "La strada dei patrizi, il bivio della Suburra e una casa del vero marchese",
+    lat: 41.89715, lon: 12.49445,
+    audio: "audio/tappa8.mp3",
+    photos: [
+      { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Monti_-_via_Urbana_1010033.JPG?width=900",
+        caption: "Via Urbana", credit: "Wikimedia Commons" }
+    ],
+    fullText: `Stai camminando su Via Urbana, e sotto di te c'è una strada che ha duemila anni. Si chiamava Vicus Patricius, la via dei patrizi. In età romana la parte alta del rione, quella che sale verso le Terme di Diocleziano, era fatta di domus signorili raccolte proprio intorno a questa via, mentre la parte bassa, la Suburra che hai appena lasciato, era plebea e paludosa. L'Argileto, la strada del fango, a un certo punto si biforcava: un ramo, il Vicus Patricius, saliva verso la porta Viminale delle mura repubblicane, cioè quella che oggi è Via Urbana; l'altro, il Clivus Suburanus, saliva verso la porta Esquilina, ed è la futura Via in Selci, dove passeremo tra poco. Un'ultima curiosità, che ti riporta al marchese di prima: nell'inventario dell'eredità dello zio Bernardo, quella che Onofrio del Grillo dilapidò, compare anche una casa in Via Urbana. Fra poco vedrai due chiese legate alla stessa famiglia di santi: continua sulla strada.`,
+    deepen: [
+      { type: "link", title: "Vicus Patricius — Wikipedia", url: "https://it.wikipedia.org/wiki/Vicus_Patricius" }
+    ]
+  },
+  {
+    id: 9, ready: true,
+    name: "Santa Pudenziana",
+    desc: "La chiesa creduta la più antica di Roma e un mosaico del 390",
+    lat: 41.89845, lon: 12.49547,
+    audio: "audio/tappa9.mp3",
+    photos: [
+      { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Santa_Pudenziana_%28Roma%29%2C_particolare_della_facciata.JPG?width=900",
+        caption: "La facciata di Santa Pudenziana", credit: "Wikimedia Commons" }
+    ],
+    fullText: `Sei davanti a Santa Pudenziana, in Via Urbana. Per secoli si è creduto che fosse la più antica chiesa cristiana di Roma. La storia tradizionale è affascinante: nove metri sotto di te ci sarebbe la casa di un senatore romano, Pudente, che avrebbe ospitato l'apostolo Pietro per sette anni, e si sarebbe convertito con le due figlie, Pudenziana e Prassede, che danno il nome a questa chiesa e a quella che visiteremo tra poco.<br><br>
+Gli studi moderni sono più prudenti. I restauri degli anni Quaranta hanno suggerito che le strutture facessero parte di terme del secondo secolo, le Terme di Novato, trasformate in chiesa alla fine del quarto secolo, sotto papa Siricio. Ma studi più recenti contestano anche questa ipotesi, perché non sono state trovate vasche né condotti, tipici di un edificio termale. L'unica cosa certa è che negli atti del sinodo del 499 la chiesa compare come titulus Pudentis: dunque esiste già, ed è antichissima.<br><br>
+E poi c'è il mosaico. Se la chiesa è aperta, entra e guarda l'abside: Cristo in trono, come un maestro, con in mano un libro aperto dove si legge la scritta Dominus conservator ecclesiae Pudentianae, il Signore protettore della chiesa di Pudenziana. Attorno a lui gli apostoli, ne restano dieci, e due donne che incoronano Pietro e Paolo. Per qualcuno sono Pudenziana e Prassede; per gli studiosi, più probabilmente, sono due allegorie: la Chiesa nata dall'ebraismo e la Chiesa nata dal paganesimo. Dietro, una città con un portico che sembra Gerusalemme, con le chiese costruite da Costantino, e al centro una croce gemmata. Risale a circa il 390: non è il più antico mosaico d'abside di Roma, il primato spetta a Santa Costanza, del 360, ma è uno dei più straordinari per fantasia e forza.<br><br>
+Una parte del mosaico fu distrutta nel Cinquecento. Nel 1588 il cardinale Enrico Caetani incaricò Francesco Capriani, detto il Volterra, di ristrutturare la chiesa: nei lavori furono sacrificati i bordi del mosaico, e con loro gli altri due apostoli. Non fu l'unico intervento pesante: Capriani demolì il portico esterno, sostituì le capriate con volte e divise lo spazio in tre navate.<br><br>
+Guarda ora la facciata. Fu restaurata nel 1870, l'anno in cui Roma diventa capitale d'Italia, per volontà del cardinale titolare di allora, Luciano Bonaparte, discendente della famiglia di Napoleone. Un Bonaparte che rimette a posto una chiesa romana mentre i bersaglieri entrano da Porta Pia: la storia a volte ha il senso del teatro. Sul fianco vedi il campanile del Duecento, a cinque ordini, con loggette e dischi di marmi colorati, costruito sotto Innocenzo Terzo. Oggi la chiesa è la chiesa nazionale dei filippini a Roma.<br><br>
+Adesso cammina verso Santa Maria Maggiore: il campanile romanico che spunta sopra i tetti ti fa da faro.`,
+    deepen: [
+      { type: "link", title: "Basilica di Santa Pudenziana — Wikipedia", url: "https://it.wikipedia.org/wiki/Basilica_di_Santa_Pudenziana" }
+    ]
+  },
+  {
+    id: 10, ready: true,
+    name: "Santa Maria Maggiore",
+    desc: "La neve di agosto, il presepe di Arnolfo, due papi gemelli e Bernini",
+    lat: 41.89763, lon: 12.49847,
+    audio: "audio/tappa10.mp3",
+    photos: [
+      { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Facciata_della_basilica_di_Santa_Maria_Maggiore%2C_before_1976_-_Archivio_Accademia_delle_Scienze_Torino%2C_Millon_49_18_321.jpg?width=900",
+        caption: "La facciata di Santa Maria Maggiore", credit: "Wikimedia Commons" },
+      { time: 93, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Arnolfo_di_Cambio_-_Presepio_-_Rm.JPG?width=900",
+        caption: "Il presepe di Arnolfo di Cambio", credit: "Wikimedia Commons" }
+    ],
+    fullText: `Santa Maria Maggiore. Hai davanti una delle quattro basiliche papali di Roma, dedicata alla Madonna. Fu ricostruita o ristrutturata da papa Sisto Terzo tra il 432 e il 440, subito dopo il concilio di Efeso del 431, che aveva riconosciuto la divina maternità di Maria: la basilica è, in un certo senso, il monumento a quella decisione. Sulla facciata, i mosaici dorati sono duecenteschi, opera di Filippo Rusuti.<br><br>
+La tradizione racconta che la Madonna apparve in sogno a papa Liberio e a un patrizio di nome Giovanni, chiedendo di costruire una chiesa in un luogo che sarebbe stato indicato in modo miracoloso. La mattina del 5 agosto un'insolita nevicata imbiancò l'Esquilino, e Liberio avrebbe tracciato nella neve il perimetro della basilica, costruita poi con i soldi di Giovanni. Non esistono prove storiche. Ma ancora oggi, ogni 5 agosto, durante la messa, dal soffitto della basilica scende una cascata di petali bianchi: pensa che scena, in piena estate romana.<br><br>
+Dentro, il soffitto a cassettoni fu voluto dal cardinale Rodrigo Borgia, quello che sarebbe diventato papa Alessandro Sesto, su un progetto attribuito a Giuliano da Sangallo. Una tradizione molto ripetuta racconta che sia stato dorato con il primo oro arrivato dalle Americhe, dono dei sovrani di Spagna. Gli storici ne discutono, ma intanto è un soffitto d'oro, e sotto di esso i mosaici del quinto secolo con le storie di Abramo, Giacobbe, Isacco, Mosè e Giosuè continuano a raccontare, da milleseicento anni, la stessa storia.<br><br>
+Questa basilica è anche la basilica del Presepe. Già nel 432 Sisto Terzo creò qui una grotta della Natività simile a quella di Betlemme, tanto che la chiesa fu chiamata Santa Maria ad praesepem, alla mangiatoia. Nel 1288 papa Niccolò Quarto commissionò ad Arnolfo di Cambio una Natività, che lui terminò di scolpire nel 1292: le statue sono in pietra, e quelle superstiti sono oggi nel museo della basilica. I pellegrini che tornavano dalla Terra Santa portarono a Roma frammenti del legno della Sacra Culla, che oggi sono custoditi nella teca dorata sotto l'altare.<br><br>
+Poi, nel Cinquecento e nel Seicento, i papi si fanno la loro cappella. Sisto Quinto incarica Domenico Fontana, nel 1585, di costruire la cappella Sistina, dove sceglie di farsi seppellire insieme al suo protettore Pio Quinto. Paolo Quinto Borghese risponde nel 1605 con la cappella Paolina, grande come una piccola chiesa, completata nel 1611: due cappelle gemelle, una di fronte all'altra, in una gara a chi era più sfarzoso.<br><br>
+Un dettaglio che pochi notano: sul pavimento, accanto all'altare maggiore, una scritta ricorda la semplice sepoltura di Gian Lorenzo Bernini nella tomba di famiglia. Il genio del barocco, che ha riempito Roma di fontane e di angeli, riposa qui senza un grande monumento. E nella navata sinistra, vicino all'altare di San Francesco, c'è la tomba di papa Francesco, sepolto qui per sua volontà. Era solito pregare qui davanti all'icona della Madonna prima e dopo i suoi viaggi. Esci ora e imbocca Via di Santa Prassede: pochi passi, e la chiesa che cerchi è nascosta in un cortile.`,
+    deepen: [
+      { type: "link", title: "Basilica di Santa Maria Maggiore — Wikipedia", url: "https://it.wikipedia.org/wiki/Basilica_di_Santa_Maria_Maggiore" }
+    ]
+  },
+  {
+    id: 11, ready: true,
+    name: "Santa Prassede",
+    desc: "Un angolo di Bisanzio a Roma: i mosaici di Pasquale I e la colonna della flagellazione",
+    lat: 41.89624, lon: 12.49867,
+    audio: "audio/tappa11.mp3",
+    photos: [
+      { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Pope_Paschalis_I._in_apsis_mosaic_of_Santa_Prassede_in_Rome.gif?width=900",
+        caption: "Papa Pasquale I nel mosaico absidale di Santa Prassede", credit: "Wikimedia Commons" },
+      { time: 77, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Santa_prassede%2C_cappella_di_san_zenone.JPG?width=900",
+        caption: "La cappella di San Zenone", credit: "Wikimedia Commons" }
+    ],
+    fullText: `Santa Prassede: una chiesa nascosta, con la facciata dentro un cortile, tanto che dalla strada quasi non la vedi. Chi la trova entra in un pezzo di Bisanzio, a Roma. La chiesa attuale è opera di papa Pasquale Primo, che la rifece nell'817 per accogliere le ossa dei martiri sepolti nel cimitero di Priscilla, sulla via Salaria. Prassede, secondo la tradizione, era la sorella di Pudenziana: quando il padre Pudente fu martirizzato, le due ragazze ottennero il permesso di far costruire un battistero, e Prassede usò il patrimonio di famiglia per costruire questa chiesa.<br><br>
+Guarda il mosaico dell'abside. In alto Cristo in piedi mostra con la mano destra alzata i segni dei chiodi, e sopra di lui la mano di Dio lo incorona. Accanto a lui, a destra, c'è lo stesso papa Pasquale Primo, che offre a Cristo un modellino della chiesa. Ha l'aureola quadrata, che nell'arte di quell'epoca distingue chi è ancora in vita: un papa che si fa ritrarre mentre è vivo, con il suo regalo in mano. In basso tredici agnelli: al centro Cristo, Agnello pasquale, su un'altura da cui sgorgano i quattro fiumi del paradiso, e ai lati i dodici apostoli. L'iscrizione sotto il mosaico dice che Pasquale spera che quell'offerta gli garantisca un posto in paradiso.<br><br>
+Poi c'è il gioiello: la cappella di San Zenone. Pasquale Primo la fece costruire come luogo di sepoltura per sua madre Teodora, e fu una delle rarissime cappelle romane del nono secolo completamente rivestite di mosaici in stile bizantino, tanto che molti la chiamano il Giardino del Paradiso. Entrando ti sembra di essere in una scatola d'oro e di blu.<br><br>
+In una nicchia, aperta sia sulla cappella che sulla navata destra, si conserva una colonna alta circa sessantatré centimetri: secondo la tradizione è la colonna alla quale Gesù fu flagellato. Fu portata a Roma da Gerusalemme, nel 1223, dal cardinale Giovanni Colonna. E sul pavimento, rifatto nel 1918 in stile cosmatesco, un grande cerchio di porfido segna il punto dove un tempo c'era un pozzo: quello in cui, si racconta, Prassede versava il sangue dei martiri, che raccoglieva con una spugna.<br><br>
+Dal 1198 la chiesa è affidata ai monaci di Vallombrosa, che ancora oggi la possiedono. Esci, e imbocca Via di San Martino ai Monti: la tappa successiva è a pochi passi.`,
+    deepen: [
+      { type: "link", title: "Basilica di Santa Prassede — Wikipedia", url: "https://it.wikipedia.org/wiki/Basilica_di_Santa_Prassede" }
+    ]
+  },
+  {
+    id: 12, ready: true,
+    name: "San Martino ai Monti e la torre dei Capocci",
+    desc: "Il titolo di Equizio, il pellegrino Labre e una torre abitata dai medaglisti",
+    lat: 41.89457, lon: 12.49827,
+    audio: "audio/tappa12.mp3",
+    photos: [
+      { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/San_Martino_ai_Monti_-_Roma_-_facciata_-_2015.JPG?width=900",
+        caption: "San Martino ai Monti", credit: "Wikimedia Commons" }
+    ],
+    fullText: `Questa è la basilica dei Santi Silvestro e Martino ai Monti, e se ti interessano le radici, scendi con la fantasia: la chiesa fu fondata da papa Silvestro Primo nel quarto secolo su un terreno donato da un certo Equizio, ed è per questo che l'antico nome è titulus Equitii. Si sa che nel 324 qui si tenne un incontro preparatorio del concilio di Nicea. Sotto la chiesa attuale, che è carolingia, è stata individuata una struttura a colonne del terzo secolo. Dentro, sulla parete della navata sinistra, due grandi dipinti mostrano gli interni di San Giovanni in Laterano e di San Pietro com'erano nel Seicento, uno attribuito a Gaspard Dughet. E un legame che ti riporta all'inizio del giro: l'abate che gestiva un ospizio per vagabondi vicino a questa chiesa convinse Benedetto Giuseppe Labre, il pellegrino morto a Santa Maria ai Monti, a stabilirsi qui. In piazza guarda la torre dei Capocci: medievale, e dal 1936 il Comune la concesse come bottega e abitazione ai fratelli medaglisti Giampaoli, che ci vissero fino a metà degli anni Sessanta. Una torre medievale come casa e laboratorio. Ora prendi Via in Selci.`,
+    deepen: [
+      { type: "link", title: "Basilica di San Martino ai Monti — Wikipedia", url: "https://it.wikipedia.org/wiki/Basilica_di_San_Martino_ai_Monti" }
+    ]
+  },
+  {
+    id: 13, ready: true,
+    name: "Santa Lucia in Selci",
+    desc: "Il Clivus Suburanus, un monastero fortificato e il giovane Borromini",
+    lat: 41.89452, lon: 12.49682,
+    audio: "audio/tappa13.mp3",
+    photos: [
+
+    ],
+    fullText: `Ti trovi su Via in Selci, e il nome è un indizio: le selci sono i basoli, le pietre con cui i romani lastricavano le strade. Questa strada, ripida e quieta, è l'antico Clivus Suburanus citato dal poeta Marziale, e scende parallela a Via Cavour, aperta alla fine dell'Ottocento: per questo qui sembra di essere ancora nella Roma di prima dell'Unità. Davanti a te Santa Lucia in Selci, fondata nel sesto secolo da papa Simmaco, è parte di un antichissimo monastero fortificato costruito su un edificio romano, di cui si vedono ancora archi tamponati e pilastri di travertino. Appartenne ai benedettini, ai certosini e, dal Seicento, alle monache agostiniane, che ancora la tengono. La ricostruì all'inizio del Seicento Carlo Maderno, e tra il 1628 e il 1639 ci lavorò anche Francesco Borromini, per la cappella della Trinità, su incarico di suor Clarice Vittoria Landi. Il più enigmatico degli architetti del barocco, in questo angolo nascosto. Ora scendi per le stradine verso San Pietro in Vincoli.`,
+    deepen: [
+      { type: "link", title: "Santa Lucia in Selci — Wikipedia", url: "https://it.wikipedia.org/wiki/Santa_Lucia_in_Selci" }
+    ]
+  },
+  {
+    id: 14, ready: true,
+    name: "San Pietro in Vincoli e il Mosè",
+    desc: "Le catene di Pietro, il Mosè di Michelangelo e il Laocoonte scoperto qui accanto",
+    lat: 41.89385, lon: 12.49316,
+    audio: "audio/tappa14.mp3",
+    photos: [
+      { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Roma_-_San_Pietro_in_Vincoli_8576.jpg?width=900",
+        caption: "San Pietro in Vincoli", credit: "Wikimedia Commons" },
+      { time: 50, url: "https://commons.wikimedia.org/wiki/Special:FilePath/San_Pietro_in_Vincoli_-_Il_Mos%C3%A8_di_Michelangelo_3.jpg?width=900",
+        caption: "Il Mosè di Michelangelo", credit: "Wikimedia Commons" },
+      { time: 150, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Laoco%C3%B6n_and_his_sons_group.jpg?width=900",
+        caption: "Il Laocoonte, oggi ai Musei Vaticani", credit: "Wikimedia Commons" },
+      { time: 194, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Domus_Aurea%2C_Nero%27s_Golden_House_%2836453906275%29.jpg?width=900",
+        caption: "La Domus Aurea di Nerone", credit: "Wikimedia Commons" }
+    ],
+    fullText: `San Pietro in Vincoli. Sei sul Colle Oppio, davanti a una chiesa che il mondo conosce per una statua. Prima, però, il nome: «in vincoli» vuol dire alle catene. La basilica fu fatta costruire nel 432 da Licinia Eudossia, figlia dell'imperatore d'Oriente e moglie di quello d'Occidente. Secondo la tradizione, sua madre, Elia Eudocia, aveva ricevuto in dono a Gerusalemme le catene con cui San Pietro fu legato per ordine di Erode Agrippa, e le mandò alla figlia a Roma. Eudossia le mostrò a papa Leone Primo, che le avvicinò a quelle che avevano tenuto prigioniero Pietro nel carcere Mamertino: le due catene, dice la tradizione, si saldarono in modo irreversibile. Sono lì, sotto l'altare: due spezzoni saldati, uno di ventitré anelli e uno di undici anelli più piccoli.<br><br>
+E poi il Mosè. Entra nel transetto destro: Michelangelo scolpì questa statua alta due metri e trentacinque tra il 1513 e il 1516 circa, per la tomba di papa Giulio Secondo, che gliel'aveva commissionata nel 1505. Doveva essere un monumento gigantesco, con circa quaranta statue. Invece quella tomba divenne per Michelangelo quella che lui chiamava la tragedia della sepoltura: il progetto fu ridimensionato più volte, e l'opera fu completata solo nel 1545, trentadue anni dopo la morte del papa. Del progetto originale il Mosè fu l'unica statua pensata fin dall'inizio a essere usata nel risultato finale, e bastò. Il biografo di Michelangelo, Ascanio Condivi, scrive che quella sola statua era sufficiente a fare onore alla sepoltura.<br><br>
+Le corna? Sono quasi certamente un errore di traduzione di San Girolamo: nel libro dell'Esodo si racconta che Mosè scese dal Sinai con due raggi di luce sulla fronte, ma la parola ebraica per raggi fu confusa con quella per corna, e per secoli gli artisti lo hanno raffigurato così. Quanto al famoso aneddoto di Michelangelo che, stupito dal realismo della sua opera, la colpì sul ginocchio con il martello gridando «Perché non parli?», è appunto un aneddoto leggendario. Un dettaglio vero e più curioso lo ha proposto il restauratore Antonio Forcellino: dopo il 1542, venticinque anni dopo averla scolpita, Michelangelo avrebbe ruotato con audacia la testa del Mosè e torto tutto il corpo. La statua, in origine, era seduta in posizione frontale. E Sigmund Freud rimase così colpito da questo Mosè che lo vide come un uomo che trattiene a stento la rabbia.<br><br>
+Ora esci e pensa che, a pochi passi da qui, il 14 gennaio del 1506, accadde un'altra storia. Scavando in una vigna sul colle Oppio, di proprietà di un certo Felice de Fredis, venne alla luce la statua del Laocoonte: un sacerdote troiano e i suoi figli stritolati dai serpenti. Allo scavo assistettero di persona, tra gli altri, Michelangelo e Giuliano da Sangallo, che riconobbe subito la scultura descritta da Plinio. Papa Giulio Secondo la comprò e la mise nel cortile del Belvedere, e quella sistemazione è considerata l'atto fondativo dei Musei Vaticani. Per inciso, Felice de Fredis è anche un antenato di Pierre de Coubertin, il fondatore delle Olimpiadi moderne.<br><br>
+Pochi anni prima, alla fine del Quattrocento, un ragazzo era caduto in una buca su questo colle e si era ritrovato in una grotta ricoperta di figure dipinte: erano le stanze della Domus Aurea di Nerone, la sua Casa d'oro, costruita dopo l'incendio del 64 e poi sepolta dalle Terme di Traiano. Gli artisti si fecero calare con le corde per vederle, e dalle grotte venne il nome di «grottesche». Pinturicchio, Raffaello e Michelangelo si calarono sottoterra a studiarle, e l'effetto su Raffaello si vede nelle logge del Vaticano. Questo colle, sotto i tuoi piedi, ha cambiato l'arte del Rinascimento.<br><br>
+Adesso scendi la scalinata che parte da qui, sotto l'arco, Via di San Francesco di Paola, fino a Via Cavour, e poi ritorna verso Via dei Serpenti e la Piazza della Madonna dei Monti. L'ultima tappa è un po' più su, in Via Panisperna.`,
+    deepen: [
+      { type: "link", title: "Mosè (Michelangelo) — Wikipedia", url: "https://it.wikipedia.org/wiki/Mosè_(Michelangelo)" }
+    ]
+  },
+  {
+    id: 15, ready: true,
+    name: "Ai Tre Scalini: il brindisi finale",
+    desc: "Una bottiglieria dal 1895 sotto l'edera: il consiglio per bere del giro",
+    lat: 41.89545, lon: 12.49058,
+    audio: "audio/tappa15.mp3",
+    photos: [
+      { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Piazza_Madonna_dei_Monti_-_La_fontana.JPG?width=900",
+        caption: "La fontana della Madonna dei Monti", credit: "Wikimedia Commons" }
+    ],
+    fullText: `Eccoci arrivati: il giro finisce qui, a pochi passi dalla Piazza della Madonna dei Monti da cui eri partito. E ti meriti un bicchiere. Questo è il consiglio per bere dell'intero percorso: Ai Tre Scalini, in Via Panisperna 251, una bottiglieria che esiste dal 1895, nascosta dietro un muro d'edera, con una carta di circa cento etichette, tutte italiane. Il nome viene dai tre scalini all'ingresso, consumati da più di un secolo di clienti. Se non c'è posto, i monticiani ti direbbero di aspettare con il bicchiere in mano proprio su quei gradini, che è il modo giusto di fare. Hai camminato in un rione che è stato palude, quartiere malfamato, area di cantiere, rifugio di cavalieri e di fisici, e che oggi è un quartiere dove la gente si siede sui gradini di una fontana. Monti non è cambiato poi tanto: è sempre il posto dove i romani vengono a stare insieme. Alla salute.`,
+    deepen: [
+      { type: "link", title: "Rione Monti — Wikipedia", url: "https://it.wikipedia.org/wiki/Monti_(rione)" }
+    ]
+  }
+];
+
+// Percorso pedonale reale (OpenStreetMap, a piedi) — [lat, lon]
+const ROUTE_COORDS = [[41.894962, 12.490857], [41.894938, 12.490742], [41.894794, 12.490802], [41.894778, 12.490808], [41.89464, 12.490852], [41.894638, 12.490843], [41.894627, 12.49079], [41.894623, 12.49077], [41.894622, 12.490767], [41.894593, 12.49078], [41.894579, 12.490771], [41.894574, 12.490747], [41.894558, 12.490754], [41.894541, 12.490759], [41.894522, 12.490766], [41.894499, 12.490775], [41.89416, 12.490904], [41.894138, 12.490889], [41.893829, 12.489622], [41.893808, 12.489547], [41.893573, 12.488662], [41.893552, 12.488572], [41.893471, 12.488612], [41.893445, 12.488502], [41.893385, 12.488247], [41.893355, 12.488122], [41.893336, 12.488036], [41.89337, 12.488023], [41.893377, 12.488022], [41.893386, 12.488023], [41.893395, 12.488025], [41.893405, 12.48803], [41.893412, 12.488035], [41.893419, 12.488041], [41.89343, 12.488055], [41.89344, 12.488069], [41.893479, 12.488134], [41.893496, 12.488162], [41.893503, 12.48817], [41.893513, 12.488177], [41.893523, 12.488179], [41.893536, 12.488178], [41.893552, 12.488171], [41.893559, 12.488166], [41.893568, 12.488158], [41.893832, 12.487829], [41.893837, 12.487619], [41.894149, 12.487319], [41.894173, 12.487308], [41.894217, 12.487287], [41.894304, 12.487254], [41.894454, 12.487225], [41.894651, 12.487025], [41.894749, 12.48698], [41.894791, 12.486962], [41.894845, 12.486938], [41.894948, 12.486925], [41.894968, 12.486922], [41.895021, 12.486912], [41.895036, 12.486813], [41.895071, 12.486588], [41.895036, 12.486567], [41.895068, 12.486371], [41.895146, 12.486365], [41.895224, 12.486365], [41.895313, 12.486386], [41.895404, 12.48638], [41.895401, 12.486436], [41.895396, 12.486479], [41.895379, 12.486471], [41.895338, 12.486449], [41.895314, 12.486437], [41.895301, 12.486539], [41.895544, 12.486607], [41.895678, 12.486651], [41.895689, 12.486658], [41.895716, 12.486678], [41.895735, 12.486684], [41.89574, 12.486658], [41.895773, 12.48667], [41.895816, 12.486685], [41.895828, 12.486687], [41.89589, 12.486586], [41.895905, 12.486501], [41.89589, 12.486586], [41.895828, 12.486687], [41.895816, 12.486685], [41.895773, 12.48667], [41.89574, 12.486658], [41.895735, 12.486684], [41.895716, 12.486678], [41.895689, 12.486658], [41.895678, 12.486651], [41.895544, 12.486607], [41.895301, 12.486539], [41.895314, 12.486437], [41.895338, 12.486449], [41.895379, 12.486471], [41.895396, 12.486479], [41.895401, 12.486436], [41.895404, 12.48638], [41.895492, 12.486347], [41.895572, 12.486289], [41.89564, 12.486208], [41.895693, 12.486109], [41.895728, 12.485996], [41.895743, 12.485876], [41.896094, 12.48579], [41.896097, 12.485814], [41.8961, 12.485838], [41.896116, 12.485983], [41.896121, 12.486025], [41.896128, 12.486071], [41.896139, 12.486146], [41.896147, 12.486145], [41.896178, 12.486143], [41.896194, 12.486383], [41.896195, 12.486432], [41.896187, 12.486609], [41.896173, 12.486829], [41.896146, 12.487029], [41.896183, 12.487084], [41.89617, 12.487091], [41.896158, 12.487095], [41.896138, 12.4871], [41.896132, 12.487162], [41.896119, 12.487307], [41.896086, 12.487627], [41.896025, 12.488303], [41.896018, 12.488403], [41.896016, 12.4885], [41.896017, 12.488563], [41.896018, 12.488614], [41.896027, 12.488724], [41.896062, 12.489021], [41.896067, 12.489056], [41.896073, 12.489089], [41.896083, 12.489133], [41.896094, 12.489186], [41.896104, 12.489227], [41.896138, 12.489214], [41.896145, 12.489212], [41.896306, 12.490058], [41.896317, 12.490113], [41.896345, 12.490103], [41.896348, 12.490111], [41.896355, 12.490143], [41.896365, 12.490188], [41.896367, 12.490199], [41.896343, 12.490208], [41.896348, 12.490241], [41.896415, 12.490606], [41.89642, 12.490636], [41.896442, 12.49063], [41.896442, 12.490633], [41.896447, 12.490666], [41.896451, 12.490694], [41.896452, 12.490699], [41.896432, 12.490705], [41.896799, 12.492575], [41.896827, 12.492601], [41.896828, 12.492612], [41.896837, 12.492694], [41.896849, 12.492793], [41.897212, 12.492363], [41.896849, 12.492793], [41.896837, 12.492814], [41.896853, 12.492889], [41.896911, 12.492923], [41.896885, 12.493123], [41.896894, 12.493168], [41.8969, 12.493206], [41.896916, 12.493213], [41.89696, 12.493468], [41.897667, 12.494206], [41.89696, 12.493468], [41.896982, 12.493571], [41.89701, 12.493722], [41.897011, 12.493747], [41.897071, 12.494056], [41.89708, 12.494104], [41.897092, 12.494177], [41.897138, 12.494454], [41.89714, 12.494463], [41.897184, 12.494683], [41.897193, 12.494735], [41.897218, 12.494873], [41.897266, 12.49492], [41.89727, 12.494977], [41.897275, 12.495052], [41.897277, 12.495071], [41.897311, 12.495066], [41.89784, 12.495534], [41.897863, 12.495554], [41.897879, 12.495522], [41.898269, 12.495861], [41.898293, 12.495809], [41.898302, 12.495789], [41.898311, 12.495771], [41.898299, 12.495761], [41.898267, 12.495732], [41.898277, 12.495713], [41.898315, 12.495742], [41.898331, 12.495756], [41.898335, 12.495746], [41.898273, 12.495691], [41.898288, 12.495661], [41.898325, 12.495588], [41.898368, 12.495628], [41.898325, 12.495588], [41.898288, 12.495661], [41.898273, 12.495691], [41.898335, 12.495746], [41.898331, 12.495756], [41.898315, 12.495742], [41.898277, 12.495713], [41.898267, 12.495732], [41.898299, 12.495761], [41.898311, 12.495771], [41.898302, 12.495789], [41.898293, 12.495809], [41.898476, 12.495966], [41.89861, 12.496081], [41.898644, 12.496108], [41.898792, 12.496233], [41.898778, 12.496253], [41.898754, 12.496288], [41.898734, 12.496316], [41.898711, 12.496344], [41.898262, 12.496868], [41.898144, 12.496745], [41.898134, 12.496734], [41.898125, 12.496746], [41.898089, 12.496806], [41.898039, 12.496886], [41.89803, 12.496901], [41.89802, 12.496884], [41.897674, 12.497322], [41.897657, 12.497343], [41.89762, 12.497378], [41.897571, 12.497426], [41.89756, 12.497437], [41.89756, 12.497448], [41.897558, 12.497461], [41.897554, 12.497474], [41.897518, 12.497522], [41.897537, 12.497549], [41.897572, 12.497596], [41.897604, 12.497641], [41.897619, 12.497658], [41.897568, 12.497724], [41.897601, 12.497765], [41.897521, 12.497883], [41.897472, 12.497883], [41.897461, 12.497897], [41.897376, 12.498032], [41.897365, 12.498049], [41.897373, 12.498114], [41.897364, 12.498127], [41.897363, 12.498128], [41.897299, 12.498225], [41.897167, 12.498432], [41.897101, 12.498539], [41.897086, 12.498525], [41.897095, 12.49851], [41.897014, 12.498419], [41.896971, 12.498366], [41.896933, 12.498321], [41.896918, 12.498302], [41.896864, 12.498353], [41.896841, 12.49838], [41.896797, 12.498429], [41.896775, 12.498452], [41.896793, 12.498489], [41.896797, 12.498506], [41.896766, 12.498534], [41.896733, 12.498568], [41.896695, 12.498603], [41.896623, 12.498671], [41.896493, 12.49879], [41.89642, 12.498858], [41.896408, 12.49883], [41.896408, 12.49883], [41.89642, 12.498858], [41.896231, 12.499023], [41.896186, 12.499064], [41.895947, 12.499243], [41.895925, 12.499259], [41.895913, 12.499268], [41.895903, 12.499275], [41.895884, 12.499289], [41.895864, 12.499303], [41.895818, 12.499112], [41.895808, 12.499117], [41.895796, 12.499077], [41.895769, 12.499093], [41.895729, 12.49896], [41.89572, 12.49893], [41.895711, 12.4989], [41.895702, 12.498904], [41.895714, 12.498948], [41.89513, 12.49917], [41.895102, 12.49918], [41.895101, 12.499201], [41.895093, 12.499199], [41.895028, 12.499188], [41.895003, 12.499184], [41.894965, 12.499176], [41.894953, 12.499178], [41.894835, 12.499319], [41.894831, 12.499323], [41.894795, 12.499277], [41.894463, 12.498761], [41.894463, 12.498749], [41.894436, 12.498705], [41.894417, 12.498672], [41.894417, 12.498662], [41.894626, 12.498436], [41.894655, 12.498402], [41.894825, 12.498204], [41.894928, 12.498069], [41.894941, 12.49805], [41.894943, 12.498073], [41.894951, 12.498149], [41.895039, 12.498117], [41.895041, 12.498058], [41.895041, 12.497838], [41.895045, 12.497421], [41.895046, 12.497231], [41.89505, 12.496884], [41.894987, 12.49688], [41.894975, 12.496878], [41.894989, 12.495866], [41.895, 12.495115], [41.894923, 12.49467], [41.894838, 12.49418], [41.894805, 12.494118], [41.894763, 12.494109], [41.894739, 12.49412], [41.894723, 12.49414], [41.894699, 12.4941], [41.89466, 12.494034], [41.894657, 12.494067], [41.894628, 12.494187], [41.8946, 12.494461], [41.894593, 12.494856], [41.894603, 12.49561], [41.894618, 12.495932], [41.894697, 12.496228], [41.894793, 12.496557], [41.894823, 12.496656], [41.894793, 12.496557], [41.894697, 12.496228], [41.894618, 12.495932], [41.894603, 12.49561], [41.894593, 12.494856], [41.8946, 12.494461], [41.894628, 12.494187], [41.894657, 12.494067], [41.89466, 12.494034], [41.894669, 12.493923], [41.89468, 12.493843], [41.894397, 12.493818], [41.894332, 12.493812], [41.894319, 12.493811], [41.894258, 12.493805], [41.894242, 12.493804], [41.894188, 12.493799], [41.894159, 12.493799], [41.894156, 12.493762], [41.894105, 12.493338], [41.894101, 12.493304], [41.894093, 12.493257], [41.894083, 12.493207], [41.894074, 12.493167], [41.894063, 12.493123], [41.89405, 12.49308], [41.894041, 12.49305], [41.893935, 12.492719], [41.893837, 12.492408], [41.893877, 12.49239], [41.894062, 12.492306], [41.894168, 12.492257], [41.894288, 12.492194], [41.894308, 12.492185], [41.894324, 12.492192], [41.894389, 12.492167], [41.894451, 12.492143], [41.89447, 12.492117], [41.894533, 12.492092], [41.89464, 12.492062], [41.894723, 12.492039], [41.894762, 12.492008], [41.894782, 12.492002], [41.894803, 12.491996], [41.894721, 12.491518], [41.894795, 12.491484], [41.894787, 12.491444], [41.89478, 12.491413], [41.894884, 12.491364], [41.894881, 12.491349], [41.89484, 12.491098], [41.894794, 12.490802], [41.894938, 12.490742], [41.894955, 12.490734], [41.894984, 12.490721], [41.895335, 12.490594], [41.895447, 12.490561]];
+</script>
+<script src="../shared/app.js"></script>
+</body>
+</html>
