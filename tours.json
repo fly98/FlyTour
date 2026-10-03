@@ -464,5 +464,24 @@
     "lon": 12.474504,
     "cover": "https://commons.wikimedia.org/wiki/Special:FilePath/Torre_degli_Anguillara_Roma.jpg?width=700",
     "url": "https://fly98.github.io/FlyTour/romacapitale/index.html"
+  },
+  {
+    "slug": "monti",
+    "country": "Italia",
+    "city": "Roma",
+    "audience": "personal",
+    "title": {
+      "it": "Monti"
+    },
+    "desc": {
+      "it": "Il primo rione di Roma a tappe fitte: la Suburra, torri medievali, il Marchese del Grillo, Fermi e i ragazzi di via Panisperna, mosaici di milleseicento anni. Anello di ~4,5 km."
+    },
+    "duration": "~3h",
+    "distance": "~4,5 km (anello)",
+    "stops": 15,
+    "lat": 41.8949,
+    "lon": 12.49088,
+    "cover": "https://commons.wikimedia.org/wiki/Special:FilePath/Fontana_dei_catecumeni_a_madonna_dei_monti_051218-06.JPG?width=700",
+    "url": "https://fly98.github.io/FlyTour/monti/index.html"
   }
 ]
