@@ -483,5 +483,36 @@
     "lon": 12.49088,
     "cover": "https://commons.wikimedia.org/wiki/Special:FilePath/Fontana_dei_catecumeni_a_madonna_dei_monti_051218-06.JPG?width=700",
     "url": "https://fly98.github.io/FlyTour/monti/index.html"
+  },
+  {
+    "slug": "romanera",
+    "country": "Italia",
+    "city": "Roma",
+    "audience": "personal",
+    "title": {
+      "it": "Roma Nera",
+      "en": "Dark Rome",
+      "es": "Roma Negra",
+      "fr": "Rome Noire",
+      "de": "Das dunkle Rom",
+      "pt": "Roma Negra",
+      "zh": "黑暗罗马"
+    },
+    "desc": {
+      "it": "Patiboli, veleni, carceri e cadaveri ripescati dal Tevere. Dal rogo di Giordano Bruno in Campo de' Fiori alla stanza murata dove morì Cesare, passando per la cripta di ossa di via Giulia e il boia di Roma. 12 tappe fitte, anello di 3,2 km, a qualsiasi ora.",
+      "en": "Scaffolds, poisons, prisons and bodies fished out of the Tiber. From the burning of Giordano Bruno in Campo de' Fiori to the walled-up room where Caesar died, by way of the bone crypt on via Giulia and Rome's executioner. 12 close-set stops, a 3.2 km loop, any time of day.",
+      "es": "Patíbulos, venenos, cárceles y cadáveres sacados del Tíber. De la hoguera de Giordano Bruno en Campo de' Fiori a la sala tapiada donde murió César, pasando por la cripta de huesos de via Giulia y el verdugo de Roma. 12 paradas seguidas, anillo de 3,2 km, a cualquier hora.",
+      "fr": "Échafauds, poisons, prisons et cadavres repêchés dans le Tibre. Du bûcher de Giordano Bruno au Campo de' Fiori à la salle murée où mourut César, en passant par la crypte d'ossements de la via Giulia et le bourreau de Rome. 12 étapes rapprochées, boucle de 3,2 km, à toute heure.",
+      "de": "Schafotte, Gifte, Gefängnisse und Leichen, die man aus dem Tiber zog. Von der Verbrennung Giordano Brunos am Campo de' Fiori bis zum zugemauerten Saal, in dem Caesar starb, über die Knochenkrypta der via Giulia und den Henker von Rom. 12 dicht aufeinanderfolgende Stationen, 3,2-km-Runde, zu jeder Tageszeit.",
+      "pt": "Patíbulos, venenos, prisões e cadáveres retirados do Tibre. Da fogueira de Giordano Bruno no Campo de' Fiori à sala emparedada onde morreu César, passando pela cripta de ossos da via Giulia e pelo carrasco de Roma. 12 paragens próximas, anel de 3,2 km, a qualquer hora.",
+      "zh": "断头台、毒药、监狱，以及从台伯河里打捞上来的尸体。从布鲁诺在鲜花广场的火刑，到凱撒死去后被封砌的房间，途经朱利亚路的骨骸地下室和罗马的刽子手。12个紧密相连的站点，3.2公里环线，任何时间都可以走。"
+    },
+    "duration": "~2h (audio ~25 min)",
+    "distance": "3,2 km (anello)",
+    "stops": 12,
+    "lat": 41.8956045,
+    "lon": 12.4721757,
+    "cover": "https://commons.wikimedia.org/wiki/Special:FilePath/Santa%20Maria%20dell'Orazione%20e%20Morte%2C%20dettaglio.jpg?width=700",
+    "url": "https://fly98.github.io/FlyTour/romanera/index.html"
   }
 ]
