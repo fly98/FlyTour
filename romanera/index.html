@@ -18,9 +18,9 @@
 <div class="wrap">
   <header>
     <a href="../index.html" class="back-link">← Tutti i percorsi</a>
-    <div class="eyebrow">Passeggiata narrata · ~2h · 3,2 km, anello · a qualsiasi ora</div>
+    <div class="eyebrow">Passeggiata narrata · ~2h30 · 3,8 km, anello · a qualsiasi ora</div>
     <h1>Roma Nera</h1>
-    <p class="subtitle">Patiboli, veleni, carceri e cadaveri ripescati dal Tevere. Dal rogo di Giordano Bruno alla stanza murata dove morì Cesare: dodici tappe fitte in mezzo chilometro quadrato di centro, da fare a qualsiasi ora. Cammina, e ti racconto io.</p>
+    <p class="subtitle">Patiboli, veleni, carceri e cadaveri ripescati dal Tevere, più un mago, una strega e un fantasma in carrozza. Dal rogo di Giordano Bruno alla stanza murata dove morì Cesare: quindici tappe fitte nel cuore di Roma, da fare a qualsiasi ora. Cammina, e ti racconto io.</p>
   </header>
 
   <div class="trail" id="trail"></div>
@@ -119,7 +119,7 @@
 
 <script src="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.js"></script>
 <script>
-// ---- Dati tappe: Roma Nera (7 tappe principali + 5 intermezzi, anello, solo italiano) ----
+// ---- Dati tappe: Roma Nera (15 tappe, anello, solo italiano) ----
 const STOPS = [
   {
     id: 1, ready: true,
@@ -130,23 +130,23 @@ const STOPS = [
     photos: [
       { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Roma_-_Campo_de%27_Fiori_%2841893760025%29.jpg?width=1024",
         caption: "Campo de' Fiori oggi", credit: "Wikimedia Commons" },
-      { time: 25, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Remains_of_the_day_-_Campo_de%27_Fiori_street_market_-_Rome%2C_Italy_-_DSC09731.jpg?width=1024",
+      { time: 30, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Remains_of_the_day_-_Campo_de%27_Fiori_street_market_-_Rome%2C_Italy_-_DSC09731.jpg?width=1024",
         caption: "Il mercato quotidiano in piazza", credit: "Wikimedia Commons" },
-      { time: 55, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Giordano_Bruno_burned_at_the_stake.jpg?width=1024",
+      { time: 51, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Giordano_Bruno_burned_at_the_stake.jpg?width=1024",
         caption: "Il rogo di Giordano Bruno", credit: "Wikimedia Commons" },
-      { time: 85, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Campo_de_Fiori_-_monumento_a_Giordano_Bruno.jpg?width=1024",
+      { time: 78, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Campo_de_Fiori_-_monumento_a_Giordano_Bruno.jpg?width=1024",
         caption: "Il monumento a Giordano Bruno", credit: "Wikimedia Commons" },
-      { time: 111, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Statua_di_Giordano_Bruno_-_Campo_de_Fiori_Roma.jpg?width=1024",
+      { time: 99, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Statua_di_Giordano_Bruno_-_Campo_de_Fiori_Roma.jpg?width=1024",
         caption: "Il volto di Giordano Bruno", credit: "Wikimedia Commons" },
-      { time: 149, url: "https://commons.wikimedia.org/wiki/Special:FilePath/2016_Campo_de%27_Fiori_02.jpg?width=1024",
+      { time: 132, url: "https://commons.wikimedia.org/wiki/Special:FilePath/2016_Campo_de%27_Fiori_02.jpg?width=1024",
         caption: "Campo de' Fiori di notte", credit: "Wikimedia Commons" }
     ],
-    fullText: `Benvenuto in Roma Nera. Questo è un anello di poco più di tre chilometri, dodici tappe fitte, e un tema solo: i morti ammazzati di questa città. Processi, veleni, patiboli, cadaveri ripescati dal fiume. Nessuna leggenda spacciata per vera: dove c'è una diceria te lo dico. Si cammina in pieno centro, a qualsiasi ora, e quasi sempre sopra qualcuno.
-Cominciamo da qui, e qui comincia male. Per circa tre secoli Campo de' Fiori è stata la piazza dei supplizi di Roma. Non un luogo di esecuzioni fra tanti: il più frequentato, insieme a piazza di Ponte. Il patibolo si montava più o meno dove sei adesso. Intorno c'erano osterie, locande, stalle, un mercato di cavalli il lunedì e il sabato, e una folla che veniva a vedere. Era intrattenimento. Si portavano i bambini.
-Il 17 febbraio 1600, in questa piazza, è stato bruciato vivo Giordano Bruno. Lo avevano tenuto sotto processo per sette anni, in parte proprio nelle carceri che vedremo più avanti. Lo portarono qui a piedi, nudo, legato a un palo. Le cronache del tempo raccontano che gli avessero serrato la lingua in una morsa di ferro, perché non potesse dire niente alla folla. Non si inginocchiò davanti al crocifisso che gli mostrarono. Poi il fuoco. Le ceneri nel Tevere.
-La statua che hai davanti è arrivata quasi tre secoli dopo, nel 1889, e fu una battaglia politica vera: il Vaticano la considerò un affronto, il papa Leone Tredicesimo passò la giornata in preghiera davanti a San Pietro. Guarda da che parte è girato Bruno. Il cappuccio calato, il libro chiuso in mano, lo sguardo verso il Vaticano. Non è un caso: l'hanno orientato così di proposito.
-Bruno non è l'unico. Nel 1553, il 9 settembre — primo giorno del capodanno ebraico, per non sbagliare il messaggio — qui furono bruciate pubblicamente le copie del Talmud sequestrate a Roma. Nel 1624 ci portarono il cadavere di Marcantonio De Dominis per bruciarlo dopo la morte. E nel luglio del 1659, su questo stesso selciato, furono impiccate cinque donne: era la banda delle avvelenatrici di Roma. Quella storia ce la raccontiamo per intero fra qualche tappa, quando arriveremo al carcere dove le interrogarono.
-Ultima cosa, poi ci muoviamo. Il mercato che vedi qui ogni mattina non c'è da sempre: è stato spostato in questa piazza nel 1869, dopo che il patibolo era stato smontato. Quindi la frutta, i fiori, le bancarelle di spezie per turisti — tutto quello è letteralmente cresciuto sopra un luogo di esecuzione, e in meno di dieci anni. Roma fa così: ci mette un mercato sopra e volta pagina.<br><br>Ora attraversa la piazza verso l'angolo sud-ovest, dove parte Via dei Cappellari. Ti aspetto lì, a ottanta metri.`,
+    fullText: `Benvenuto in Roma Nera. Questo è un anello di quasi quattro chilometri, quindici tappe fitte, e un tema solo: i morti ammazzati di questa città. Processi, veleni, patiboli, cadaveri ripescati dal fiume, qualche strega e qualche fantasma. Dove una storia è documentata te lo dico, e dove è leggenda te lo dico lo stesso: ma ti racconto anche quelle, perché le leggende dicono di cosa avevano paura i romani. Si cammina in pieno centro, a qualsiasi ora, e quasi sempre sopra qualcuno.
+Cominciamo da qui, e qui comincia male. Campo de' Fiori è stata per secoli uno dei luoghi delle esecuzioni pubbliche di Roma, insieme a Piazza di Ponte, che incontreremo più avanti. Il patibolo si montava in questa piazza. Intorno c'erano osterie, locande, stalle, un mercato di cavalli il lunedì e il sabato, e la folla veniva a vedere.
+Il 17 febbraio 1600, in questa piazza, è stato bruciato vivo Giordano Bruno. Lo avevano processato per sette anni. Lo portarono qui, nudo, legato a un palo. Le cronache del tempo raccontano che gli avessero serrato la lingua con una morsa di ferro, la mordacchia, perché non potesse parlare alla folla, e che davanti al crocifisso che gli porgevano abbia voltato la testa. Poi il fuoco. Le ceneri nel Tevere.
+La statua che hai davanti è arrivata quasi tre secoli dopo, nel 1889, ed è opera di Ettore Ferrari. Fu una battaglia politica vera: il Vaticano la considerò un affronto, e si racconta che il papa Leone Tredicesimo trascorse quella giornata in preghiera. Guardalo in faccia: il cappuccio calato, il libro chiuso tra le mani.
+Bruno non è l'unico. Nel 1553, il 9 settembre, primo giorno del capodanno ebraico, qui furono bruciate le copie del Talmud sequestrate a Roma. Nel 1624 ci portarono il cadavere di Marcantonio De Dominis per bruciarlo dopo la morte. E nel luglio del 1659, su questo stesso selciato, furono impiccate cinque donne: era la banda delle avvelenatrici di Roma. Quella storia ce la raccontiamo per intero fra qualche tappa, quando arriveremo al carcere dove le interrogarono.
+Ultima cosa, poi ci muoviamo. Il mercato che vedi qui ogni mattina è stato trasferito in questa piazza da Piazza Navona nel 1869. Quindi la frutta, i fiori, le bancarelle di spezie per turisti stanno letteralmente sopra un luogo dove si eseguivano condanne a morte. Roma fa così: ci mette un mercato sopra e volta pagina.<br><br>Ora attraversa la piazza verso l'angolo sud-ovest, dove parte Via dei Cappellari. Ti aspetto lì, a ottanta metri.`,
     deepen: [
       { type: "link", title: "Campo de' Fiori — Wikipedia", url: "https://it.wikipedia.org/wiki/Campo_de%27_Fiori" }
     ]
@@ -162,8 +162,8 @@ Ultima cosa, poi ci muoviamo. Il mercato che vedi qui ogni mattina non c'è da s
         caption: "Lo stemma di Vannozza Cattanei a vicolo del Gallo", credit: "Wikimedia Commons" },
       { time: 15, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Cappellari_-_campo_de%27_Fiori_-_locanda_del_Gallo_di_Vannozza_P1100061.JPG?width=1024",
         caption: "La locanda all'angolo di via dei Cappellari", credit: "Wikimedia Commons" },
-      { time: 35, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Vannozza_Cattanei_Wappen_Osteria_della_Vacca%2C_Vicolo_del_Gatto%2C_Roma.jpg?width=1024",
-        caption: "Il toro dei Borgia nello stemma", credit: "Wikimedia Commons" }
+      { time: 35, url: "https://commons.wikimedia.org/wiki/Special:FilePath/V_Cappellari_-_madonna_dei_Cappellari_O4040006.JPG?width=1024",
+        caption: "La Madonna dei Cappellari", credit: "Wikimedia Commons" }
     ],
     fullText: `Alza gli occhi all'angolo fra Via dei Cappellari e Vicolo del Gallo. C'è uno stemma di pietra, consumato, diviso in quattro. In due quarti c'è un toro. Da quel toro viene il nome popolare di questo edificio: la Locanda della Vacca.
 La proprietaria era Vannozza Cattanei, l'amante del cardinale Rodrigo Borgia, l'uomo che diventò papa col nome di Alessandro Sesto. Qui dentro, secondo la tradizione, sono nati i suoi quattro figli: Lucrezia, Cesare, Goffredo e Juan. Il toro e le fasce dello stemma sono l'arma dei Borgia; il leone è dei Cattanei.
@@ -187,8 +187,8 @@ Tienili a mente due di quei nomi: Cesare e Juan. Fra qualche tappa, in riva al T
         caption: "Il presunto ritratto di Beatrice Cenci", credit: "Wikimedia Commons" },
       { time: 80, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Petrella_Salto_-_rocca_e_abitato.jpg?width=1024",
         caption: "La rocca di Petrella Salto", credit: "Wikimedia Commons" },
-      { time: 108, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Beatrice_Cenci_after_the_rack_graphic.jpg?width=1024",
-        caption: "Beatrice Cenci dopo la tortura della corda", credit: "Wikimedia Commons" },
+      { time: 108, url: "https://commons.wikimedia.org/wiki/Special:FilePath/01_Portret_Beatrice_Cenci.jpg?width=1024",
+        caption: "Beatrice Cenci in un ritratto ottocentesco", credit: "Wikimedia Commons" },
       { time: 131, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Roma%2C_via_di_monserrato%2C_targa_beatrice_cenci%2C_1999.JPG?width=1024",
         caption: "La targa a Beatrice Cenci in via di Monserrato", credit: "Wikimedia Commons" }
     ],
@@ -232,23 +232,23 @@ Via Giulia è stata aperta da Giulio Secondo nel 1508: un chilometro dritto, la 
     photos: [
       { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Santa_Maria_dell%27Orazione_e_Morte_%28Rom%29%3B_Fassade_1.jpg?width=1024",
         caption: "La facciata con i teschi alati", credit: "Wikimedia Commons" },
-      { time: 27, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Santa_Maria_dell%27Orazione_e_Morte%2C_dettaglio.jpg?width=1024",
+      { time: 36, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Santa_Maria_dell%27Orazione_e_Morte%2C_dettaglio.jpg?width=1024",
         caption: "Dettaglio della facciata", credit: "Wikimedia Commons" },
-      { time: 49, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Knocking_on_Deaths_Door_%283563106941%29.jpg?width=1024",
+      { time: 57, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Knocking_on_Deaths_Door_%283563106941%29.jpg?width=1024",
         caption: "Il teschio sul portone", credit: "Wikimedia Commons" },
-      { time: 68, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Santa_Maria_dell%27Orazione_e_Morte_Krypta_Almosenbox.jpg?width=1024",
+      { time: 74, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Santa_Maria_dell%27Orazione_e_Morte_Krypta_Almosenbox.jpg?width=1024",
         caption: "La cripta-ossario", credit: "Wikimedia Commons" },
-      { time: 98, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Regola_-_via_Giulia_s_Maria_dellOrazione_e_Morte_1000202.JPG?width=1024",
+      { time: 102, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Regola_-_via_Giulia_s_Maria_dellOrazione_e_Morte_1000202.JPG?width=1024",
         caption: "La chiesa su via Giulia", credit: "Wikimedia Commons" },
       { time: 112, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Lungotevere_dei_Tebaldi_-_Rome%2C_Italy_-_DSC09775.jpg?width=1024",
         caption: "Il Lungotevere dei Tebaldi, dove stava il cimitero", credit: "Wikimedia Commons" }
     ],
-    fullText: `Fermati e guarda la facciata. Non è una decorazione: sono teschi. Teschi di marmo con le ali, appoggiati su clessidre, uno con una corona in testa, uno con la mitra. Sopra la porta c'è un bassorilievo con uno scheletro e una scritta latina che ti riguarda personalmente: hodie mihi, cras tibi. Oggi a me, domani a te. Questa è l'unica chiesa di Roma costruita esplicitamente intorno all'idea della morte.
+    fullText: `Fermati e guarda la facciata. Non è una decorazione qualunque: teschi alati intorno alla porta e, sopra, in un'edicola, una clessidra con le ali, il tempo che corre verso la morte. Accanto all'ingresso c'è uno scheletro alato che sorveglia una cassetta per le elemosine, con una scritta latina che ti riguarda personalmente: hodie mihi, cras tibi. Oggi a me, domani a te. Sulla cassetta c'è scritto: elemosina per i poveri morti che si pigliano in campagna, 1694. E la fessura è ancora aperta.
 La confraternita che la fondò, nel 1573, aveva un compito preciso e piuttosto orribile: raccogliere i cadaveri abbandonati. Chi moriva nella campagna romana e nessuno reclamava. Chi finiva annegato nel Tevere. Chi non aveva identità, o non poteva avere un funerale. Loro andavano a prenderli e li seppellivano.
-Funzionava così: giravano di notte, con le lanterne e le barelle, vestiti con un sacco nero che lasciava scoperti solo gli occhi. Scendevano sulle rive del fiume dopo le piene, quando il Tevere restituiva quello che si era preso. Battevano la campagna fuori le mura. E tenevano un registro.
-Quel registro dice che fra il 1552 e il 1896 hanno sepolto qui sotto più di ottomila corpi. Ottomila. Il cimitero era in parte sotterraneo e in parte giù sulla riva del Tevere, sotto i tuoi piedi e appena oltre la strada. E la cripta non era un semplice ossario: era decorata. Lampadari fatti di ossa, sculture di ossa, pareti composte con femori e teschi, come alla Cripta dei Cappuccini ma fatta con i morti di nessuno.
-Nell'Ottocento l'hanno anche usata come scenografia: dentro la cripta allestivano rappresentazioni sacre con figure di cera a grandezza naturale, da visitare. Era un'attrazione. La gente ci andava la sera.
-Finisce nel 1886. Quando costruirono i muraglioni del Tevere, il cimitero sulla riva fu praticamente distrutto, e parte di quei resti finì chissà dove insieme alla terra di scavo. Oggi la cripta si può visitare, ma con orari stretti e quasi mai: se trovi aperto, entra.<br><br>Ora risali Via Giulia verso nord, verso Ponte Sant'Angelo. Sono quasi cinquecento metri sempre dritti. Cerca sulla destra una targa: Vicolo del Malpasso.`,
+Si chiamavano i fratelli della morte, e non avevano orari. Recuperavano le salme anche nei posti più lontani e malsani, di giorno e di notte, in ogni stagione. Se le caricavano sulle spalle e le portavano anche per chilometri, spesso quando i corpi erano rimasti insepolti per giorni.
+Fra il 1552 e il 1896 hanno sepolto qui sotto più di ottomila corpi. Ottomila. Il cimitero era in parte sotterraneo e in parte sulla riva del Tevere. Oggi ne resta una stanza, la cripta, ed è fatta di ossa: lampadari di ossa, sculture di ossa, una grande croce di ossa sulla parete in fondo. E sugli scaffali ci sono teschi con l'anno della morte e la causa scritti sulla fronte.
+Nell'Ottocento l'hanno anche usata come scenografia: dentro la cripta allestivano rappresentazioni sacre con figure di cera a grandezza naturale.
+Nel 1886, quando costruirono i muraglioni del Tevere, il grande cimitero sulla riva fu quasi distrutto. Oggi la cripta si può visitare, ma con orari limitati, di solito il pomeriggio e la domenica mattina: se trovi aperto, entra.<br><br>Ora risali Via Giulia verso nord, verso Ponte Sant'Angelo. Sono quasi cinquecento metri sempre dritti. Cerca sulla destra una targa: Vicolo del Malpasso.`,
     deepen: [
       { type: "link", title: "Chiesa di Santa Maria dell'Orazione e Morte — Wikipedia", url: "https://it.wikipedia.org/wiki/Chiesa_di_Santa_Maria_dell%27Orazione_e_Morte" }
     ]
@@ -269,7 +269,7 @@ Finisce nel 1886. Quando costruirono i muraglioni del Tevere, il cimitero sulla 
     ],
     fullText: `Vicolo del Malpasso. Il nome vuol dire letteralmente passo cattivo, e di spiegazioni ce ne sono due. La prima è prosaica: quando lo pavimentarono, misero le pietre male, storte e sconnesse, e ci si camminava da rompersi una caviglia.
 La seconda è la ragione per cui ne parliamo. Questo vicolo, da un capo, passa davanti al carcere che vedrai fra cento metri. E da qui, secondo la tradizione, passavano i condannati per andare al patibolo, che stava verso la chiesetta di San Nicolò degli Incoronati. Il mal passo sarebbe quello: l'ultima camminata. Quale delle due sia vera non lo sa nessuno. Ma il vicolo esisteva già nell'antichità e scendeva al fiume, quindi il nome è vecchio di secoli.
-Nota anche una cosa: un lato del vicolo non c'è più. Nel 1940 demolirono tutta la fila di case a sud per aprire uno stradone che non fu mai finito. Il buco è rimasto lì per decenni.<br><br>E qui ti dò l'unico consiglio da bere di tutto il giro, perché è a cinquanta metri: Il Goccetto, in Via dei Banchi Vecchi, vineria storica in un palazzo del Cinquecento. Chiuso domenica e lunedì. Tienitelo per la fine, o fermati adesso.<br><br>Poi torna su Via Giulia e guarda il palazzone grigio: le Carceri Nuove.`,
+Nota anche una cosa: un lato del vicolo non c'è più. Nel 1940 demolirono tutta la fila di case a sud per aprire uno stradone che non fu mai finito. Il buco è rimasto lì per decenni.<br><br>E qui ti do l'unico consiglio da bere di tutto il giro, perché è a una sessantina di metri: Il Goccetto, in Via dei Banchi Vecchi, una vineria. Chiusa domenica e lunedì. Tienitelo per la fine, o fermati adesso.<br><br>Poi torna su Via Giulia e guarda il palazzone grigio: le Carceri Nuove.`,
     deepen: [
       { type: "link", title: "Via Giulia — Wikipedia", url: "https://it.wikipedia.org/wiki/Via_Giulia" }
     ]
@@ -315,30 +315,57 @@ Una curiosità finale, di quelle che sembrano inventate: la pianta dell'edificio
         caption: "Ponte Sant'Angelo al crepuscolo", credit: "Wikimedia Commons" },
       { time: 20, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Veduta_del_Ponte_e_Castello_Sant%27Angelo_1778_barcode_%281778%29.jpg?width=1024",
         caption: "Il ponte in un'incisione di Piranesi, 1778", credit: "Wikimedia Commons" },
-      { time: 40, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Roma_-_Galleria_Barberini_-_Ritratto_di_Beatrice_Cenci._Guido_Reni%2C_RP-F-F25508-E.jpg?width=1024",
+      { time: 34, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Roma_-_Galleria_Barberini_-_Ritratto_di_Beatrice_Cenci._Guido_Reni%2C_RP-F-F25508-E.jpg?width=1024",
         caption: "Beatrice Cenci, ritratto attribuito a Guido Reni", credit: "Wikimedia Commons" },
-      { time: 71, url: "https://commons.wikimedia.org/wiki/Special:FilePath/01_Portret_Beatrice_Cenci.jpg?width=1024",
+      { time: 66, url: "https://commons.wikimedia.org/wiki/Special:FilePath/01_Portret_Beatrice_Cenci.jpg?width=1024",
         caption: "Beatrice Cenci in un ritratto ottocentesco", credit: "Wikimedia Commons" },
-      { time: 96, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Mastro_Titta._Il_boja_di_Roma..._E._Perino_Editore_Roma..._-_affiche_-_non_identifi%C3%A9_-_btv1b532876379.jpg?width=1024",
+      { time: 86, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Mastro_Titta._Il_boja_di_Roma..._E._Perino_Editore_Roma..._-_affiche_-_non_identifi%C3%A9_-_btv1b532876379.jpg?width=1024",
         caption: "Mastro Titta, il boia di Roma", credit: "Wikimedia Commons" },
-      { time: 135, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Engelenbrug_en_Engelenburcht_te_Rome_Veduta_del_Ponte%2C_e_del_Mausoleo%2C_fabbricati_da_Elio_Adriano_Imp.re_%28titel_op_object%29_Archeologische_vondsten_in_en_rond_Rome_%28serietitel%29_Le_Antichit%C3%A0_Romane_%28serietitel%29%2C_RP-P-OB-39.545.jpg?width=1024",
+      { time: 125, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Engelenbrug_en_Engelenburcht_te_Rome_Veduta_del_Ponte%2C_e_del_Mausoleo%2C_fabbricati_da_Elio_Adriano_Imp.re_%28titel_op_object%29_Archeologische_vondsten_in_en_rond_Rome_%28serietitel%29_Le_Antichit%C3%A0_Romane_%28serietitel%29%2C_RP-P-OB-39.545.jpg?width=1024",
         caption: "Il ponte e il mausoleo in Piranesi", credit: "Wikimedia Commons" },
-      { time: 171, url: "https://commons.wikimedia.org/wiki/Special:FilePath/StAngelo_Bridge_Rome.jpg?width=1024",
+      { time: 154, url: "https://commons.wikimedia.org/wiki/Special:FilePath/StAngelo_Bridge_Rome.jpg?width=1024",
         caption: "Il ponte visto dal fiume", credit: "Wikimedia Commons" }
     ],
     fullText: `Sei sul ponte più fotografato di Roma. Dieci angeli di marmo, il castello in fondo, San Pietro di là dal fiume. Adesso togli gli angeli — sono arrivati nel Seicento — e immagina questo spiazzo davanti al ponte come quello che è stato per secoli: piazza di Ponte, il luogo delle esecuzioni capitali di Roma.
-Non solo delle esecuzioni. I corpi dei giustiziati venivano poi esposti sul ponte. Teste e pezzi di cadavere, appesi o appoggiati sui parapetti, lasciati lì a decomporsi per giorni come monito alla popolazione. Chi entrava in città per andare a San Pietro passava da qui e li vedeva. Era il biglietto da visita della Roma dei papi.
+I corpi dei giustiziati venivano esposti sul ponte come monito per la popolazione. Chi entrava in città per andare a San Pietro passava da qui e li vedeva. Era il biglietto da visita della Roma dei papi.
 L'11 settembre 1599, qui, sono state decapitate Beatrice Cenci e la sua matrigna Lucrezia. Di suo fratello Giacomo fecero di peggio: fu torturato sul palco e poi squartato. Era una giornata di caldo assurdo e la folla era enorme — tutta Roma voleva vedere morire una nobile di ventidue anni. Diverse persone fra il pubblico morirono per il caldo e la calca. Si dice che fra quella folla ci fossero anche Caravaggio e i Gentileschi, padre e figlia.
-Beatrice fu sepolta senza nome a San Pietro in Montorio. Nel 1798 i soldati francesi scoperchiarono le tombe e si portarono via il suo cranio, per gioco. Da allora la leggenda dice che la notte dell'11 settembre lei torna su questo ponte, con la testa in mano. È una leggenda, nata nell'Ottocento romantico, ma a Roma c'è gente che quella notte viene a controllare.
+Beatrice fu sepolta senza nome a San Pietro in Montorio. Nel 1798 i soldati francesi violarono le tombe e il suo cranio finì lanciato in giro per gioco. Da allora si racconta che la notte dell'11 settembre lei torni su questo ponte, con la testa in mano. È una leggenda, non una storia.
 E adesso l'uomo che ha lavorato più di tutti su questo ponte. Si chiamava Giovanni Battista Bugatti, ma a Roma era Mastro Titta, er boja de Roma. Cominciò a diciassette anni, nel 1796, e smise nel 1864 a ottantacinque: sessantotto anni di servizio. Il suo quaderno elenca cinquecentosedici nomi. Abitava di là dal fiume, nel Borgo, in Vicolo del Campanile, perché al boia non era gradito stare in città. Quando lo vedevano attraversare questo ponte, i romani dicevano una frase sola: Mastro Titta passa ponte. Voleva dire che quel giorno si ammazzava qualcuno.
-Dettagli che fanno la differenza. Indossava un mantello scarlatto, oggi conservato al Museo Criminologico. Prima dell'esecuzione offriva al condannato una presa di tabacco da annusare: un gesto di cortesia, dal boia. Nei periodi di inattività vendeva ombrelli. Lord Byron, nel 1817, vide tre sue decapitazioni a Piazza del Popolo e le descrisse in una lettera; Charles Dickens ne vide un'altra nel 1845. E il folklore dice che il suo fantasma giri all'alba nei luoghi delle sue esecuzioni, offrendo tabacco ai passanti.
-Un'ultima cosa, che non c'entra con i delitti ma è la strage più grande avvenuta qui. Giubileo del 1450: una folla di pellegrini si ammassa sul ponte, i parapetti cedono e la gente finisce nel Tevere. Centosettantadue morti, schiacciati e annegati, secondo il diario di Stefano Infessura. Dopo, per sicurezza, demolirono le case all'imbocco del ponte per far defluire la gente.<br><br>Ora torna indietro e cammina lungo il fiume verso sud-est, su Lungotevere Tor di Nona. Quattrocento metri.`,
+Dettagli che fanno la differenza. Indossava un mantello scarlatto, oggi conservato al Museo Criminologico. Nei periodi di inattività vendeva ombrelli. Lord Byron, nel 1817, vide tre sue decapitazioni a Piazza del Popolo e le descrisse in una lettera; Charles Dickens ne vide un'altra nel 1845. E il folklore vuole che il suo fantasma giri all'alba nei luoghi delle sue esecuzioni, offrendo tabacco ai passanti.
+Un'ultima cosa, che non c'entra con i delitti ma è la strage più grande avvenuta qui. Giubileo del 1450: una folla di pellegrini si ammassa sul ponte, i parapetti cedono e la gente finisce nel Tevere. Centosettantadue morti, secondo il diario di Stefano Infessura. Dopo, per sicurezza, demolirono le case all'imbocco del ponte per far defluire la gente.<br><br>Ora vai verso il castello, l'edificio enorme in fondo al ponte: sono meno di cento metri. Fermati davanti all'ingresso. Lì dentro c'è un prigioniero che devo presentarti.`,
     deepen: [
       { type: "link", title: "Ponte Sant'Angelo — Wikipedia", url: "https://it.wikipedia.org/wiki/Ponte_Sant%27Angelo" }
     ]
   },
   {
     id: 9, ready: true,
+    name: "Castel Sant'Angelo e la Cagliostra",
+    desc: "Il mago Cagliostro nella cella dei prigionieri illustri, condannato a morte e graziato dal papa",
+    lat: 41.9027, lon: 12.4662,
+    audio: "audio/tappa13.mp3",
+    photos: [
+      { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Castel_Sant%27Angelo_from_Southeast%2C_Rome%2C_Italy.jpg?width=1024",
+        caption: "Castel Sant'Angelo", credit: "Wikimedia Commons" },
+      { time: 25, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Portrait_of_Giuseppe_Balsamo_%28called_Count_Alessandro_Cagliostro%29_LACMA_62.18_%281_of_2%29.jpg?width=1024",
+        caption: "Il conte di Cagliostro, Giuseppe Balsamo", credit: "Wikimedia Commons" },
+      { time: 57, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Castello_-_cortile_di_Alessandro_VI_e_porticina_alle_prigioni_P1270281.JPG?width=1024",
+        caption: "Il cortile di Alessandro VI e la porticina alle prigioni", credit: "Wikimedia Commons" },
+      { time: 83, url: "https://commons.wikimedia.org/wiki/Special:FilePath/San_leo_rocca%2C_mastio_centrale.jpg?width=1024",
+        caption: "La rocca di San Leo, dove morì", credit: "Wikimedia Commons" },
+      { time: 117, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Rocca_di_San_Leo_tra_la_nebbia.jpg?width=1024",
+        caption: "La rocca di San Leo tra la nebbia", credit: "Wikimedia Commons" }
+    ],
+    fullText: `Siamo sotto Castel Sant'Angelo. Per i romani è sempre stato un posto di paura: il mausoleo dell'imperatore Adriano, poi la fortezza dei papi, e per secoli anche la prigione più importante dello Stato Pontificio. Se per la plebe c'erano Tor di Nona e le segrete di Via Giulia, qui venivano chiusi i prigionieri di riguardo. E il più famoso di tutti arriva il 27 dicembre 1789.
+Si chiamava Giuseppe Balsamo, era nato a Palermo nel 1743, e l'Europa lo conosceva come il conte di Cagliostro: mago, alchimista, guaritore, truffatore, dipende da chi lo racconta. Era stato trascinato nello scandalo della collana della regina Maria Antonietta. A Roma lo arrestò il Sant'Uffizio per eresia e massoneria: aveva fondato un suo rito, il Rito Egizio, che a Roma non attecchì. A denunciarlo, secondo alcune ricostruzioni, fu sua moglie Lorenza Feliciani.
+Lo misero nella Cagliostra: tre stanze nel lato nord degli appartamenti papali, riservate ai detenuti illustri. Il cibo veniva dalle cucine del papa, e poteva leggere e scrivere. Una prigione quasi comoda, per un uomo che rischiava di essere strangolato. Il processo durò più di un anno, con gli interrogatori di una commissione di cardinali. Provò anche a scappare: aggredì il frate confessore per rubargli l'abito. Lo fermarono.
+Il 7 aprile 1791 arrivò la condanna a morte. Poi il colpo di scena: papa Pio Sesto la trasformò in ergastolo, e le ragioni non sono mai state rese pubbliche. Lo portarono nella fortezza di San Leo, sull'Appennino, e lo chiusero nel Pozzetto: una cella senza porta, dove si entrava da una botola nel soffitto. Morì lì il 26 agosto 1795. Causa ufficiale, un colpo apoplettico. Qualcuno pensò a maltrattamenti, qualcuno al suicidio. Fu sepolto in terra non consacrata.
+Sul suo cranio gira una storia macabra: che soldati polacchi lo abbiano dissotterrato per farne una coppa. È quasi certamente falsa, ma a Roma le storie false durano più di quelle vere. E c'è un'ultima parte che non appartiene a questo posto ma a un vicolo a due passi da dove siamo partiti: lì dicono che di notte si senta ancora lui. Per ora tienilo a mente.<br><br>Torna sul lungotevere e cammina verso sud-est, lungo il fiume, per circa quattrocento metri: ti aspetta la galera da cui sono passati tutti gli altri.`,
+    deepen: [
+      { type: "link", title: "Alessandro Cagliostro — Wikipedia", url: "https://it.wikipedia.org/wiki/Alessandro_Cagliostro" }
+    ]
+  },
+  {
+    id: 10, ready: true,
     name: "Tor di Nona",
     desc: "La galera dei papi: le celle senza luce, \"il pozzo\", e il processo delle avvelenatrici",
     lat: 41.9015251, lon: 12.4700651,
@@ -346,32 +373,32 @@ Un'ultima cosa, che non c'entra con i delitti ma è la strage più grande avvenu
     photos: [
       { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/L_tevere_Tor_di_Nona_1250393.JPG?width=1024",
         caption: "Lungotevere Tor di Nona oggi", credit: "Wikimedia Commons" },
-      { time: 16, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Tor_di_Nona.jpg?width=1024",
-        caption: "Tor di Nona in una veduta antica", credit: "Wikimedia Commons" },
-      { time: 38, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Alleged_Benvenuto_Cellini_Self_Portrait1.jpg?width=1024",
+      { time: 16, url: "https://commons.wikimedia.org/wiki/Special:FilePath/TORDINONANAVONACA09102023_093.jpg?width=1024",
+        caption: "Il Lungotevere di Tor di Nona", credit: "Wikimedia Commons" },
+      { time: 38, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Alleged_Benvenuto_Cellini_Self_Portrait.jpg?width=1024",
         caption: "Benvenuto Cellini, autoritratto attribuito", credit: "Wikimedia Commons" },
-      { time: 65, url: "https://commons.wikimedia.org/wiki/Special:FilePath/A_chemist_gives_a_demonstration_involving_arsenic_Wellcome_V0011761.jpg?width=1024",
+      { time: 61, url: "https://commons.wikimedia.org/wiki/Special:FilePath/A_chemist_gives_a_demonstration_involving_arsenic_Wellcome_V0011761.jpg?width=1024",
         caption: "Una dimostrazione con l'arsenico in una stampa d'epoca", credit: "Wikimedia Commons" },
-      { time: 98, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Ponte_-_via_di_Tor_di_Nona_1110736.JPG?width=1024",
+      { time: 90, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Ponte_-_via_di_Tor_di_Nona_1110736.JPG?width=1024",
         caption: "Via di Tor di Nona", credit: "Wikimedia Commons" },
-      { time: 127, url: "https://commons.wikimedia.org/wiki/Special:FilePath/RomaCastelSantAngelo.jpg?width=1024",
+      { time: 119, url: "https://commons.wikimedia.org/wiki/Special:FilePath/RomaCastelSantAngelo.jpg?width=1024",
         caption: "Castel Sant'Angelo, dove furono sigillati gli atti", credit: "Wikimedia Commons" },
-      { time: 166, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Ponte_-_memoria_del_teatro_Apollo_a_Tor_di_Nona_1000649.JPG?width=1024",
+      { time: 163, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Ponte_-_memoria_del_teatro_Apollo_a_Tor_di_Nona_1000649.JPG?width=1024",
         caption: "La memoria del Teatro Apollo a Tor di Nona", credit: "Wikimedia Commons" }
     ],
     fullText: `Guardati intorno: qui non c'è niente. Lungotevere, traffico, un muraglione. Ed è la tappa più importante del giro, perché quello che stava qui è il posto dove sono passati, prima di morire, quasi tutti i personaggi di cui ti ho parlato finora.
 Si chiamava Torre dell'Annona, abbreviato Tor di Nona: una torre medievale degli Orsini, sulla riva del fiume. Dal primo Quattrocento diventa carcere pontificio. Celle senza luce, scavate nello spessore del muro; una era chiamata semplicemente il pozzo. L'umidità del Tevere entrava dentro, e dal Tevere arrivava anche tutto il resto.
-Chi ci è stato dentro. Benvenuto Cellini, l'orafo, incarcerato per omicidio e poi per altri reati. Beatrice Cenci, prima di finire alla Corte Savella. E Giordano Bruno, che da qui, dopo sette anni di processo, uscì per andare a piedi fino a Campo de' Fiori — cioè il punto dove abbiamo iniziato questo giro. L'anello si chiude davvero: la tua prima tappa e la tua nona tappa sono i due capi della stessa camminata, quella del 17 febbraio 1600.
-E qui dentro, nel 1659, si svolse l'indagine delle avvelenatrici che ti ho promesso a Campo de' Fiori. Il 31 gennaio arrestano in flagranza una donna, Giovanna De Grandis, e la portano a Tor di Nona. Il giorno dopo confessa e comincia a fare nomi. Il 2 febbraio arrestano Gironima Spana, che era il centro della rete: vendeva un liquido trasparente, inodore, a base di arsenico, che si poteva mettere nel vino a gocce. Lo compravano mogli che volevano liberarsi del marito.
+Chi ci è stato dentro. Benvenuto Cellini, l'orafo. Beatrice Cenci. E Giordano Bruno, che da qui, dopo sette anni di processo, uscì per andare fino a Campo de' Fiori, cioè il punto da cui abbiamo cominciato. L'anello si chiude: la tua prima tappa e questa sono i due capi della stessa camminata, quella del 17 febbraio 1600.
+E qui dentro, nel 1659, si svolse l'indagine delle avvelenatrici che ti ho promesso a Campo de' Fiori. Il 31 gennaio arrestano in flagranza una donna, Giovanna De Grandis, e la portano a Tor di Nona. Il giorno dopo confessa e comincia a fare nomi. Il 2 febbraio arrestano Gironima Spana, che era al centro della rete: vendeva un liquido a base di arsenico, da versare nel vino. Lo compravano mogli che volevano liberarsi del marito.
 L'inchiesta tirò dentro più di quaranta persone, fra venditrici e clienti. Spana resistette per mesi agli interrogatori prima di confessare; altre furono torturate con la corda e non parlarono mai. Il 5 luglio 1659 cinque donne furono impiccate a Campo de' Fiori; una sesta nel marzo del 1660, altre frustate e bandite. Diverse clienti di famiglia nobile ottennero l'immunità papale in cambio della confessione, e dal processo sparirono.
-Il finale è la parte più inquietante. Il papa ordinò che tutti gli atti del processo fossero sigillati a Castel Sant'Angelo, perché non si diffondesse la conoscenza del veleno. Rimasero chiusi lì per oltre due secoli: li ritrovarono solo negli anni Ottanta dell'Ottocento. Ed è per questo che la figura dell'avvelenatrice di Roma — quella che tutti chiamano Giulia Tofana — è diventata una leggenda gonfiata: i documenti veri erano sottochiave, e nel vuoto ci è cresciuta la storia delle seicento vittime. Tofana è esistita, è morta a Roma nel 1651 nel suo letto, e perfino il suo cognome è un'invenzione di uno storico dell'Ottocento.
+Il finale è la parte più inquietante. Il papa ordinò che tutti gli atti del processo fossero sigillati a Castel Sant'Angelo, dove siamo appena stati, perché non si diffondesse la conoscenza del veleno. Rimasero chiusi lì per oltre due secoli: li ritrovarono solo negli anni Ottanta dell'Ottocento. E forse anche per questo la figura dell'avvelenatrice di Roma, quella che tutti chiamano Giulia Tofana, è diventata una leggenda gonfiata, con le sue seicento vittime. Una Giulia esistette, e morì a Roma nel 1651, a quanto pare nel sonno. Ma perfino il cognome Tofana è un'invenzione di uno storico dell'Ottocento, e non è nemmeno certo che c'entrasse col processo del 1659.
 Nel 1667, finito il carcere, la torre fu trasformata in teatro — il primo teatro pubblico di Roma, patrocinato da Cristina di Svezia. Diventò poi il Teatro Apollo, e ci andarono in scena in prima assoluta Il Trovatore e Un Ballo in Maschera di Verdi. Nel 1888 i muraglioni del Tevere si portarono via tutto: galera, teatro, memoria. Resta una fontanella del 1925.<br><br>Ora entra nei vicoli verso est e cerca Piazza Fiammetta. Duecentocinquanta metri.`,
     deepen: [
-      { type: "link", title: "Tor di Nona — Wikipedia", url: "https://it.wikipedia.org/wiki/Tordinona" }
+      { type: "link", title: "Tor di Nona — Wikipedia", url: "https://it.wikipedia.org/wiki/Teatro_Tordinona" }
     ]
   },
   {
-    id: 10, ready: true,
+    id: 11, ready: true,
     name: "Piazza Fiammetta e Via dei Coronari",
     desc: "Il quartiere delle cortigiane e il corpo di Juan Borgia ripescato dal fiume",
     lat: 41.9009345, lon: 12.472279,
@@ -381,20 +408,20 @@ Nel 1667, finito il carcere, la torre fu trasformata in teatro — il primo teat
         caption: "La casa di Fiammetta", credit: "Wikimedia Commons" },
       { time: 30, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Casa_di_Fiammetta_1711985281887.jpg?width=1024",
         caption: "Il portico della casa di Fiammetta", credit: "Wikimedia Commons" },
-      { time: 44, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Corpse_of_Juan_Borgia_found.jpg?width=1024",
+      { time: 50, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Corpse_of_Juan_Borgia_found.jpg?width=1024",
         caption: "Il ritrovamento del corpo di Juan Borgia nel Tevere", credit: "Wikimedia Commons" }
     ],
     fullText: `Questa piazza porta il nome di una cortigiana. Fiammetta Michaelis, fiorentina, arrivata a Roma con la madre e diventata una delle donne più note della città: una cortigiana onesta, come si diceva allora, cioè di alto rango. Nel 1479 una commissione voluta da Sisto Quarto le assegnò in dote una vigna sotto il Vaticano e tre case, una delle quali qui. Le aveva lasciate un cardinale, e la commissione servì a ridurre il lascito.
-Era questo il quartiere delle cortigiane di Roma, fra Via dei Coronari e il fiume. Fiammetta morì nel 1512 e si fece seppellire a Sant'Agostino, dove aveva una cappella; della tomba oggi non resta traccia.
-Ora il nome che ti avevo chiesto di tenere a mente. Juan Borgia, figlio di Vannozza e del papa. La notte del 14 giugno 1497 sparisce. Lo ritrovano dopo giorni nel Tevere, qui vicino, grazie all'indicazione di un commerciante di legname. Nove coltellate: testa, collo, corpo, gambe. Addosso aveva ancora trenta ducati d'oro nella borsa, quindi non era una rapina. Il papa Alessandro Sesto, distrutto, ordinò un'indagine feroce — e una settimana dopo la fece chiudere di colpo, senza spiegazioni. Sospettarono gli Orsini, gli Sforza, e suo fratello Cesare. Non si è mai saputo.<br><br>Ora scendi verso Piazza Navona, duecentosessanta metri.`,
+Fiammetta morì nel 1512 e si fece seppellire a Sant'Agostino, dove aveva una cappella; della tomba oggi non resta traccia. La casa che porta il suo nome, in Via degli Acquasparta, con il porticato e l'altana, probabilmente non fu mai la sua residenza: lei preferiva quella di Via dei Coronari.
+Ora il nome che ti avevo chiesto di tenere a mente. Juan Borgia, figlio di Vannozza e del papa. La notte del 14 giugno 1497 viene ucciso. Dopo qualche giorno lo ripescano nel Tevere, grazie all'indicazione di un commerciante di legname. Nove coltellate: testa, collo, corpo, gambe. Addosso aveva ancora trenta ducati d'oro nella borsa, quindi non era una rapina. Il papa Alessandro Sesto, distrutto, ordinò un'indagine feroce, e una settimana dopo la fece chiudere di colpo, senza spiegazioni. Sospettarono gli Orsini, gli Sforza, e suo fratello Cesare. Non si è mai saputo.<br><br>Ora scendi verso Piazza Navona, duecentosettanta metri.`,
     deepen: [
       { type: "link", title: "Fiammetta Michaelis — Wikipedia", url: "https://it.wikipedia.org/wiki/Fiammetta_Michaelis" }
     ]
   },
   {
-    id: 11, ready: true,
-    name: "Piazza Navona",
-    desc: "Lo stadio di Domiziano, i bordelli sotto le arcate e il cranio di Sant'Agnese",
+    id: 12, ready: true,
+    name: "Piazza Navona e Donna Olimpia",
+    desc: "Lo stadio di Domiziano, il cranio di Sant'Agnese e il carro di fuoco di Donna Olimpia",
     lat: 41.8991633, lon: 12.4730742,
     audio: "audio/tappa11.mp3",
     photos: [
@@ -402,18 +429,75 @@ Ora il nome che ti avevo chiesto di tenere a mente. Juan Borgia, figlio di Vanno
         caption: "Piazza Navona sulle rovine dello stadio, in Piranesi", credit: "Wikimedia Commons" },
       { time: 19, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Rome_Sant%27Agnese_in_Agone_2020_P01_facade.jpg?width=1024",
         caption: "La facciata di Sant'Agnese in Agone", credit: "Wikimedia Commons" },
-      { time: 48, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Piranesi-16031.jpg?width=1024",
-        caption: "Piazza Navona in un'incisione di Piranesi", credit: "Wikimedia Commons" }
+      { time: 48, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Alessandro_algardi%2C_Ritratto_di_Olimpia_Maidalchini%2C_1646-1647.jpg?width=1024",
+        caption: "Olimpia Maidalchini, busto di Alessandro Algardi", credit: "Wikimedia Commons" },
+      { time: 83, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Piazza_Navona_Rome_04_2016_6556.jpg?width=1024",
+        caption: "Piazza Navona", credit: "Wikimedia Commons" },
+      { time: 123, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Ponte_Sisto_Roma_HDR_2013_03.jpg?width=1024",
+        caption: "Ponte Sisto, dove la leggenda fa precipitare il carro", credit: "Wikimedia Commons" }
     ],
     fullText: `Piazza Navona ha questa forma perché è letteralmente il buco di uno stadio: lo Stadio di Domiziano, trentamila posti, costruito per le gare di corsa. Il nome in agone significa nel luogo delle gare, non ha niente a che fare con l'agonia, anche se tutti lo pensano. Le case intorno poggiano sulle gradinate.
 Quando lo stadio andò in rovina, le arcate del piano terra diventarono botteghe, taverne e bordelli. Ed è qui che la tradizione colloca il martirio di Agnese, una ragazzina di dodici o tredici anni: secondo il racconto fu portata in uno di quei postacci sotto le arcate ed esposta nuda al pubblico, prima di essere uccisa. La chiesa che hai davanti è costruita esattamente sopra quel punto. Dentro, in un reliquiario, è conservato il suo cranio.
-Due passi e siamo alla fine. Esci dalla piazza dal lato sud, prendi Corso Vittorio, attraversa, e infilati in Via di Grotta Pinta: è una stradina che fa una curva strana. Cinquecento metri. Quella curva è l'ultima cosa che ti devo spiegare.`,
+Il palazzo lungo accanto alla chiesa è Palazzo Pamphilj. Qui abitava Olimpia Maidalchini, cognata di papa Innocenzo Decimo, e per gli anni del suo pontificato, dal 1644 al 1655, la donna più potente di Roma. I romani la chiamavano la Papessa. E la Pimpaccia, che non era un complimento. Il papa la nominò erede universale. La allontanò dal palazzo pontificio nel 1650 e si riconciliarono nel 1653. Pasquino, la statua parlante, la sbeffeggiava di continuo.
+Innocenzo Decimo muore la sera del 7 gennaio 1655. E qui comincia la leggenda. Si dice che due casse d'oro fossero state sottratte da sotto il letto del papa agonizzante, e che Olimpia, quando le chiesero di contribuire alle spese del funerale, rispondesse: che cosa può fare una povera vedova? Si racconta che quella stessa sera molti giurarono di aver visto un carro di fuoco uscire dal palazzo, correre verso Ponte Sisto e sprofondare nel Tevere con tutte le ricchezze. In un'altra versione il carro scompare in una voragine che porta dritta all'inferno: da lì verrebbe il nome dell'antica via Tiradiavoli, fuori Porta San Pancrazio.
+Dicono che il carro torni ogni anno, il 7 gennaio. Che chi lo vede muoia entro pochi mesi. Che si sentano le risate di Olimpia. Le mamme romane lo usavano per far addormentare i bambini. La storia vera è più asciutta: appena morto il cognato Olimpia perse ogni potere, si ritirò a Viterbo e morì di peste nel 1657, due anni dopo. Ma la leggenda dura da quattro secoli.<br><br>Ora esci dal lato est della piazza e raggiungi Corso del Rinascimento, il palazzo con la cupola a spirale: sono duecento metri.`,
     deepen: [
-      { type: "link", title: "Sant'Agnese in Agone — Wikipedia", url: "https://it.wikipedia.org/wiki/Sant%27Agnese_in_Agone" }
+      { type: "link", title: "Olimpia Maidalchini — Wikipedia", url: "https://it.wikipedia.org/wiki/Olimpia_Maidalchini" }
     ]
   },
   {
-    id: 12, ready: true,
+    id: 13, ready: true,
+    name: "Sant'Ivo alla Sapienza e Bellezza Orsini",
+    desc: "La strega che Roma non bruciò: il fascicolo di Bellezza Orsini e il paradosso dell'Inquisizione",
+    lat: 41.898178, lon: 12.474422,
+    audio: "audio/tappa14.mp3",
+    photos: [
+      { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Sant%27Ivo_alla_Sapienza_4.jpg?width=1024",
+        caption: "La cupola a spirale di Sant'Ivo alla Sapienza", credit: "Wikimedia Commons" },
+      { time: 23, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Biblioteca_dell%27Archivio_di_Stato_di_Roma.jpg?width=1024",
+        caption: "La biblioteca dell'Archivio di Stato", credit: "Wikimedia Commons" },
+      { time: 60, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Weiss_Schlsselblum_CCCCXC_-_DPLA_-_8f91c14103b905e761ca82a7fc546845.jpg?width=1024",
+        caption: "Un erbario del Cinquecento", credit: "Wikimedia Commons (DPLA)" },
+      { time: 94, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Fiano_Romano_-_Castello_ducale_Orsini_-_2025-09-25_22-22-02_002.jpg?width=1024",
+        caption: "Il castello Orsini di Fiano Romano", credit: "Wikimedia Commons" },
+      { time: 120, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Fiano_Romano_-_Castello_ducale_Orsini_-_2025-09-07_22-40-21_001.JPG?width=1024",
+        caption: "La rocca di Fiano Romano", credit: "Wikimedia Commons" },
+      { time: 140, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Sant%27ivo_alla_Sapienza_1.jpg?width=1024",
+        caption: "Sant'Ivo alla Sapienza", credit: "Wikimedia Commons" }
+    ],
+    fullText: `Questo palazzo con la cupola a spirale è Sant'Ivo alla Sapienza, opera di Borromini. Per secoli fu l'università di Roma. Oggi dentro c'è l'Archivio di Stato, e fra le carte dei tribunali dei papi, in uno dei suoi volumi, c'è il fascicolo di una strega. Non di una strega romana. Ed è proprio questo il punto.
+Perché Roma, la città che bruciava eretici in piazza, con le streghe fu stranamente prudente. In tutta la sua storia l'Inquisizione romana mandò al rogo per stregoneria, dentro le mura della città, appena quattro persone. Quattro. Per il Sant'Uffizio il sabba era un'illusione, un inganno del diavolo: la gente sognava di volare al raduno delle streghe, non ci volava davvero. E negli anni Venti del Seicento mise per iscritto un manuale per gli inquisitori, per non farsi trascinare dalle denunce e non credere a chi accusava altri sotto tortura. Gli storici stessi lo chiamano un paradosso.
+La strega del fascicolo si chiamava Bellezza Orsini. Era nata in Sabina, a Collevecchio, figlia illegittima di un Orsini, e aveva lavorato come serva nelle cucine dei conti a Monterotondo. Lì, secondo il suo racconto, aveva conosciuto una prigioniera accusata di stregoneria e ne aveva imparato i segreti. Faceva la guaritrice: erbe, un olio di fiori che considerava la sua cura migliore, segni di croce e formule contro il malocchio. E aveva un quaderno di centottanta pagine che diceva pieno dei segreti del mondo.
+Nel 1528, appena dopo il Sacco di Roma, un ragazzo morì mentre era con lei in pellegrinaggio verso Roma. Il paese la accusò: la chiamavano strea. La arrestarono a Fiano Romano e la portarono nella rocca. Il giudice, Marco Calisto da Todi, le contestò malefici e veleni, e lei si difese come guaritrice. Poi la portò nella stanza della tortura. Quando vide gli strumenti, tentò di uccidersi in cella.
+Sotto tortura la sua storia cambiò. Disse tutto quello che il giudice voleva sentire: i voli di notte verso il noce di Benevento, i raduni, una gerarchia di streghe guidata da una maestra che chiamò Befania. Un nome che a noi suona familiare. Il giudice non fu soddisfatto, e ordinò altra tortura.
+Finì male. Dopo aver consegnato il quaderno, si ferì la gola con un chiodo. Il giudice la interrogò ancora mentre stava morendo, e il suo ultimo desiderio, secondo le carte, fu uno solo: lasciare questo mondo. Non sappiamo se ci fu una sentenza. Il fascicolo, anni dopo, finì fra le carte del tribunale del governatore di Roma, ed eccolo qui, a pochi passi da Piazza Navona. Roma non la bruciò: la sua storia finì in una rocca di provincia, e a Roma arrivarono solo le carte.<br><br>Ora cerca Vicolo delle Grotte, a sud di Campo de' Fiori, a due passi da dove siamo partiti. Sono cinquecento metri.`,
+    deepen: [
+      { type: "link", title: "Bellezza Orsini — Ereticopedia", url: "https://www.ereticopedia.org/bellezza-orsini" }
+    ]
+  },
+  {
+    id: 14, ready: true,
+    name: "Vicolo delle Grotte",
+    desc: "Le grotte del Teatro di Pompeo e il fantasma di Cagliostro che chiama Lorenza",
+    lat: 41.8945576, lon: 12.472458,
+    audio: "audio/tappa15.mp3",
+    photos: [
+      { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Parione_-_largo_del_Pallaro_case_sul_teatro_di_Pompeo_1010679.JPG?width=1024",
+        caption: "Le case costruite sul teatro di Pompeo", credit: "Wikimedia Commons" },
+      { time: 20, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Roma_1006_14.jpg?width=1024",
+        caption: "Il vicolo", credit: "Wikimedia Commons" },
+      { time: 51, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Parione_-_madonnella%2C_largo_del_Pallaro_et_via_di_Grotta_Pinta.jpg?width=1024",
+        caption: "Via di Grotta Pinta", credit: "Wikimedia Commons" }
+    ],
+    fullText: `Vicolo delle Grotte. Il nome ti dice già una cosa: sotto i palazzi di qui ci sono le rovine del Teatro di Pompeo, e nel Medioevo nei suoi spazi interrati si aprirono cantine, botteghe e osterie, le grotte. Siamo nel punto in cui il teatro è stato inghiottito dalla città, e quello che vedi è la città costruita sopra.
+E qui, dicono, in certe notti d'autunno e d'inverno, si sente una cosa. Una donna con il volto coperto da un velo, che si lamenta. E dietro di lei la voce di un uomo che la chiama per nome: Lorenza. Sarebbero Lorenza Feliciani e il conte di Cagliostro, quello della cella che hai appena visto: lei, secondo la leggenda, lo avrebbe tradito e denunciato, e lui la cerca ancora. Litigavano spesso, in modo violento. Nessuna fonte lo prova: è una leggenda, e sta qui da sola.
+Un ultimo spostamento. Il vicolo si chiama delle Grotte, la strada accanto si chiama di Grotta Pinta: stessa origine, stesso teatro. Cammina fino a Via di Grotta Pinta, duecento metri: ti aspetta l'ultima tappa, il teatro di Pompeo e il posto dove è morto Giulio Cesare.`,
+    deepen: [
+      { type: "link", title: "Teatro di Pompeo — Wikipedia", url: "https://it.wikipedia.org/wiki/Teatro_di_Pompeo" }
+    ]
+  },
+  {
+    id: 15, ready: true,
     name: "Via di Grotta Pinta e il Teatro di Pompeo",
     desc: "La curva del teatro dove morì Cesare, e la stanza che Augusto fece murare",
     lat: 41.8952261, lon: 12.4734953,
@@ -421,17 +505,17 @@ Due passi e siamo alla fine. Esci dalla piazza dal lato sud, prendi Corso Vittor
     photos: [
       { time: 0, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Parione_-_via_di_Grottapinta_e_largo_del_Pallaro_case_sul_teatro_di_Pompeo_1010680.JPG?width=1024",
         caption: "La curva di via di Grotta Pinta sulla cavea del teatro", credit: "Wikimedia Commons" },
-      { time: 25, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Vincenzo_Camuccini_-_La_morte_di_Cesare.jpg?width=1024",
+      { time: 23, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Vincenzo_Camuccini_-_La_morte_di_Cesare.jpg?width=1024",
         caption: "La morte di Cesare, Vincenzo Camuccini", credit: "Wikimedia Commons" },
-      { time: 64, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Venice_MAN_62_Roman_portrait_head_of_Pompey.jpg?width=1024",
+      { time: 60, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Venice_MAN_62_Roman_portrait_head_of_Pompey.jpg?width=1024",
         caption: "Ritratto romano di Pompeo Magno", credit: "Wikimedia Commons" },
-      { time: 91, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Parione_-_passetto_del_Biscione_1663.jpg?width=1024",
+      { time: 86, url: "https://commons.wikimedia.org/wiki/Special:FilePath/Parione_-_passetto_del_Biscione_1663.jpg?width=1024",
         caption: "Il passetto del Biscione", credit: "Wikimedia Commons" }
     ],
-    fullText: `Fermati e guarda la forma della strada. Quella curva non è un caso urbanistico: stai camminando dentro la cavea del Teatro di Pompeo, il primo teatro in pietra di Roma, inaugurato nel 55 avanti Cristo. I palazzi che ti circondano sono costruiti sopra le gradinate, le seguono, ne hanno preso la sagoma. Nelle cantine di alcuni di questi edifici ci sono ancora i muri romani in opera reticolata.
-Il complesso non era solo il teatro. Dietro c'era un enorme quadriportico con giardini, e sul lato opposto una grande aula: la Curia di Pompeo, dove il Senato si riuniva quando il Foro non era disponibile. Il 15 marzo del 44 avanti Cristo, in quell'aula, i congiurati accoltellarono Giulio Cesare. Cadde ai piedi della statua di Pompeo, il suo vecchio nemico. È il delitto politico più famoso della storia, e non è avvenuto al Foro né al Campidoglio come credono quasi tutti: è avvenuto qui dietro, all'altro capo di questo stesso isolato, sotto quello che oggi è Largo di Torre Argentina.
-Cosa ne fecero di quella stanza è la parte che preferisco. Augusto la fece murare: chiusa, cancellata, non ci si entrava più. Prima di sigillarla fece collocare una lastra di marmo di circa due metri per tre sul punto esatto, e fece togliere la statua di Pompeo. Poi, scrive Cassio Dione, quell'ambiente finì trasformato in latrina. Il luogo dove è morto Giulio Cesare è stato per secoli un cesso pubblico. Roma è questa.
-Il giro finisce qui, a centocinquanta metri da dove è cominciato. In tre chilometri hai attraversato un patibolo coperto da un mercato, un carcere privato demolito per non ricordarlo, ottomila morti senza nome sotto una chiesa con i teschi in facciata, una galera cancellata dal Lungotevere, un ponte usato come vetrina di cadaveri, un veleno tenuto sotto chiave in Castel Sant'Angelo per duecento anni, e una latrina imperiale costruita sul cadavere di Cesare.<br><br>Il bello è che ci cammini sopra a qualsiasi ora, e nessuno ti dice niente. Grazie per aver camminato con me nella Roma nera.`,
+    fullText: `Fermati e guarda la forma della strada. Quella curva non è un caso urbanistico: stai camminando dentro la cavea del Teatro di Pompeo, il primo teatro in pietra di Roma, inaugurato nel 55 avanti Cristo. I palazzi che ti circondano sono costruiti sopra le gradinate, le seguono, ne hanno preso la sagoma. Sotto alcuni di questi edifici restano ancora i muri del teatro.
+Il complesso non era solo il teatro. Dietro c'era un enorme quadriportico con giardini, e sul lato opposto una grande aula: la Curia di Pompeo, dove quel giorno si riuniva il Senato. Il 15 marzo del 44 avanti Cristo, in quell'aula, i congiurati accoltellarono Giulio Cesare. Cadde ai piedi della statua di Pompeo, il suo vecchio nemico. È il delitto politico più famoso della storia, e non è avvenuto al Foro né al Campidoglio come credono quasi tutti: è avvenuto qui dietro, all'altro capo di questo stesso isolato, sotto quello che oggi è Largo di Torre Argentina.
+Cosa ne fecero di quella stanza è la parte che preferisco. Augusto la fece murare: chiusa, cancellata, non ci si entrava più. Prima di sigillarla fece collocare una lastra di marmo di circa due metri per tre sul punto esatto, e fece togliere la statua di Pompeo. Poi, scrive Cassio Dione, quell'ambiente finì trasformato in latrina. Il luogo dove è morto Giulio Cesare diventato un cesso pubblico. Roma è questa.
+Il giro finisce qui, a poco più di cento metri da dove è cominciato. In quasi quattro chilometri hai attraversato un patibolo coperto da un mercato, un carcere privato demolito per non ricordarlo, ottomila morti senza nome sotto una chiesa con i teschi in facciata, una galera cancellata dal Lungotevere, un ponte usato per esporre i cadaveri, un mago chiuso in una cella con il cibo del papa, il fascicolo di una guaritrice che a Roma nessuno bruciò, un carro di fuoco che sprofonda nel Tevere, e una latrina costruita nel luogo dove morì Cesare.<br><br>Il bello è che ci cammini sopra a qualsiasi ora, e nessuno ti dice niente. Grazie per aver camminato con me nella Roma nera.`,
     deepen: [
       { type: "link", title: "Curia di Pompeo — Wikipedia", url: "https://it.wikipedia.org/wiki/Curia_di_Pompeo" }
     ]
@@ -439,7 +523,7 @@ Il giro finisce qui, a centocinquanta metri da dove è cominciato. In tre chilom
 ];
 
 // Percorso pedonale reale (OSRM foot, routing.openstreetmap.de) — [lat, lon]
-const ROUTE_COORDS = [[41.895477, 12.472046], [41.895613, 12.471803], [41.89575, 12.47152], [41.895759, 12.471504], [41.895798, 12.471439], [41.895759, 12.471504], [41.89575, 12.47152], [41.895736, 12.471507], [41.895435, 12.471115], [41.895424, 12.471101], [41.895413, 12.47109], [41.895399, 12.471085], [41.895392, 12.471084], [41.895158, 12.470779], [41.895146, 12.470732], [41.89514, 12.47072], [41.895201, 12.470637], [41.895275, 12.470521], [41.895298, 12.470487], [41.89532, 12.470448], [41.895332, 12.470427], [41.895362, 12.470359], [41.895413, 12.470245], [41.895429, 12.470193], [41.895479, 12.470078], [41.895514, 12.470017], [41.89558, 12.469913], [41.895606, 12.469871], [41.895614, 12.46986], [41.895606, 12.469871], [41.89558, 12.469913], [41.895514, 12.470017], [41.895381, 12.469826], [41.895351, 12.46978], [41.895334, 12.469797], [41.895265, 12.469874], [41.895214, 12.469936], [41.895202, 12.469958], [41.894911, 12.46966], [41.894754, 12.469491], [41.894417, 12.469804], [41.894386, 12.469835], [41.894323, 12.469893], [41.894207, 12.470003], [41.894323, 12.469893], [41.894386, 12.469835], [41.894417, 12.469804], [41.894463, 12.469761], [41.894754, 12.469491], [41.895065, 12.469202], [41.895893, 12.468449], [41.895918, 12.468426], [41.896037, 12.468319], [41.896306, 12.468077], [41.896436, 12.46796], [41.89653, 12.467875], [41.896769, 12.467661], [41.896785, 12.467646], [41.896821, 12.467614], [41.896896, 12.467542], [41.896951, 12.467489], [41.897198, 12.467248], [41.897223, 12.467323], [41.897302, 12.467568], [41.897223, 12.467323], [41.897198, 12.467248], [41.89751, 12.466972], [41.8972, 12.466454], [41.89751, 12.466972], [41.897778, 12.467429], [41.898039, 12.467162], [41.898078, 12.467124], [41.898117, 12.467087], [41.898163, 12.467047], [41.898208, 12.467007], [41.898402, 12.466849], [41.898432, 12.466826], [41.898464, 12.466803], [41.898496, 12.466783], [41.89853, 12.466762], [41.898656, 12.466691], [41.898666, 12.466687], [41.898677, 12.466683], [41.898687, 12.46668], [41.898698, 12.466677], [41.89872, 12.466672], [41.898766, 12.466665], [41.89881, 12.466659], [41.898837, 12.466657], [41.898899, 12.466649], [41.898949, 12.466642], [41.899141, 12.466608], [41.899154, 12.466605], [41.899167, 12.4666], [41.899181, 12.466593], [41.899196, 12.466586], [41.899437, 12.466431], [41.89945, 12.46645], [41.89948, 12.466409], [41.899492, 12.466393], [41.899501, 12.466406], [41.899546, 12.466471], [41.899586, 12.466531], [41.899601, 12.466545], [41.899632, 12.466556], [41.899797, 12.466577], [41.899819, 12.46658], [41.899824, 12.466601], [41.899831, 12.466627], [41.899892, 12.466642], [41.900146, 12.466633], [41.900478, 12.466582], [41.900543, 12.466572], [41.901073, 12.466521], [41.901121, 12.466521], [41.901213, 12.466521], [41.901234, 12.466519], [41.901281, 12.466516], [41.901316, 12.466513], [41.901327, 12.466512], [41.901902, 12.466463], [41.901327, 12.466512], [41.901316, 12.466513], [41.901281, 12.466516], [41.901234, 12.466519], [41.901213, 12.466521], [41.901222, 12.466728], [41.901238, 12.466962], [41.901289, 12.467641], [41.901332, 12.468044], [41.901355, 12.468239], [41.901379, 12.468424], [41.901329, 12.468449], [41.901342, 12.468492], [41.901339, 12.468515], [41.901326, 12.468523], [41.90135, 12.468731], [41.901393, 12.469227], [41.90145, 12.46968], [41.90147, 12.469834], [41.901499, 12.47005], [41.901501, 12.470069], [41.901499, 12.47005], [41.901377, 12.470062], [41.901061, 12.470118], [41.901062, 12.470137], [41.901092, 12.47053], [41.901095, 12.470568], [41.901079, 12.470571], [41.900969, 12.470591], [41.900945, 12.470599], [41.90093, 12.470611], [41.900913, 12.470629], [41.900884, 12.470672], [41.900872, 12.470696], [41.900862, 12.470719], [41.900852, 12.470753], [41.900843, 12.470786], [41.900836, 12.470832], [41.900831, 12.470877], [41.900832, 12.470927], [41.900859, 12.471495], [41.900862, 12.471602], [41.900864, 12.471623], [41.90087, 12.471698], [41.900879, 12.471815], [41.900899, 12.47217], [41.900901, 12.472222], [41.900903, 12.472285], [41.900932, 12.472269], [41.900903, 12.472285], [41.900875, 12.472301], [41.90077, 12.472367], [41.900489, 12.472538], [41.900444, 12.472535], [41.900423, 12.472534], [41.900288, 12.472504], [41.900279, 12.472522], [41.900268, 12.472511], [41.900174, 12.472426], [41.900163, 12.472447], [41.900152, 12.472437], [41.900146, 12.472431], [41.900134, 12.472423], [41.900117, 12.472412], [41.900106, 12.472401], [41.900075, 12.472383], [41.900042, 12.472363], [41.900027, 12.472354], [41.899981, 12.472331], [41.899956, 12.472318], [41.899953, 12.47225], [41.899829, 12.472245], [41.899803, 12.472246], [41.899805, 12.472696], [41.899811, 12.472797], [41.899206, 12.472847], [41.899209, 12.47291], [41.899162, 12.473074], [41.899112, 12.47325], [41.899117, 12.473313], [41.899123, 12.473395], [41.899141, 12.473788], [41.899142, 12.473804], [41.898939, 12.473823], [41.898385, 12.473885], [41.897918, 12.47393], [41.897896, 12.473931], [41.897865, 12.473937], [41.897848, 12.47394], [41.89749, 12.474035], [41.897272, 12.474085], [41.897245, 12.47409], [41.897221, 12.474095], [41.897186, 12.474113], [41.896938, 12.474146], [41.896613, 12.474151], [41.896614, 12.474142], [41.896601, 12.474141], [41.896535, 12.474144], [41.896422, 12.474137], [41.896431, 12.474051], [41.896415, 12.47405], [41.896399, 12.47405], [41.896006, 12.474039], [41.89569, 12.474044], [41.895641, 12.473971], [41.895613, 12.473944], [41.895587, 12.473901], [41.895566, 12.473851], [41.895534, 12.47381], [41.895439, 12.473698], [41.8954, 12.473667], [41.8954, 12.473693], [41.895378, 12.473675], [41.895347, 12.47366], [41.895318, 12.473652], [41.89529, 12.47365], [41.895241, 12.473648], [41.895226, 12.473648], [41.895241, 12.473648], [41.89529, 12.47365], [41.895318, 12.473652], [41.895347, 12.47366], [41.895404, 12.473551], [41.895424, 12.473416], [41.895409, 12.473278], [41.895416, 12.473145], [41.895412, 12.472736], [41.895233, 12.472481], [41.895383, 12.472213], [41.895477, 12.472046]];
+const ROUTE_COORDS = [[41.895477, 12.472046], [41.895613, 12.471803], [41.89575, 12.47152], [41.895759, 12.471504], [41.895798, 12.471439], [41.895759, 12.471504], [41.89575, 12.47152], [41.895736, 12.471507], [41.895435, 12.471115], [41.895424, 12.471101], [41.895413, 12.47109], [41.895399, 12.471085], [41.895392, 12.471084], [41.895158, 12.470779], [41.895146, 12.470732], [41.89514, 12.47072], [41.895201, 12.470637], [41.895275, 12.470521], [41.895298, 12.470487], [41.89532, 12.470448], [41.895332, 12.470427], [41.895362, 12.470359], [41.895413, 12.470245], [41.895429, 12.470193], [41.895479, 12.470078], [41.895514, 12.470017], [41.89558, 12.469913], [41.895606, 12.469871], [41.895614, 12.46986], [41.895606, 12.469871], [41.89558, 12.469913], [41.895514, 12.470017], [41.895381, 12.469826], [41.895351, 12.46978], [41.895334, 12.469797], [41.895265, 12.469874], [41.895214, 12.469936], [41.895202, 12.469958], [41.894911, 12.46966], [41.894754, 12.469491], [41.894417, 12.469804], [41.894386, 12.469835], [41.894323, 12.469893], [41.894207, 12.470003], [41.894323, 12.469893], [41.894386, 12.469835], [41.894417, 12.469804], [41.894463, 12.469761], [41.894754, 12.469491], [41.895065, 12.469202], [41.895893, 12.468449], [41.895918, 12.468426], [41.896037, 12.468319], [41.896306, 12.468077], [41.896436, 12.46796], [41.89653, 12.467875], [41.896769, 12.467661], [41.896785, 12.467646], [41.896821, 12.467614], [41.896896, 12.467542], [41.896951, 12.467489], [41.897198, 12.467248], [41.897223, 12.467323], [41.897302, 12.467568], [41.897223, 12.467323], [41.897198, 12.467248], [41.89751, 12.466972], [41.8972, 12.466454], [41.89751, 12.466972], [41.897778, 12.467429], [41.898039, 12.467162], [41.898078, 12.467124], [41.898117, 12.467087], [41.898163, 12.467047], [41.898208, 12.467007], [41.898402, 12.466849], [41.898432, 12.466826], [41.898464, 12.466803], [41.898496, 12.466783], [41.89853, 12.466762], [41.898656, 12.466691], [41.898666, 12.466687], [41.898677, 12.466683], [41.898687, 12.46668], [41.898698, 12.466677], [41.89872, 12.466672], [41.898766, 12.466665], [41.89881, 12.466659], [41.898837, 12.466657], [41.898899, 12.466649], [41.898949, 12.466642], [41.899141, 12.466608], [41.899154, 12.466605], [41.899167, 12.4666], [41.899181, 12.466593], [41.899196, 12.466586], [41.899437, 12.466431], [41.89945, 12.46645], [41.89948, 12.466409], [41.899492, 12.466393], [41.899501, 12.466406], [41.899546, 12.466471], [41.899586, 12.466531], [41.899601, 12.466545], [41.899632, 12.466556], [41.899797, 12.466577], [41.899819, 12.46658], [41.899824, 12.466601], [41.899831, 12.466627], [41.899892, 12.466642], [41.900146, 12.466633], [41.900478, 12.466582], [41.900543, 12.466572], [41.901073, 12.466521], [41.901121, 12.466521], [41.901213, 12.466521], [41.901234, 12.466519], [41.901281, 12.466516], [41.901316, 12.466513], [41.901327, 12.466512], [41.901902, 12.466463], [41.902457, 12.466415], [41.902467, 12.466414], [41.902513, 12.46641], [41.902503, 12.466219], [41.902513, 12.46641], [41.902467, 12.466414], [41.902457, 12.466415], [41.901327, 12.466512], [41.901316, 12.466513], [41.901281, 12.466516], [41.901234, 12.466519], [41.901213, 12.466521], [41.901222, 12.466728], [41.901238, 12.466962], [41.901289, 12.467641], [41.901332, 12.468044], [41.901355, 12.468239], [41.901379, 12.468424], [41.901329, 12.468449], [41.901342, 12.468492], [41.901339, 12.468515], [41.901326, 12.468523], [41.90135, 12.468731], [41.901393, 12.469227], [41.90145, 12.46968], [41.90147, 12.469834], [41.901499, 12.47005], [41.901501, 12.470069], [41.901499, 12.47005], [41.901377, 12.470062], [41.901061, 12.470118], [41.901062, 12.470137], [41.901092, 12.47053], [41.901095, 12.470568], [41.901079, 12.470571], [41.900969, 12.470591], [41.900945, 12.470599], [41.90093, 12.470611], [41.900913, 12.470629], [41.900884, 12.470672], [41.900872, 12.470696], [41.900862, 12.470719], [41.900852, 12.470753], [41.900843, 12.470786], [41.900836, 12.470832], [41.900831, 12.470877], [41.900832, 12.470927], [41.900859, 12.471495], [41.900862, 12.471602], [41.900864, 12.471623], [41.90087, 12.471698], [41.900879, 12.471815], [41.900899, 12.47217], [41.900901, 12.472222], [41.900903, 12.472285], [41.900932, 12.472269], [41.900903, 12.472285], [41.900875, 12.472301], [41.90077, 12.472367], [41.900489, 12.472538], [41.900444, 12.472535], [41.900423, 12.472534], [41.900288, 12.472504], [41.900279, 12.472522], [41.900268, 12.472511], [41.900174, 12.472426], [41.900163, 12.472447], [41.900152, 12.472437], [41.900146, 12.472431], [41.900134, 12.472423], [41.900117, 12.472412], [41.900106, 12.472401], [41.900075, 12.472383], [41.900042, 12.472363], [41.900027, 12.472354], [41.899981, 12.472331], [41.899956, 12.472318], [41.899953, 12.47225], [41.899829, 12.472245], [41.899803, 12.472246], [41.899805, 12.472696], [41.899811, 12.472797], [41.899206, 12.472847], [41.899209, 12.47291], [41.899162, 12.473074], [41.899112, 12.47325], [41.899117, 12.473313], [41.899123, 12.473395], [41.899141, 12.473788], [41.899142, 12.473804], [41.898939, 12.473823], [41.898385, 12.473885], [41.898388, 12.473918], [41.89839, 12.473952], [41.898394, 12.474021], [41.898145, 12.474051], [41.898151, 12.474097], [41.898151, 12.474097], [41.898145, 12.474051], [41.897924, 12.474088], [41.897905, 12.47409], [41.897873, 12.474096], [41.897826, 12.474106], [41.897394, 12.47421], [41.897199, 12.474256], [41.897195, 12.4742], [41.897193, 12.474172], [41.897189, 12.474129], [41.897186, 12.474113], [41.896938, 12.474146], [41.896613, 12.474151], [41.896614, 12.474142], [41.896601, 12.474141], [41.896535, 12.474144], [41.896422, 12.474137], [41.896431, 12.474051], [41.896415, 12.47405], [41.896399, 12.47405], [41.89641, 12.473948], [41.896256, 12.473929], [41.896157, 12.473915], [41.89602, 12.473896], [41.895994, 12.473893], [41.895979, 12.473702], [41.895966, 12.473538], [41.895959, 12.473456], [41.895952, 12.473402], [41.895947, 12.473375], [41.895939, 12.473349], [41.89593, 12.473324], [41.89592, 12.473302], [41.895908, 12.473281], [41.895895, 12.473263], [41.895862, 12.473225], [41.895794, 12.473155], [41.895616, 12.472986], [41.895412, 12.472736], [41.895233, 12.472481], [41.895191, 12.472557], [41.895186, 12.47257], [41.895092, 12.472693], [41.894989, 12.472627], [41.894924, 12.472587], [41.894885, 12.472563], [41.894831, 12.472539], [41.894728, 12.4725], [41.894612, 12.472465], [41.894558, 12.472458], [41.894612, 12.472465], [41.894728, 12.4725], [41.894831, 12.472539], [41.894885, 12.472563], [41.894924, 12.472587], [41.894989, 12.472627], [41.895092, 12.472693], [41.895186, 12.47257], [41.895191, 12.472557], [41.895233, 12.472481], [41.895412, 12.472736], [41.895416, 12.473145], [41.895409, 12.473278], [41.895424, 12.473416], [41.895404, 12.473551], [41.895347, 12.47366], [41.895318, 12.473652], [41.89529, 12.47365], [41.895241, 12.473648], [41.895226, 12.473648], [41.895241, 12.473648], [41.89529, 12.47365], [41.895318, 12.473652], [41.895347, 12.47366], [41.895404, 12.473551], [41.895424, 12.473416], [41.895409, 12.473278], [41.895416, 12.473145], [41.895412, 12.472736], [41.895233, 12.472481], [41.895383, 12.472213], [41.895477, 12.472046]];
 </script>
 <script src="../shared/app.js"></script>
 </body>
